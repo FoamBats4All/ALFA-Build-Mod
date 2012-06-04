@@ -12,7 +12,7 @@ void main() {
 	WriteTimestampedLogEntry( "acr_s0_feather_fall -- State 002" );
 	
 	// Get the caster and location of the target.
-	object oCaster = GetLastSpellCaster();
+	object oCaster = OBJECT_SELF;
     location lLocal = GetSpellTargetLocation();
 	
 	// Get duration and limit.
