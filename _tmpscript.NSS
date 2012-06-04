@@ -1,1316 +1,1662 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//	System Name : ALFA Core Rules
-//		Filename : acr_nonlethal_i.nss
-//		$Revision:: 656			$ current version of the file
-//				$Date:: 2012-04-30#$ date the file was created or modified
-//			Author : Creslyn & AcadiusLost
+//  System Name : ALFA Core Rules
+//     Filename : acr_mod_events_i.nss
+//    $Revision:: 616        $ current version of the file
+//        $Date:: 2009-12-29#$ date the file was created or modified
+//       Author : Ronan & Cipher & AcadiusLost
 //
-//	Var Prefix : ACR_NLD
-//	Dependencies:
+//  Description
+//  This file contains functions which process all module event scripts for
+//  ALFA modules.
 //
-//	Description
-//	This script controls the nonlethal/subdual scripts for use on other PCs and NPCs.
+//  Of note is the presence of only a single loop in each event. Subsystems
+//  residing in an event should not contain their own inventory or effect loops,
+//  instead the subsystems should share a single loop. This is done for reasons
+//  of efficiency, NWScript is not quick when doing things like looping through
+//  items in an inventory, or objects in an area.
 //
-//	Revision History
-//	2008/07/22	Creslyn	Subdual v11: Inception.
-//	2008/08/27	AcadiusLost	reformatting/integration to ACR.
-//	2008/08/30	AcadiusLost	adjusted constants to Live versions, converted DB to SQL
-//								expanded ACR_NLD_OnPCLoaded() event to initialize local caches.
-//	2008/09/01	AcadiusLost	Switched to orange for reporting, added death switch
-//	2008/09/06	Creslyn	Improved feat handling, removed persistency requirements,
-//					dealt with several DR cases.
-//	2008/09/19	AcadiusLost	Attempted improvement on subdued animations.
-//	2008/09/20	AcadiusLost	Altered subdual health display
-//	2008/09/21	AcadiusLost	Fixed subdual health reports, added DEX=0 to the Helpless state.
-//					SetCommandable window reduced to 0.1 seconds, Dex penalty removal fixed,
-//					OnExit event added to clear logout with subdual on.
-//	2008/09/27	AcadiusLost	Added Subdual logging. Also cleaned reporting of {CR} text to players.
-//	2008/11/10	AcadiusLost	Migrated/fixed reporting of {CR} text to acr_tools_i
-//	2009/03/20	Creslyn	Addition of public function to apply subdual damage
-//	2009/05/10	Creslyn	Improvements to Weapon Switch, DR check, and ApplyFist functions.
-//	2009/05/30	AcadiusLost	Subdual healing to 1 per 8 rnds
-//	2012/04/30	Foam Cleaned code, added further commenting.
-//	2012/05/01	Foam Added support for precise strike and insightful strike.
-//	2012/05/01	Foam Improved support for enhancement and damage bonuses.
+//  Revision History
+//  2006/08/18  Cipher  Added pc initialization, rest processing, & minor reformatting
+//  2006/09/09  Cipher  Changed ALFA prefix to ACR
+//  2006/09/15  Ronan   Added game constant cache system, and updated to ACR_ convention
+//  2006/09/15  Cipher  Added support for scrying spells
+//  2006/09/15  Cipher  Added death system functions
+//  2006/12/22  Cipher  Added OnModuleStart and OnPCLoaded event handlers
+//  2007/01/20  Cipher  Moved ExecuteScript() item script to ACR_ModuleOnActivateItem()
+//  2007/03/31  AcadiusLost  commented out calls to Death system scripts, for now.
+//  2007/04/15  AcadiusLost  edited OnActivate to explicitly pass oItem in ExecuteScript
+//  2007/04/26  AcadiusLost  Added Module Switches to OnModuleLoad handler
+//  2007/05/03  AcadiusLost  Added death effect to ACR_ModuleOnPlayerDying()- temporarily
+//  2007/05/03  Cipher  Added call to ACR_PlayerOnDying() and initialized spell hooking
+//  2007/05/25  Cipher  Added NWNX initialization and 1984 logging hooks
+//  2007/07/01  Cipher  Added OnPCLoaded() event calls. This solves PC instantiation workarounds
+//  2007/07/13  Cipher  Added SQL table creation function call
+//  2007/07/14  AcadiusLost  Moved DM item granting to OnPCLoaded, added starting equipment handling.
+//                      Also changed ACR_ModuleOnPlayerDeath() to use GetLastHostileActor(), and 
+//                      ACR_ModuleOnUnacquireItem() to check GetIsObjectValid(oItem), and ACR_ModuleOnAcquireItem
+//                      to use GetItemPossessor(GetModuleItemAquired()) to avoid strange cases.
+//  2007/07/18  AcadiusLost  Moved ACR_RestOnClientEnter to OnPCLoaded
+//  2007/07/21  Cipher  Revised ACR_SQLGetData() calls, skip item acquisition logging on logins
+//  2007/09/02  Cipher  Added rebuild journal quest entries on login
+//  2007/09/15  AcadiusLost Pushed back RestOnClientEnter with a DelayCommand() to give PC status 
+//                      adjust a chance to apply damage before calculating offcamera rest healing.
+//  2007/09/15  Cipher  Moved journal rebuild to the OnPCLoaded event
+//  2007/09/20  Cipher  Added quest hook for item bounties
+//  2007/09/21  Cipher  Moved inventory item checks on login to the ItemOnAcquired function to avoid redundancy
+//  2007/10/28  AcadiusLost Merged with DMFI 1.05 for OnPCLoad event.  Added "#include "dmfi_inc_initial"
+//  2007/10/31  AcadiusLost Changed DMFI call to an ExecuteScript() so it isn't needed to compile the ACR.
+//  2007/11/02  AcadiusLost Shifted DMFI call outside the DM/Player conditional so it is called for both.
+//  2007/11/15  AcadiusLost removed module switch for UMD scrolls (adding ALFA scrolls) 
+//  2007/11/25  AcadiusLost added OnEquip handling for Martial Bastardswords
+//  2007/11/30  AcadiusLost added OnModuleLoad call to initialize chat plugin cache
+//  2007/12/16  AcadiusLost added calls to acr_items_i to handle item scripts, moved bastardsword code.
+//  2007/12/17  AcadiusLost - pushed death and resting includes to acr_items_i, shifted item activation code as well.
+//  2008/03/19  AcadiusLost - shifted death logging into acr_death_i, due to addition of "death floor"
+//  2008/04/16  Cipher  Fixed logout logging.
+//  2008/04/16  Cipher  Fixed acquire logging.
+//  2008/08/27  AcadiusLost - added hooks for nonlethal damage system
+//  2008/09/19  AcadiusLost - prepare for Custom skills, regions, logging fix for NLD
+//  2008/09/21  AcadiusLost - Nonlethal OnExit event added.
+//  2008/12/08  AcadiusLost - Added handling for server names with apostrophes eg. "Baldur's Gate"
+//                    Item acquire/unacquire optimizations (commented out SQL illegal item checks), deprecated storageobjects 
+//                  also amended spawn debug wand tag for GetItemPossessedBy() for DMs.
+//  2008/12/10  AcadiusLost - optimized class checking OnPCLoaded()
+//  2009/01/19  AcadiusLost - switched Servers table update to take GetName(oModule) to allow synchronicity with pwdata entries.
+//  2009/02/07  AcadiusLost - Changed initialization of the AutoSave() cycle for PCs.
+//  2009/03/10  AcadiusLost - Added initialization for the DM Client Extension suite in OnClientEnter.
+//  2009/07/07  AcadiusLost - updated to add custom skill framework with 1.23
+//  2009/07/18  AcadiusLost - Added language and region hooks into PC Load and Levelup events.
+//  2009/08/03  AcadiusLost - Added IP-logging onLogin
+//  2009/08/08  AcadiusLost - Added handling for OnChat event (1.23)
+//  2009/12/29  AcadiusLost - Removed autoassignment of subdual widget OnPCLoaded (no longer needed)
+//    2011/05/29    Ronan        - Added OnModuleLoad parameters for global module settings.
+//      2011/06/04      Zelknolf        - Added hook for display of NPC creator GUI
+//    2011/06/24    AcadiusLost    - merged in fix for clearing IsOnline bits in Characters table OnModuleLoad()
+//    2011/06/25    Ronan - Added in the service heartbeats for asynchronous SQL writes.
+// 2011/07/02  Basilica - Added persistent database callouts for cache management.
+// 2011/12/26  Basilica - Added server admin command directives.
+// 2012/01/02  Basilica - Added latency monitor support.
+// 2012/01/05  Basilica - Added server IPC callouts.
+// 2012/01/09  Basilica - CE integration.
+// 2012/01/14  Basilica - Changed to use ACR_RPXPMarkActive for marking RPXP.
+// 2012/01/19  Basilica - Added callout for area instancing system.
+// 2012/03/03  Basilica - Added callout for SCliExt OnLeave.
+// 2012/04/15  Basilica - Added infrastructure for deleting unneeded static objects at module startup.
+// 2012/04/16  Basilica - Log module and HAK build date to server log at module startup.
+// 2012/04/28  Basilica - Prevent creation of new characters or players with trailing spaces.
 //
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
 // Includes ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-#include "acr_pps_i"
-#include "acr_1984_i"
+#include "acr_settings_i"
+#include "acr_debug_i"
+#include "acr_time_i"
+#include "acr_xp_i"
+//#include "acr_storageobj_i"
+#include "acr_spawn_i"
+#include "acr_db_persist_i"
+//#include "acr_game_const_i"
+#include "acr_scry_i"
 #include "acr_tools_i"
-#include "x2_inc_itemprop"
-#include "X0_I0_SPELLS"
-#include "x2_inc_spellhook" 
+#include "acr_1984_i"
+#include "acr_quest_i"
+#include "acr_chat_i"
+#include "acr_xp_i"
+#include "acr_items_i"
+#include "acr_skills_i"
+#include "acr_nonlethal_i"
+#include "acr_language_i"
+#include "acr_feat_events_i"
+#include "acr_srvadmin_i"
+#include "acr_server_ipc_i"
+#include "acr_version_i"
+#include "acr_scliext_i"
+#include "acr_area_instance_i"
+#include "acr_wealth_i"
+
+#include "acf_spawn_i"
+#include "acf_settings_i"
+
+#include "x2_inc_switches"
+#include "dmfi_inc_initial"
+#include "dmfi_inc_lang"
+
+#include "acr_roll_i"
+
+#include "nwnx_craft_system"
+
+#include "acr_craft_creation_i"
+#include "acr_notifications_i"
+#include "nwnx_objectattributes_include"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constants ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-const string ACR_SUBDUAL_TOGGLE = "acr_subdual";
-const string ACR_NLD_DB = "ACR_NLD_DB";
+const string _ONLOAD_DEBUG = "ACR_ModuleOnModuleLoad";
+const string ACR_MOD_STATUS = "ACR_MOD_STATUS";
 
-//!! Number of rounds it takes to heal 1 point of non lethal damage
-//!!	10 may be canon, 5 is less tedious for a PW environment.
-const int ACR_NLD_HEALRATE = 8;
+//! Local variable definitions
+const string ACR_MOD_SPELLBOOK = "ACR_MOD_SPELLBOOK";
+const string ACR_MOD_HOLYSYMBOL = "ACR_MOD_HOLYSYMBOL";
+const string ACR_MOD_STARTINGGOLD = "ACR_MOD_STARTINGGOLD";
+const string ACR_MOD_STARTARMORX = "ACR_MOD_STARTARMORX";
+const string ACR_MOD_FIRSTAID_IT = "ACR_MOD_FIRSTAID_IT";
 
-//!! Determine whether or not sneak attacks are allowed to deal non lethal damage
-//!! - FALSE: not allowed; TRUE: allowed
-const int NLD_SA_ALLOWED = FALSE;
+const string ACR_MOD_LAST_TELL_TO = "ACR_MOD_LAST_TELL_TO";
+const string ACR_MOD_LAST_TELL_FROM = "ACR_MOD_LAST_TELL_FROM";
+const string ACR_MOD_SUPPRESS_LANGUAGE = "ACR_MOD_SUPPRESS_LANGUAGE";
 
-const string ACR_NLD_MODE = "ACR_NLD_MODE";
-const string ACR_NLD_STATE = "ACR_NLD_STATE";
-const string ACR_NLD_HEALING = "ACR_NLD_HEALING";
 
-const int ACR_NLD_STATE_NORMAL = 0;
-const int ACR_NLD_STATE_STAGGERED = 1;
-const int ACR_NLD_STATE_HELPLESS = 2;
+//! ACR_MOD_STATUS Module Status Flags (bitmask)
+const int ACR_MOD_NWNX_FAILED = 0x01;
 
-const string ACR_NLD_DAMAGE = "ACR_NLD_DAMAGE";
-const string ACR_NLD_DAMAGE_TOTAL = "ACR_NLD_DAMAGE_TOTAL";
+//! The time period for OnModuleLoad() rescheduling, necessary for NWNX failures.
+const float ACR_MOD_RELOAD_CYCLE = 10.0;
 
-const string ACR_NLD_DICE_DAMAGE = "ACR_NLD_DICE_DAMAGE";
-const string ACR_NLD_DICE_NUMBER = "ACR_NLD_DICE_NUMBER";
-const string ACR_NLD_DAMAGE_PENALTY = "ACR_NLD_DAMAGE_PENALTY";
 
-const string ACR_NLD_WOFFHAND = "ACR_NLD_WOFFHAND";
-const string ACR_NLD_W2HANDED = "ACR_NLD_W2HANDED";
+const float ACR_TALK_SPHERE_RADIUS = 20.0f;
+const float ACR_WHISPER_SPHERE_RADIUS = 3.0f;
 
-const string ACR_NLD_SNEAKATTACK = "ACR_NLD_SNEAKATTACK";
-const string ACR_NLD_SA_DICE = "ACR_NLD_SA_DICE";
+//! Define to 1 to enable language handling debugging.
+#define DEBUG_LANG 0
 
-const string ACR_NLD_MAT_ADAMANTINE = "_ada_";
-const string ACR_NLD_MAT_ALCSILVER = "_slv_";
-const string ACR_NLD_MAT_COLDIRON = "_cld_";
-//const string ACR_NLD_MAT_MITHRIL = "_mth_";
-//const string ACR_NLD_MAT_DARKSTEEL = "_drk_";
 
-const string ACR_NLD_ATTACKER = "ACR_NLD_ATTACKER";
-const string ACR_NLD_TARGET = "ACR_NLD_TARGET";
+////////////////////////////////////////////////////////////////////////////////
+// Structures //////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
-// Missing feat globals.
-const int FEAT_FAVORED_SOUL_DR_COLD_IRON = 2087;
-const int FEAT_FAVORED_SOUL_DR_SILVER = 2088;
-const int FEAT_INSIGHTFUL_STRIKE = 2141;
-
-// Missing spell globals.
-const int SPELL_GR_SHADOW_CON_GHOSTLY_VISAGE = 351;
+////////////////////////////////////////////////////////////////////////////////
+// Global Variables ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
 // Function Prototypes /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-//!! Toggles NLD mode on/off for oUser, also reports total NLD oUser currently suffers
-void ACR_ToggleNLDMode( object oUser = OBJECT_SELF );
+// Runs the ALFA OnModuleLoad event.
 
-//!! Start healing cycle, toggle NLD mode off (if it was on), restore feats, etc.
-void ACR_NLD_OnPCLoaded( object oPC );
+void ACR_ModuleOnModuleLoad();
+void ACR_ModuleOnModuleStart();
+void ACR_ModuleOnClientEnter();
+void ACR_ModuleOnClientLeave();
+void ACR_ModuleOnAcquireItem();
+void ACR_ModuleOnUnacquireItem();
+void ACR_ModuleOnActivateItem();
+void ACR_ModuleOnPCLoaded();
+void ACR_ModuleOnPlayerDeath();
+void ACR_ModuleOnPlayerDying();
+void ACR_ModuleOnPlayerLevelUp();
+void ACR_ModuleOnPlayerRespawn();
+void ACR_ModuleOnPlayerRest();
+void ACR_ModuleOnHeartbeat();
+void ACR_ModuleOnUserDefined();
+void ACR_ModuleOnPlayerEquip();
+void ACR_ModuleOnPlayerUnequip();
+void ACR_ModuleOnCutsceneAbort();
 
-//!! Adds/removes NLD properties to equipped/unequipped weapons
-//!! - oUser
-//!! - oWeapon
-//!! - bEquipped: specify whether oWeapon was just equipped (TRUE) or unequipped (FALSE)
-void ACR_NLD_OnWeaponSwitch( object oUser, object oWeapon, int bEquipped = TRUE );
+// special handler for the OnChat event (new in 1.23)
+int ACR_ModuleOnChat(object oSpeaker, object oTarget, int nMode, string sText);
 
-//!! Apply and/or remove the effects associate with each NLD state
-//!! - oTarget
-//!! - nSubdualTotal: total amount of non lethal damage oTarget has taken
-void ACR_ApplyNLDEffects( object oTarget, int nSubdualTotal );
+//! Returns the state of the desired module status bit
+//! - nStatus: One of the status flags defined for ACR_MOD_STATUS
+//! - returns: TRUE is set, FALSE if not set
+int ACR_GetModuleStatus(int nStatus);
 
-//!! NLD check on weapon hit, applied from x2_s3_onhitcast
-//!! returns TRUE if NLD mode is on, then applies NLD. FALSE if off
-int ACR_NLD_OnWeaponHit( object oWeapon, object oTarget, object oAttacker );
+//! Sets the state of the desired module status bit
+//! - nStatus: One of the status flags defined for ACR_MOD_STATUS
+//! - returns: Nothing
+void ACR_SetModuleStatus(int nStatus);
 
-//!! Heals nHealAmount of non lethal damage on oTarget
-//!! - if this takes oTarget out of/into the staggered 
-//!!	or helpless states, remove/apply effects from those states
-//!! - bReport: tells the player how much nonlethal damage they have remaining
-//!! - oCaster: if oCaster is a valid object, report amount of NLD healed/remaining to oCaster too
-void ACR_NLD_HealNLD( object oTarget, int nHealAmount, int bReport = TRUE, object oCaster = OBJECT_INVALID );
+// Private
 
-//!! Regenerates X amount of nonlethal damage on oTarget per round
-//!! * X depends on which spell is used
-//!! - oTarget:
-//!! - nAmount: amount to regenerate
-//!! - nSpell: use GetSpellID()
-//!! - fDelay: how long before the next iteration of regenerate
-void ACR_NLD_Regen( object oTarget, int nAmount, int nSpell, float fDelay );
+//! Start up latency and health monitoring for the server
+void ACR_ModuleInitHealthChecks();
 
-//!! Reports the total amount of non lethal damage oTarget is still suffering
-//!! - oTarget:
-//!! - oReportTo: who recieves the message
-//!! - nAmount: used in other functions where this amount is already known,
-//!!		saves extra db calls
-void ACR_NLD_ReportTotal( object oTarget, object oReportTo, int nAmount = 0 );
+//! Perform startup time area cleanup.
+void ACR_PerformModuleStartupCleanup();
 
-//!! Heals all non lethal damage on oTarget
-//!! - for use in a successful rest, or login after x period of time
-void ACR_NLD_HealAll( object oTarget );
+//! Sweep unneeded objects from the area, such as walkmesh helpers.
+//!  - AreaObject: the area to remove unneeded objects from.
+void ACR_SweepAreaOfUnneededObjects(object AreaObject);
 
-//!! If oTarget is taken into negatives/killed, determine if
-//!! oAttacker was using non lethal damage, and if so how much
-//!! non lethal damage was done ( = amount real damage to heal)
-//!! - oTarget: dead/dying pc
-//!! - oAttacker: damage dealer, use GetLastDamager()
-int ACR_NLD_DeathOrDyingHitDamage( object oTarget, object oAttacker );
+//! Wrapper for ACR_ModuleInitHealthChecks().
+void ACR_StartModuleInitHealthChecks();
 
-//!! Deactivates subdual mode for dead PCs (avoids inadvertant feat upgrade from deactivation after
-//!!	a rez which would cause loss of a sneak attack feat.
-void ACR_NLD_OnDeath( object oDead );
+//! Parse a new language
+string _ParseLang(object pc, string text);
 
-//!! Cleans up after a logout while in Subdual Mode
-void ACR_NonLethalOnClientExit( object oDeparting );
+//! Parse a new language
+int _HandleLang(object pc, string text, int mode, string lang, object DMFIToolOwner);
 
-// Apply an amount of nonlethal damage (nSubdualDamage) to oTarget directly.
-// * This will simply apply a flat amount of nonlethal damage, ignoring resistances,
-//		saves or anything and everything else.
-void ACR_ApplyNonlethalDamageToCreature( object oTarget, int nSubdualDamage );
+//! Check if a mouthpiece should have messages relayed from a speaker.
+//!  - oMouthPiece: Supplies the mouthpiece, i.e. controlling object (e.g. DM).
+//!  - oSpeaker: Supplies the actual physical speaker (e.g. controlled object).
+//!  - fDistance: Supplies the distance for the range check.
+//!  - Returns: TRUE if the objects were out of range to receive the message
+//              through conventional means, i.e. we should relay it.
+int _MouthPieceNotInRange(object oMouthPiece, object oSpeaker, float fDistance);
 
-//! *** PRIVATE FUNCTIONS ***
-//! Not for external use.
+//! Wrapper for SpeakString that suppresses voice throw reception.
+//!  - sToSpeak: The string to send.
+//!  - nTalkVolume: The volume to use.
+void _SpeakString(string sToSpeak, int nTalkVolume);
 
-// Applies non lethal damage from subdual weapons.
-// - oTarget
-// - oAttacker
-// - oItem: the equipped weapon
-// - bSneak: attack was a Sneak Attack - TRUE/FALSE
-void _NLDWeaponDamage( object oTarget, object oAttacker, object oItem, int bSneak = FALSE );
+//! Distribute translated chat message to DM avatars as they do not reliably
+//  appear to be enumerated within an object shape region.
+//!  - sTranslatedMessage: The message to distribute.
+//!  - oSpeaker: The speaking object.
+//!  - fRange: The maximum range to deliver the message at.
+void _DistributeTranslationToDMAvatars(string sTranslatedMessage, object oSpeaker, float fRange);
 
-// Determine if oAttacker has the specialisation feat for his weapon
-int _NLDGetWeaponSpecialisation( object oAttacker, object oItem );
+//! Distribute translated chat message to a mouthpiece object (i.e. controlling
+//  DMs or players).
+//!  - sTranslatedMessage: The message to distribute to objects that can
+//     translate the language.
+//!  - sScrambledMessage: The message to distribute to objects that cannot
+//     translate the language.
+//!  - oSpeaker: The speaking object.
+//!  - fRange: The maximum range to deliver the message at.
+//!  - oListener: The object that might is within hearing range of the message.
+void _DistributeTranslationToMouthPiece(string sTranslatedMessage, string sScrambledMessage, object oSpeaker, float fRange, object oListener);
 
-// Determine if oAttacker has the greater specialisation feat for his weapon
-int _NLDGetGreaterWeaponSpecialisation( object oAttacker, object oItem );
+//!  Distribute translated chat message to appropriate recipients, for party.
+//!  - sTranslatedMessage: The message to distribute to objects that can
+//     translate the language.
+//!  - sScrambledMessage: The message to distribute to objects that cannot
+//     translate the language.
+//!  - sLanguage: The language (e.g. Elven).
+//!  - oSpeaker: The speaking object.
+void _DistributeTranslationParty(string sTranslatedMessage, string sScrambledMessage, string sLanguage, object oSpeaker);
 
-// Determine enhancement bonus of the weapon
-int _NLDGetEnhancementBonus( object oTarget, object oItem );
+//!  Distribute translated chat message to appropriate recipients, for talk or
+//   whisper.
+//!  - sTranslatedMessage: The message to distribute to objects that can
+//     translate the language.
+//!  - sScrambledMessage: The message to distribute to objects that cannot
+//     translate the language.
+//!  - sLanguage: The language (e.g. Elven).
+//!  - oSpeaker: The speaking object.
+//!  - fRange: The range to distribute the message at.
+void _DistributeTranslationSpoken(string sTranslatedMessage, string sScrambledMessage, string sLanguage, object oSpeaker, float fRange);
 
-// Get the amount of non lethal damage that bypasses
-// oTarget's damage reduction, apply physical damage
-// up to the amount of DR (for stoneskins)
-// - oWeapon : the weapon hitting oTarget
-int _GetNLDamageReduction( object oTarget, object oWeapon );
+//!  Distribute translated chat message to appropriate recipients.
+//!  - sOriginalMessage: The message to distribute to objects that can
+//     translate the language.
+//!  - sScrambledMessage: The message to distribute to objects that cannot
+//     translate the language.
+//!  - sLanguage: The language (e.g. Elven).
+//!  - oSpeaker: The speaking object.
+//!  - nMode: The chat mode (CHAT_MODE_WHISPER, CHAT_MODE_TALK,
+//     CHAT_MODE_PARTY)
+void _DistributeTranslation(string sOriginalMessage, string sScrambledMessage, string sLanguage, object oSpeaker, int nMode);
 
-// Give oUser a creature weapon for unarmed NLD
-void _GiveNLDFist( object oUser );
-
-// Apply NLD weapon effects to the NLD fist held by oUser
-void _ApplyNLDFist( object oUser );
-
-// oTarget will heal non lethal damage at a set amount/time
-// - for testing purposes, it will be 1hp/round
-void _NLDNaturalHealing( object oTarget, int nCnt = 0 );
-
-// Remove the NLD staggered state effects from oTarget
-// - needs work
-void _RemoveNLDStaggeredEffect( object oTarget );
-
-// Remove the NLD helpless state effects from oTarget
-// - needs work
-void _RemoveNLDHelplessEffect( object oTarget );
-
-// Get how many d6 sneak attack oAttacker has
-int _GetNLDSneakAttackDice( object oAttacker );
-
-// Determines how much Sneak Attack damage oAttacker should
-// do, and removes the feats
-void _HandleNLDSneakAttacks( object oAttacker );
-
-// Restores removed Sneak Attack feats
-void _RestoreNLDSneakAttackFeats( object oAttacker );
-
-// Retrieve list of sneak attack feats removed from oAttacker
-int _GetNLDSAFeatList( object oAttacker );
-
-// Store list of sneak attack feats removed from oAttacker
-void _SetNLDSAFeatList( object oAttacker, int nFeatList );
-
-// Determine NLD mode. Returns:
-// - TRUE: ON
-// - FALSE: OFF
-int _GetNLDMode( object oUser );
-
-// Set NLD mode
-// - TRUE: on
-// - FASE: off
-void _SetNLDMode( object oUser, int bMode );
-
-// Get NLD state of target. Returns:
-// - 0: normal
-// - 1: staggered
-// - 2: helpless
-int _GetNLDState( object oTarget );
-
-// Set what NLD state the target is in
-// - 0: normal
-// - 1: staggered
-// - 2: helpless
-void _SetNLDState( object oTarget, int nState );
-
-// Get the total non lethal damage that oTarget has taken
-int _GetNLDTotal( object oTarget );
-
-// Set the total non lethal damage that oTarget has taken
-void _SetNLDTotal( object oTarget, int nAmount );
-
-// Get the amount of damage the last NLD hit caused
-int _GetLastNLDamage( object oTarget );
-
-// Set the amount of damage the last NLD hit caused
-void _SetLastNLDamage( object oTarget, int nDamage );
-
-// Determine if oTarget is healing NLD naturally
-int _GetIsNLDHealing( object oTarget );
-
-// Set oTarget to heal/cease healing NLD naturally
-void _SetIsNLDHealing( object oTarget, int bHeal );
-
-// void wrapper for looping animation enforcement on subdued PCs.
-void _DoSubduedAnimation( object oTarget );
+//! Force linkage to functions that CLR scripts will want to call in the
+//  context of acf_mod_onmoduleload.nss.  Note that this function is never
+//  really run but must make a reference to every symbol that should be force
+//  included so that it can be resolved at runtime.
+void ACR_ModuleInit_ForceLinkageForCLRScripts();
 
 ////////////////////////////////////////////////////////////////////////////////
 // Function Definitions ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////
-// *** BEGIN PUBLIC FUNCTIONS ***
-////////////////////////////////////////////////////////////////////////////////
+void _SpeakString(string sToSpeak, int nTalkVolume)
+{
+    // Note - there is a bug in the NWScript plugin that under these conditions:
+    //
+    // "If a script is executed from a script situation (DelayCommand,
+    //  AssignCommand, and so forth, other 'action' types in NWScript), and the
+    //  script makes a recursive call to itself, then the recursion is not
+    //  properly detected and a new, stacked program object for the script is
+    //  not created.  This results in the recursive instance using the global
+    //  variables and OBJECT_SELF of the previous instance (modifications are
+    //  visible between the two, in particular, if the recursive call sets a new
+    //  OBJECT_SELF then OBJECT_SELF appears to have changed in the calling
+    //  instance).
+    //
+    //  The problem occurs because the NWScript JIT backend does not correctly
+    //  increment the internal nesting level from a script when the script is
+    //  called because of a script situation.  If the script had already been
+    //  recursively invoked, the nesting level would have necessitated a new
+    //  script object being temporarily created, as entry into a script from
+    //  the entrypoint always increments the nesting level across the call.
+    //
+    //  This will be fixed in a future release."
+    //
+    // Work around the bug for now by capturing OBJECT_SELF up front and not
+    // using globals in this AssignCommand action, as the SpeakString engine
+    // function will cause a recursive call to the OnChat script, which we're
+    // already running from.
 
+    object Self = OBJECT_SELF;
 
-void ACR_ToggleNLDMode( object oUser = OBJECT_SELF ) {
-	// Get creature's weapons.
-	object oWeapR = GetItemInSlot( INVENTORY_SLOT_RIGHTHAND, oUser );
-	object oWeapL = GetItemInSlot( INVENTORY_SLOT_LEFTHAND, oUser );
-	object oCweap = GetItemInSlot( INVENTORY_SLOT_CWEAPON_R, oUser );
-	
-	// Is NLD mode enabled?
-	if ( _GetNLDMode( oUser ) == TRUE ) {
-		// Unset the player's right-hand weapon to NLD.
-		if ( GetIsObjectValid( oWeapR ) && GetWeaponType( oWeapR ) != WEAPON_TYPE_NONE && GetWeaponRanged( oWeapR ) != TRUE )
-			ACR_NLD_OnWeaponSwitch( oUser, oWeapR, FALSE );
-		
-		// Unset the target's left-hand weapon to NLD.
-		if ( GetIsObjectValid( oWeapL ) && GetWeaponType( oWeapL ) != WEAPON_TYPE_NONE )
-			ACR_NLD_OnWeaponSwitch( oUser, oWeapL, FALSE );
-		
-		// Delete previous "acr_nld_fist" creature weapon.
-		if ( GetIsObjectValid( oCweap ) && GetTag( oCweap ) == "acr_nld_fist" ) DestroyObject(oCweap, 0.2, FALSE);
-		
-		// Restore sneak attack feats.
-		_RestoreNLDSneakAttackFeats( oUser );
-		
-		// Remove creature proficiencies.
-		FeatRemove( oUser, FEAT_WEAPON_PROFICIENCY_CREATURE );
-		if ( GetHasFeat( FEAT_WEAPON_FOCUS_CREATURE, oUser ) ) FeatRemove( oUser, FEAT_WEAPON_FOCUS_CREATURE );
-		
-		// Disable NLD mode.
-		DelayCommand( 0.1, _SetNLDMode( oUser, FALSE ) );
-	} else {
-		// Enable NLD mode.
-		_SetNLDMode( oUser, TRUE );
-		
-		// Set the player's right-hand weapon to NLD.
-		if ( GetIsObjectValid( oWeapR ) && GetWeaponType( oWeapR ) != WEAPON_TYPE_NONE && GetWeaponRanged(oWeapR) != TRUE )
-			DelayCommand( 0.1, ACR_NLD_OnWeaponSwitch( oUser, oWeapR, TRUE ) );
-		
-		// Set the target's left-hand weapon to NLD.
-		if ( GetIsObjectValid( oWeapL ) && GetWeaponType( oWeapL ) != WEAPON_TYPE_NONE )
-			DelayCommand( 0.1, ACR_NLD_OnWeaponSwitch( oUser, oWeapL, TRUE ) );
-		
-		// Handle sneak attacks.
-		_HandleNLDSneakAttacks( oUser );
-		
-		// Give NLD fists.
-		DelayCommand( 0.1, _GiveNLDFist( oUser ) );
-	}
+#if DEBUG_LANG
+    WriteTimestampedLogEntry("_SpeakString(" + GetName(Self) + ": Speaking " + sToSpeak + ", volume: " + IntToString(nTalkVolume) + ".");
+#endif
+
+    SetLocalInt(Self, ACR_MOD_SUPPRESS_LANGUAGE, 1);
+    SpeakString(sToSpeak, nTalkVolume);
+    DeleteLocalInt(Self, ACR_MOD_SUPPRESS_LANGUAGE);
+
+    // If the NWScript plugin bug is present, this shows the name of the module
+    // and not the name of the object that spoke above.
+#if DEBUG_LANG
+    WriteTimestampedLogEntry("_SpeakString finished for " + GetName(OBJECT_SELF) + ".");
+#endif
 }
 
+void _DistributeTranslationToDMAvatars(string sTranslatedMessage, object oSpeaker, float fRange)
+{
+    object oPC;
+    object oOriginArea = GetArea(oSpeaker);
 
-void ACR_NLD_OnPCLoaded( object oPC ) {
-	// Restore one point of nonlethal damage.
-	ACR_NLD_HealNLD( oPC, 1 );
-	
-	// Turn NLD mode if it is on.
-	if ( _GetNLDMode( oPC ) ) ACR_ToggleNLDMode( oPC );
+    for (oPC = GetFirstPC(FALSE); GetIsObjectValid(oPC); oPC = GetNextPC(FALSE))
+    {
+        if (!GetIsDM(oPC) && !GetIsDMPossessed(oPC))
+        {
+#if DEBUG_LANG
+            WriteTimestampedLogEntry("_DistributeTranslationToDMAvatars: " + GetName(oPC) + " is not a DM");
+#endif
+
+            continue;
+        }
+
+        if (GetArea(oPC) != oOriginArea)
+        {
+#if DEBUG_LANG
+            WriteTimestampedLogEntry("_DistributeTranslationToDMAvatars: " + GetName(oPC) + " is in the wrong area");
+#endif
+
+            continue;
+        }
+
+        if (GetDistanceBetween(oSpeaker, oPC) > fRange)
+        {
+#if DEBUG_LANG
+            WriteTimestampedLogEntry("_DistributeTranslationToDMAvatars: " + GetName(oPC) + " is out of range");
+#endif
+
+            continue;
+        }
+
+#if DEBUG_LANG
+        WriteTimestampedLogEntry("_DistributeTranslationToDMAvatars: Relay message to " + GetName(oPC));
+#endif
+
+        SendMessageToPC(oPC, sTranslatedMessage);
+    }
 }
 
-void ACR_NLD_OnWeaponSwitch( object oUser, object oWeapon, int bEquipped = TRUE ) {
-	// We only care if we are in NLD mode.
-	if ( !_GetNLDMode( oUser ) ) return;
-	
-	// Get possible NLD weapons.
-	object oWeapR = GetItemInSlot( INVENTORY_SLOT_RIGHTHAND, oUser );
-	object oWeapL = GetItemInSlot( INVENTORY_SLOT_LEFTHAND, oUser );
-	object oCweap = GetItemInSlot( INVENTORY_SLOT_CWEAPON_R, oUser );
-	
-	// Handle offhand/2handed str modifiers for currently equipped weapons.
-	if ( GetIsObjectValid( oWeapR ) && GetWeaponRanged( oWeapR ) != TRUE && GetWeaponType( oWeapR ) != WEAPON_TYPE_NONE ) {
-		SetLocalInt( oWeapR, ACR_NLD_WOFFHAND, FALSE );
-		// Item in the offhand?
-		if ( GetIsObjectValid( oWeapL ) && oWeapL != oWeapR ) {
-			SetLocalInt( oWeapR, ACR_NLD_W2HANDED, FALSE );
-			if ( GetWeaponType( oWeapL ) != WEAPON_TYPE_NONE ) SetLocalInt( oWeapL, ACR_NLD_WOFFHAND, TRUE );
-		} else {
-			// Check weapon size vs creature size to determine if it's wielded 2 handed.
-			SetLocalInt(oWeapR,ACR_NLD_W2HANDED,FALSE);
-			int nSize = StringToInt( Get2DAString( "baseitems", "WeaponSize", GetBaseItemType( oWeapR ) ) );
-			if ( ( GetCreatureSize( oUser ) >= nSize ) ) SetLocalInt( oWeapR, ACR_NLD_W2HANDED, TRUE );
-		}
-	} else if ( !GetIsObjectValid( oWeapR ) ) {
-		// Need to work on barehanded subdual.
-		if ( !GetIsObjectValid( oCweap ) ) {
-			_GiveNLDFist(oUser);
-		}
-	}
-	
-	// Now look at the weapon that was just equipped .
-	if ( GetTag( oWeapon ) == "acr_nld_fist" ) return;
-	
-	// Store weapon data, toggle state.
-	if ( GetIsObjectValid( oWeapon ) && GetWeaponRanged( oWeapon ) != TRUE && GetWeaponType( oWeapon ) != WEAPON_TYPE_NONE ) {
-		itemproperty iProp;
-		itemproperty iHit = ItemPropertyOnHitCastSpell( IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER, 1 );
-		itemproperty iNoDam = ItemPropertyNoDamage();
-		itemproperty iNoStr = ItemPropertyDamagePenalty( 5 );
-		int nDiceDam, nDiceNum, nBaseItem, nSADice, nDamPenalty;
-		
-		// Check equip state.
-		if ( bEquipped == FALSE ) {
-			// Weapon was just unequipped: remove NLD properties, zero damage/sneak vars
-			iProp = GetFirstItemProperty( oWeapon );
-			while ( GetIsItemPropertyValid( iProp ) ) {
-				if ( GetItemPropertyType( iProp ) == ITEM_PROPERTY_ONHITCASTSPELL
-				  || GetItemPropertyType( iProp ) == ITEM_PROPERTY_NO_DAMAGE
-				  || GetItemPropertyType( iProp ) == ITEM_PROPERTY_DECREASED_DAMAGE ) {
-					DelayCommand( 0.5, AssignCommand( oUser, RemoveItemProperty( oWeapon, iProp ) ) );
-				}
-				iProp = GetNextItemProperty( oWeapon );
-			}
-		
-			// Set local variables.
-			SetLocalInt( oWeapon, ACR_NLD_WOFFHAND, FALSE );
-			SetLocalInt( oWeapon, ACR_NLD_W2HANDED, FALSE );
-			SetLocalInt( oWeapon, ACR_NLD_SA_DICE, 0 );
-			
-			// Assign damage penalty.
-			nDamPenalty = GetLocalInt( oWeapon, ACR_NLD_DAMAGE_PENALTY );
-			if ( nDamPenalty >= 1 && nDamPenalty < 255 ) AssignCommand( oUser, AddItemProperty( DURATION_TYPE_PERMANENT, ItemPropertyDamagePenalty( nDamPenalty ), oWeapon ) );
-		} else {
-			// Store old damage penalty.
-			iProp = GetFirstItemProperty( oWeapon );
-			while ( GetIsItemPropertyValid( iProp ) ) {
-				if ( GetItemPropertyType( iProp ) == ITEM_PROPERTY_DECREASED_DAMAGE ) {
-					nDamPenalty = GetItemPropertyCostTableValue( iProp );
-					SetLocalInt( oWeapon, ACR_NLD_DAMAGE_PENALTY, nDamPenalty );
-				}
-				iProp = GetNextItemProperty( oWeapon );
-			}
-			if ( nDamPenalty < 1 ) SetLocalInt( oWeapon, ACR_NLD_DAMAGE_PENALTY, 255 );
-			
-			// Store weapon data.
-			nBaseItem = GetBaseItemType( oWeapon );
-			nDiceDam = StringToInt( Get2DAString( "baseitems", "DieToRoll", nBaseItem ) );
-			nDiceNum = StringToInt( Get2DAString( "baseitems", "NumDice", nBaseItem ) );
-			nSADice = _GetNLDSneakAttackDice( oUser );
-			SetLocalInt( oWeapon, ACR_NLD_DICE_DAMAGE, nDiceDam );
-			SetLocalInt( oWeapon, ACR_NLD_DICE_NUMBER, nDiceNum );
-			SetLocalInt( oWeapon, ACR_NLD_SA_DICE, nSADice );
-			AssignCommand( oUser, AddItemProperty( DURATION_TYPE_PERMANENT, iHit, oWeapon ) );
-			AssignCommand( oUser, AddItemProperty( DURATION_TYPE_PERMANENT, iNoDam, oWeapon ) );
-			AssignCommand( oUser, AddItemProperty( DURATION_TYPE_PERMANENT, iNoStr, oWeapon ) );
-		}
-	}
+void _DistributeTranslationToMouthPieces(string sTranslatedMessage, string sScrambledMessage, object oSpeaker, float fRange, object oListener)
+{
+    object oMouthPiece = GetLocalObject(oListener, "MouthPiece");
+    string sHeardDescriptor;
+
+    if (oMouthPiece == OBJECT_INVALID)
+    {
+#if DEBUG_LANG
+        WriteTimestampedLogEntry("_DistributeTranslationToMouthPieces: No mouthpiece for " + GetName(oListener));
+#endif
+
+        return;
+    }
+
+    // If the mouthpiece object would normally receive the message then do not
+    // synthesize a new report.
+    if (!_MouthPieceNotInRange(oMouthPiece, oSpeaker, fRange))
+    {
+#if DEBUG_LANG
+        WriteTimestampedLogEntry("_DistributeTranslationToMouthPieces: Listener " + GetName(oListener) + " mouthpiece " + GetName(oMouthPiece) + " is in normal hearing range not relaying");
+#endif
+
+        return;
+    }
+
+#if DEBUG_LANG
+    WriteTimestampedLogEntry("_DistributeTranslationToMouthPieces: Distributing message to " + (GetIsDM(oMouthPiece) ? "DM" : "player") + " mouthpiece " + GetName(oMouthPiece) + ".");
+#endif
+
+    sHeardDescriptor = " <i><c=gray>(" + GetName(oListener) + ")</c</i>";
+
+    // Choose whether to send the translated or scrambled message, and hand it
+    // on.
+    //
+    // TODO:  If we wanted to support having familiars that understood a
+    //        language, this is where we would do it.  Right now we only allow a
+    //        DM mouthpiece to receive translated messages.
+
+    if (GetIsDM(oMouthPiece))
+        SendMessageToPC(oMouthPiece, sTranslatedMessage + sHeardDescriptor);
+    else
+        SendMessageToPC(oMouthPiece, sScrambledMessage + sHeardDescriptor);
 }
 
+void _DistributeTranslationParty(string sTranslatedMessage, string sScrambledMessage, string sLanguage, object oSpeaker)
+{
+    int bTranslate = (sLanguage != "common");
+    object oListener;
 
-void ACR_ApplyNLDEffects( object oTarget, int nSubdualTotal ) {
-	effect eStaggered = ExtraordinaryEffect( EffectDazed() );
-	int nCurrentHP = GetCurrentHitPoints( oTarget );
-	int nState = _GetNLDState( oTarget );
-	
-	// Staggered: Just daced for now.
-	if ( nSubdualTotal == nCurrentHP ) {
-		if ( nState != ACR_NLD_STATE_STAGGERED ) {
-			if ( nState == ACR_NLD_STATE_HELPLESS ) {
-				_RemoveNLDHelplessEffect(oTarget);
-			}
-			_SetNLDState( oTarget, ACR_NLD_STATE_STAGGERED );
-			DelayCommand( 0.1, AssignCommand( oTarget, SpeakString( "<c=orange>Staggered</c>" ) ) );
-			AssignCommand( oTarget, ApplyEffectToObject( DURATION_TYPE_TEMPORARY, eStaggered, oTarget, 12.0 ) );
-		}
-		
- 	// Helpless: Set commandable for now.
-	} else if( nSubdualTotal > nCurrentHP ) {
-		if ( nState == ACR_NLD_STATE_STAGGERED ) {
-			_RemoveNLDStaggeredEffect(oTarget);
-		}
-		
-		if ( nState != ACR_NLD_STATE_HELPLESS ) {
-			effect eHelpless = ExtraordinaryEffect(EffectAbilityDecrease(ABILITY_DEXTERITY, GetAbilityScore(oTarget, ABILITY_DEXTERITY)));
-			AssignCommand(GetModule(), ApplyEffectToObject(DURATION_TYPE_PERMANENT, eHelpless, oTarget));
-			AssignCommand(oTarget,SpeakString("<c=orange>Subdued</c>"));
-			// log the event
-			object oSubduer = GetLocalObject(oTarget, ACR_NLD_ATTACKER);
-			ACR_LogEvent(oTarget, ACR_LOG_SUBDUAL, "Was subdued by "+GetName(oSubduer));
-			ACR_LogEvent(oSubduer, ACR_LOG_SUBDUAL, "Subdued "+GetName(oTarget));
-			DeleteLocalObject(oTarget, ACR_NLD_ATTACKER);
-			DeleteLocalObject(oSubduer, ACR_NLD_TARGET);
-			_SetNLDState(oTarget, ACR_NLD_STATE_HELPLESS);
-				AssignCommand(oTarget, ClearAllActions(TRUE));
-			//DelayCommand(0.1, AssignCommand(oTarget, PlayAnimation(ANIMATION_LOOPING_DEAD_BACK))); 	// need some other animation for non-humanoids
-			PlayCustomAnimation(oTarget, "proneb", 1);
-			// start re-polling with animation ever 2 seconds till recovered
-			DelayCommand(2.0, _DoSubduedAnimation(oTarget));
-			DelayCommand(0.1, SetCommandable(FALSE, oTarget));
-		}
-	}
-	
-	// Normal.
-	else {
-		if ( nState == ACR_NLD_STATE_HELPLESS ) {
-			_RemoveNLDHelplessEffect(oTarget);
-		} else if ( nState == ACR_NLD_STATE_STAGGERED ) {
-			_RemoveNLDStaggeredEffect(oTarget);
-		}
-		if ( nState != ACR_NLD_STATE_NORMAL ) {
-			_SetNLDState(oTarget, ACR_NLD_STATE_NORMAL);
-			DelayCommand(0.1,AssignCommand(oTarget,SpeakString("<c=orange>Recovered</c>")));
-			// log the event
-			ACR_LogEvent(oTarget, ACR_LOG_SUBDUAL, "Recovered");
-		}
-	}
-	
-	if ( !_GetIsNLDHealing( oTarget ) && nSubdualTotal > 0 ) {
-		_SetIsNLDHealing(oTarget,TRUE);
-		DelayCommand(RoundsToSeconds(1),_NLDNaturalHealing(oTarget));
-	}
+    if (!bTranslate)
+    {
+#if DEBUG_LANG
+        WriteTimestampedLogEntry("_DistributeTranslationParty: No translation required for untranslated message.");
+#endif
+
+        return;
+    }
+
+    for (oListener = GetFirstPC(FALSE);
+         GetIsObjectValid(oListener);
+         oListener = GetNextPC(FALSE))
+    {
+        if ((_IsLanguageKnown(oListener, sLanguage) && GetFactionEqual(oSpeaker, oListener))
+            || GetIsDM(oListener) || GetIsDMPossessed(oListener) || oListener == oSpeaker)
+        {
+#if DEBUG_LANG
+            WriteTimestampedLogEntry("_DistributeTranslationParty: Distributing message to party or DM recipient " + GetName(oListener));
+#endif
+
+            SendMessageToPC(oListener, sTranslatedMessage);
+        }
+    }
 }
 
-int ACR_NLD_OnWeaponHit( object oWeapon, object oTarget, object oAttacker ) {
-	// Valid weapon?
-	if ( GetWeaponType( oWeapon ) != WEAPON_TYPE_NONE ) return FALSE;
-	
-	// Is in NLD mode?
-	if ( _GetNLDMode( oAttacker ) == FALSE ) return FALSE;
-	
-	// Valid target?
-	if ( GetObjectType( oTarget ) != OBJECT_TYPE_CREATURE ) return FALSE;
-	
-	// Check for sneak attack damage.
-	int bSneak = FALSE;
-	if ( NLD_SA_ALLOWED ) {
-		if ( ( GetAttackTarget( oTarget ) != oAttacker || GetHasFeatEffect( FEAT_FEINT, oTarget ) )
-		  && !GetIsImmune( oTarget, IMMUNITY_TYPE_SNEAK_ATTACK ) )
-			bSneak = TRUE;
-	}
-	
-	// Deal nonlethal damage.
-	_NLDWeaponDamage( oTarget, oAttacker, oWeapon, bSneak );
-	return TRUE;
+void _DistributeTranslationSpoken(string sTranslatedMessage, string sScrambledMessage, string sLanguage, object oSpeaker, float fRange)
+{
+    int bTranslate = (sLanguage != "common");
+    location lSpeaker = GetLocation(oSpeaker);
+    object oListener;
+
+#if DEBUG_LANG
+    WriteTimestampedLogEntry("_DistributeTranslationSpoken: Distributing message of language " + sLanguage);
+#endif
+
+
+    // First, distribute the message to objects in range.  Note that DM avatars
+    // are not reliably enumerated here so they are handled separately.
+    //
+    // Additionally, distribute the message to mouthpiece listeners if they are
+    // within range and would not normally receive the message.
+    for (oListener = GetFirstObjectInShape(SHAPE_SPHERE, fRange, lSpeaker);
+         GetIsObjectValid(oListener);
+         oListener = GetNextObjectInShape(SHAPE_SPHERE, fRange, lSpeaker))
+    {
+        if (bTranslate && _IsLanguageKnown(oListener, sLanguage) && !GetIsDM(oListener))
+        {
+#if DEBUG_LANG
+            WriteTimestampedLogEntry("_DistributeTranslationSpoken: Distributing message to non-DM listener " + GetName(oListener) + ".");
+#endif
+
+            SendMessageToPC(oListener, sTranslatedMessage);
+        }
+
+        _DistributeTranslationToMouthPieces(sTranslatedMessage, sScrambledMessage, oSpeaker, fRange, oListener);
+    }
+
+    if (bTranslate)
+        _DistributeTranslationToDMAvatars(sTranslatedMessage, oSpeaker, fRange);
 }
 
-void ACR_NLD_HealNLD( object oTarget, int nHealAmount, int bReport = TRUE, object oCaster = OBJECT_INVALID ) {
-	// Get current subdual damage.
-	int nDam = _GetNLDTotal( oTarget );
-	int nNLDamage = nDam - nHealAmount;
-	if ( nDam == 0 ) return;
-	
-	// Fully healed?
-	if ( nNLDamage < 0 ) {
-		nHealAmount = nDam;
-		nNLDamage = 0;
-		_SetIsNLDHealing( oTarget, FALSE );
-		bReport = FALSE;
-	}
-	
-	// Apply healing.
-	_SetNLDTotal( oTarget, nNLDamage );
-	ACR_ApplyNLDEffects( oTarget, nNLDamage );
-	SendMessageToPC( oTarget, "<c=orange>Nonlethal damage healed: </c>" + IntToString( nHealAmount ) );
-	if ( bReport ) ACR_NLD_ReportTotal( oTarget, oTarget, nNLDamage );
-	
-	// If we have a healer, report the healing to them.
-	if ( GetIsObjectValid( oCaster ) && oCaster != oTarget ) {
-		SendMessageToPC( oCaster, "<c=orange>Nonlethal damage healed: </c>" + IntToString( nHealAmount ) );
-		ACR_NLD_ReportTotal( oTarget, oCaster, nNLDamage );
-	}
+void _DistributeTranslation(string sOriginalMessage, string sScrambledMessage, string sLanguage, object oSpeaker, int nMode)
+{
+    string sDisplayLanguage;
+    string sModeColor;
+    string sModeDescriptor;
+    string sTranslatedMessage;
+    string sUntranslatedMessage;
+    float fRange;
+    int nTalkVolume;
+
+    // Distribute the translated version of the message.
+
+    switch (nMode)
+    {
+
+    case CHAT_MODE_PARTY:
+        sModeColor = "FFFFFF";
+        sModeDescriptor = ", Party";
+        fRange = 0.0f;
+        nTalkVolume = TALKVOLUME_TALK;
+        break;
+
+    case CHAT_MODE_TALK:
+        sModeColor = "FFFFFF";
+        sModeDescriptor = "";
+        fRange = ACR_TALK_SPHERE_RADIUS;
+        nTalkVolume = TALKVOLUME_TALK;
+        break;
+
+    case CHAT_MODE_WHISPER:
+        sModeColor = "808080";
+        sModeDescriptor = ", Whisper";
+        fRange = ACR_WHISPER_SPHERE_RADIUS;
+        nTalkVolume = TALKVOLUME_WHISPER;
+        break;
+
+    case CHAT_MODE_SILENT_TALK:
+        return;
+
+    default:
+        WriteTimestampedLogEntry("_DistributeTranslation: Unhandled chat mode " + IntToString(nMode) + "!");
+        return;
+
+    }
+
+    sTranslatedMessage = "<color=#D7C5B9>"+GetName(oSpeaker)+" : </color><color=#" + sModeColor + "> ["+_CapitalizeWord(sLanguage)+sModeDescriptor + "] "+sOriginalMessage;
+    sUntranslatedMessage = "<color=#D7C5B9>"+GetName(oSpeaker)+" : </color><color=#" + sModeColor + "> [Untranslated"+sModeDescriptor + "] "+sScrambledMessage;
+
+    switch (nMode)
+    {
+
+    case CHAT_MODE_PARTY:
+        _DistributeTranslationParty(sTranslatedMessage, sUntranslatedMessage, sLanguage, oSpeaker);
+        break;
+
+    case CHAT_MODE_TALK:
+    case CHAT_MODE_WHISPER:
+        _DistributeTranslationSpoken(sTranslatedMessage, sUntranslatedMessage, sLanguage, oSpeaker, fRange);
+        break;
+
+    }
+
+    // Finally, distribute the scrambled version of the message.
+
+    if (GetIsPC(oSpeaker) || GetIsDM(oSpeaker) || GetIsDMPossessed(oSpeaker))    
+        SendChatMessage(oSpeaker, oSpeaker, nMode, sScrambledMessage, FALSE);
+    else
+        AssignCommand(oSpeaker, _SpeakString(sScrambledMessage, nTalkVolume));
 }
 
-void ACR_NLD_Regen( object oTarget, int nAmount, int nSpell, float fDelay ) {
-	if ( GetHasSpellEffect( nSpell ) ) {
-		ACR_NLD_HealNLD( oTarget, nAmount, FALSE );
-		DelayCommand( fDelay, ACR_NLD_Regen( oTarget, nAmount, nSpell, fDelay ) );
-	}
+void ACR_CheckBodyPartsOnLevelUp(object oPC)
+{
+    int nRace = GetRacialType(oPC);
+    if(GetLevelByClass(CLASS_TYPE_FAVORED_SOUL, oPC) == 17)
+    {
+        int nWings = 0;
+        if(GetAlignmentGoodEvil(oPC) == ALIGNMENT_EVIL)
+        {
+            if(nRace == RACIAL_TYPE_DWARF)
+            {
+                if(GetGender(oPC) == GENDER_FEMALE)
+                    nWings = WING_MODEL_DWARF_LEATHER_FEMALE;
+                else
+                    nWings = WING_MODEL_DWARF_LEATHER_MALE;
+            }
+            else if(nRace == RACIAL_TYPE_GNOME)
+            {
+                if(GetGender(oPC) == GENDER_FEMALE)
+                    nWings = WING_MODEL_GNOME_LEATHER_FEMALE;
+                else
+                    nWings = WING_MODEL_GNOME_LEATHER_MALE;
+            }
+            else if(nRace == RACIAL_TYPE_HALFORC)
+            {
+                if(GetGender(oPC) == GENDER_FEMALE)
+                    nWings = WING_MODEL_HALFORC_LEATHER_FEMALE;
+                else
+                    nWings = WING_MODEL_HALFORC_LEATHER_MALE;
+            }
+            else
+            {
+                if(GetGender(oPC) == GENDER_FEMALE)
+                    nWings = WING_MODEL_HUMAN_LEATHER_FEMALE;
+                else
+                    nWings = WING_MODEL_HUMAN_LEATHER_MALE;
+            }
+        }
+        else
+        {
+            if(nRace == RACIAL_TYPE_DWARF)
+            {
+                if(GetGender(oPC) == GENDER_FEMALE)
+                    nWings = WING_MODEL_DWARF_WHITE_FEMALE;
+                else
+                    nWings = WING_MODEL_DWARF_WHITE_MALE;
+            }
+            else if(nRace == RACIAL_TYPE_GNOME)
+            {
+                if(GetGender(oPC) == GENDER_FEMALE)
+                    nWings = WING_MODEL_GNOME_WHITE_FEMALE;
+                else
+                    nWings = WING_MODEL_GNOME_WHITE_MALE;
+            }
+            else if(nRace == RACIAL_TYPE_HALFORC)
+            {
+                if(GetGender(oPC) == GENDER_FEMALE)
+                    nWings = WING_MODEL_HALFORC_WHITE_FEMALE;
+                else
+                    nWings = WING_MODEL_HALFORC_WHITE_MALE;
+            }
+            else
+            {
+                if(GetGender(oPC) == GENDER_FEMALE)
+                    nWings = WING_MODEL_HUMAN_WHITE_FEMALE;
+                else
+                    nWings = WING_MODEL_HUMAN_WHITE_MALE;
+            }
+        }
+        XPObjectAttributesSetWingVariation(oPC, nWings);
+    }
+    if(GetLevelByClass(CLASS_TYPE_DRAGONDISCIPLE, oPC) == 9)
+    {
+        if(nRace == RACIAL_TYPE_DWARF)
+        {
+            if(GetGender(oPC) == GENDER_FEMALE)
+                nWings = WING_MODEL_DWARF_RED_FEMALE;
+            else
+                nWings = WING_MODEL_DWARF_RED_MALE;
+        }
+        else if(nRace == RACIAL_TYPE_GNOME)
+        {
+            if(GetGender(oPC) == GENDER_FEMALE)
+                nWings = WING_MODEL_GNOME_RED_FEMALE;
+            else
+                nWings = WING_MODEL_GNOME_RED_MALE;
+        }
+        else if(nRace == RACIAL_TYPE_HALFORC)
+        {
+            if(GetGender(oPC) == GENDER_FEMALE)
+                nWings = WING_MODEL_HALFORC_RED_FEMALE;
+            else
+                nWings = WING_MODEL_HALFORC_RED_MALE;
+        }
+        else
+        {
+            if(GetGender(oPC) == GENDER_FEMALE)
+                nWings = WING_MODEL_HUMAN_RED_FEMALE;
+            else
+                nWings = WING_MODEL_HUMAN_RED_MALE;
+        }
+        XPObjectAttributesSetWingVariation(oPC, nWings);
+    }
 }
 
-void ACR_NLD_ReportTotal( object oTarget, object oReportTo, int nAmount = 0 ) {
-	if ( !GetIsObjectValid( oTarget ) || !GetIsObjectValid( oReportTo ) ) return;
-	
-	if ( nAmount == 0 ) nAmount = _GetNLDTotal( oTarget );
-	SendMessageToPC( oReportTo, "<c=orange>Subdual Health: </c>" + IntToString( GetCurrentHitPoints( oTarget ) - nAmount ) + "/" + IntToString( GetCurrentHitPoints( oTarget ) ) );
+void ACR_ModuleOnModuleLoad()
+{
+    // Set global module settings.
+    SetServerData(ACR_SERVER_ID, ACR_SERVER_NAME, ACR_SERVER_REGION, ACR_SERVER_IP);
+
+    // Check and warn the user if the module wasn't built with the same ACR
+    // version as a script contained within the hak.  (This script is built
+    // with the module and returns the module's view of the version number.  The
+    // acr_version_check script is built with the hak and returns the hak's view
+    // of the version number.)
+    AddScriptParameterString(ACR_GetVersion());
+    if (ExecuteScriptEnhanced("acr_version_check", OBJECT_SELF) != TRUE)
+    {
+        WriteTimestampedLogEntry("acr_mod_events_i: ** WARNING **: Module ACR version doesn't match alfa2_acr.hak ACR version!  This is usually caused by compiling the module against a different set of script headers than alfa2_acr.hak was constructed against.");
+    }
+
+    object oModule = GetModule();
+    
+    // ORDER MATTERS !!
+
+    // Start the debuging system and create debugging ids for the module event scripts
+    ACR_InitializeDebugging();
+    ACR_CreateDebugSystem(_ONLOAD_DEBUG, DEBUG_TARGET_LOG | DEBUG_TARGET_DB, DEBUG_TARGET_LOG | DEBUG_TARGET_DB, DEBUG_TARGET_LOG | DEBUG_TARGET_DB);
+    string sServerId = IntToString(ACR_GetServerId());
+    ACR_PrintDebugMessage("acr_mod_events_i: ALFA " + sServerId + " loading the ALFA Core Rules.", _ONLOAD_DEBUG, DEBUG_LEVEL_INFO);
+
+    // Check NWNX status
+    if (! NWNXInstalled())
+    {
+        // record the status
+        ACR_SetModuleStatus(ACR_MOD_NWNX_FAILED);
+        ACR_PrintDebugMessage("acr_mod_events_i: NWNX unavailable on ALFA server " + sServerId + ". Rescheduling OnModuleLoad(). Server restart may be required.", _ONLOAD_DEBUG, DEBUG_LEVEL_FATAL);
+
+        // reschedule the OnModuleLoad() handler
+        DelayCommand(ACR_MOD_RELOAD_CYCLE, ACR_ModuleOnModuleLoad());
+        return;
+    }
+    else
+    {
+        // create the SQL tables if need be
+        ACR_CreateSQLTables();
+    }
+    
+    // Initialize asynchronous writes
+    ACR_StartAsyncService();
+
+    // Load database-side configuration directives
+    ACR_LoadDatabaseConfiguration();
+
+    // Initialize spell hook
+    SetLocalString(oModule, "X2_S_UD_SPELLSCRIPT", "acr_spellhook");
+
+    // Initialize storage objects used by many systems.
+    // ACR_InitializeStorageObjects();
+
+    // Initialize game engine constants.
+    //ACR_InitializeGameConstants();
+
+    // Initialize the spawn system.
+    ACR_InitializeSpawns(_SPAWN_AREA_DESPAWN_DELAY, _SPAWN_REFRESH_DELAY, _SPAWN_PRESPAWN_SEAMLESS, _SPAWN_PRESPAWN_PREDICTION);
+
+    // Initialize the time system.
+    ACR_InitializeTime();
+//    ACR_PrintDebugMessage("acr_mod_events_i: Starting date: " + GetDateAsString(), _ONLOAD_DEBUG, DEBUG_LEVEL_INFO);
+//    ACR_PrintDebugMessage("acr_mod_events_i: Sarting time: " + GetTimeAsString(), _ONLOAD_DEBUG, DEBUG_LEVEL_INFO);
+    ACR_PrintDebugMessage("acr_mod_events_i: Time compression ratio: " + FloatToString(ACR_GetGameToRealTimeRatio()), _ONLOAD_DEBUG, DEBUG_LEVEL_INFO);
+
+    // Initialize one-time PC status setups
+    ACR_PCOnModuleLoad();
+
+    // Recreate player corpses
+    ACR_RestoreCorpsesOnModuleLoad();
+
+    // Set bioware/obsidian module switches as desired:
+    SetModuleSwitch(MODULE_SWITCH_ENABLE_INVISIBLE_GLYPH_OF_WARDING, TRUE);
+    SetModuleSwitch(MODULE_SWITCH_ENABLE_CROSSAREA_WALKWAYPOINTS, TRUE);
+    //SetModuleSwitch(MODULE_SWITCH_ENABLE_UMD_SCROLLS, TRUE);
+    SetModuleSwitch(MODULE_SWITCH_ENABLE_NPC_AOE_HURT_ALLIES, TRUE);
+    SetModuleSwitch(MODULE_SWITCH_ENABLE_MULTI_HENCH_AOE_DAMAGE, TRUE);
+    SetModuleSwitch(MODULE_SWITCH_AOE_HURT_NEUTRAL_NPCS, TRUE);
+    SetModuleSwitch(MODULE_VAR_AI_STOP_EXPERTISE_ABUSE, TRUE);
+    SetModuleSwitch(MODULE_SWITCH_ENABLE_TAGBASED_SCRIPTS, TRUE);
+
+    string sSID = IntToString(ACR_SERVER_ID);
+    // grab the server name from the module properties so it will be updated.
+    string sServerName = GetName(oModule);
+
+    // Try and discover the external address of the server from the database
+    // connection.  If that fails, fall back to the hardcoded default in the
+    // configuration file.
+    //
+    // This is now superseded by the server communicator in most cases.
+    string sExtAddress = ACR_GetServerAddressFromDatabase();
+
+    if (sExtAddress == "")
+        sExtAddress = ACR_SERVER_IP;
+
+    // check that the server information is in the database
+    ACR_SQLQuery("SELECT * FROM servers WHERE ID=" + sSID);
+
+    // create the record if it does not already exist
+    if (ACR_SQLFetch() != SQL_SUCCESS)
+    {
+        ACR_SQLQuery("INSERT INTO servers (ID, Name, IPAddress) VALUES(" + sSID + ",'" + ACR_SQLEncodeSpecialChars(sServerName) + "','" + sExtAddress + "')"); 
+    }
+    else
+    {    
+        // update server name and ip address if they've changed
+        if (ACR_SQLGetData(1) != sServerName || ACR_SQLGetData(2) != sExtAddress)
+        {
+            ACR_SQLQuery("UPDATE servers SET Name='" + ACR_SQLEncodeSpecialChars(sServerName) + "', IPAddress='" + sExtAddress + "' WHERE ID=" + sSID);
+        }
+    }
+
+    //  EDIT: Only where ServerID = the ID of the server that has just finished loading.
+        ACR_SQLQuery("UPDATE characters SET IsOnline=0 WHERE ServerID=" + sSID);
+    
+    // Initialize chatlogging buffer
+    ACR_InitializeChat();
+
+    // Initialize server IPC support
+    ACR_ServerIPC_OnModuleLoad();
+
+    // This should be the last time in this function.
+    ACR_PrintDebugMessage("acr_mod_events_i: ALFA server " + sServerId + " loaded.", _ONLOAD_DEBUG, DEBUG_LEVEL_INFO);
+
+    // Start the health monitor (in a DelayCommand to reset the instruction/loop
+    // count limit).
+    DelayCommand(0.1f, ACR_StartModuleInitHealthChecks());
+    // Delete unnecessary objects, such as walkmesh helpers, from statically
+    // placed areas.
+    ACR_PerformModuleStartupCleanup();
+    ACR_LogEvent(OBJECT_INVALID, ACR_LOG_SERVER_LOAD, "Server " + sServerId + " loaded module " + GetName(GetModule()) + ".");
+
+    WriteTimestampedLogEntry("Module compiled on: " + ACR_GetBuildDate() + ", HAK compiled on: " + ACR_GetHAKBuildDate() + ", module ACR version: " + ACR_GetVersion());
+
+    // Increment the global server startup counter statistic.
+    ACR_IncrementStatistic("MODULE_LOADS");
+
+    // The following function call is never called.  This is intentional; the
+    // purpose of this line is to ensure that the compiler cannot elide any
+    // symbols referenced by ACR_ModuleInit_ForceLinkageForCLRScripts.
+    if (Random(2) == 42)
+        ACR_ModuleInit_ForceLinkageForCLRScripts();
 }
 
-void ACR_NLD_HealAll( object oTarget ) {
-	int nHeal = _GetNLDTotal( oTarget );
-	ACR_NLD_HealNLD( oTarget, nHeal );
+void ACR_ModuleOnModuleStart()
+{
 }
 
-int ACR_NLD_DeathOrDyingHitDamage( object oTarget, object oAttacker ) {
-	if ( GetIsObjectValid( oAttacker ) && GetObjectType( oAttacker ) == OBJECT_TYPE_CREATURE ) {
-		if ( _GetNLDMode( oAttacker ) ) return _GetLastNLDamage( oTarget );
-	}
-	return FALSE;
+void ACR_ModuleOnClientEnter()
+{
+    object oPC = GetEnteringObject(), oCorpse = OBJECT_INVALID;
+
+    // exit if the database is unavailable
+    if (ACR_GetModuleStatus(ACR_MOD_NWNX_FAILED))
+    {
+        ACR_PrintDebugMessage("acr_mod_events_i: ERROR - NWNX Unavailable on " + GetName(oPC) + " login.", _ONLOAD_DEBUG, DEBUG_LEVEL_FATAL);
+           // boot players and log the error
+           if (! GetIsDM(oPC))
+            {
+                SendMessageToPC(oPC, "Booted because NWNX isn't running on the server (server internal error).");
+                BootPC(oPC);
+                return;
+            }
+    }
+
+    // Code executed for DMs and PCs goes here
+
+    // initialize the player - RUN THIS BEFORE INITIALIZING OTHER SYSTEMS
+    if (!ACR_PCOnClientEnter(oPC))
+     {
+        return;
+     }
+    
+    // Zero out the RP XP timer. Though this looks ill-placed, we need it to detect redundant
+    // tickers.
+    SetLocalInt(oPC, _RPXP_HB, 0);
+
+    // notify database system of login
+    ACR_DBPersistOnIncomingPlayer(oPC);
+
+    //initialize for chatlogging
+    ACR_ChatOnClientEnter(oPC);
+
+    // Initialize DM Client Extension pack (optional)
+    ExecuteScript("wand_init", oPC);
+    
+    if (GetIsDM(oPC) || GetIsDMPossessed(oPC))
+    {
+        // log the entry
+        ACR_LogEvent(oPC, ACR_LOG_LOGIN, "Dungeon Master: " + ACR_SQLEncodeSpecialChars(GetName(oPC)) + " from IP: "+GetPCIPAddress(oPC));
+            DisplayGuiScreen(oPC, "zspawn_b", FALSE, "zspawn_b.xml");
+
+        ACR_IncrementStatistic("DM_LOGINS");
+    }
+    else
+    {
+        // log the entry
+        ACR_LogEvent(oPC, ACR_LOG_LOGIN, "Character: " + ACR_SQLEncodeSpecialChars(GetName(oPC))+ " from IP: "+GetPCIPAddress(oPC));
+        
+        // manage dead PCs - important for this to be done first
+        ACR_DeathOnClientEnter(oPC);
+        ACR_SkillsOnClientEnter(oPC);
+    }
+    
+    // Do custom feat stuff.
+    ACR_FeatOnClientEnter(oPC);
+
+    // Let the IPC subsystem know of the login event.
+    ACR_ServerIPC_OnClientEnter(oPC);
+
+    // Let the wealth subsystem know of the login event.
+    ACR_WealthOnClientEnter(oPC);
+
+    ACR_IncrementStatistic("PLAYER_LOGINS");
 }
 
-void ACR_NLD_OnDeath( object oDead ) {
-	if ( _GetNLDMode( oDead ) == TRUE ) ACR_ToggleNLDMode( oDead );
+void ACR_ModuleOnPCLoaded()
+{
+    object oPC = GetEnteringObject();
+    
+    CraftingOnPCLoaded(oPC);
+    
+    // process DMs
+    if (GetIsDM(oPC) || GetIsDMPossessed(oPC))
+    {
+         ACR_PCOnPCLoadedAsDM(oPC);
+        if (GetItemPossessedBy(oPC, "abr_spawn_debug") == OBJECT_INVALID) { CreateItemOnObject("acr_spawn_debug", oPC); }
+        if (GetItemPossessedBy(oPC, "acr_dcsetter") == OBJECT_INVALID) { CreateItemOnObject("abr_it_dmdcsetter", oPC); }
+        ExecuteScript("dmfi_mod_pcload", GetModule());
+    }
+    // process players
+    else
+    {
+        int bSave = FALSE;
+        
+        // PC has Wizard levels, issue them a spellbook if they weren't issued one already
+        if (ACR_HasCasterClass(oPC, "ARCANE")) {
+            if (!ACR_GetPersistentInt(oPC, ACR_MOD_SPELLBOOK)) {
+                bSave = TRUE;
+                SetIdentified(CreateItemOnObject(ACR_MOD_SPELLBOOK_RESREF, oPC), TRUE);
+                ACR_SetPersistentInt(oPC, ACR_MOD_SPELLBOOK, TRUE);
+            }
+        }
+        // PC has Cleric/Ranger/Druid levels, issue them a holy symbol if they weren't issued one already
+        if (ACR_HasCasterClass(oPC, "DIVINE")) {
+            if  (!ACR_GetPersistentInt(oPC, ACR_MOD_HOLYSYMBOL)) {
+                bSave = TRUE;
+                SetIdentified(CreateItemOnObject(ACR_MOD_HOLYSYMBOL_RESREF, oPC), TRUE);
+                ACR_SetPersistentInt(oPC, ACR_MOD_HOLYSYMBOL, TRUE);
+            }    
+        }
+        if (!ACR_GetPersistentInt(oPC, ACR_MOD_STARTINGGOLD))
+        {
+            GiveGoldToCreature(oPC, 300);
+            ACR_SetPersistentInt(oPC, ACR_MOD_STARTINGGOLD, TRUE);
+            bSave = TRUE;
+        }
+        if ((GetXP(oPC) <= 1) && !ACR_GetPersistentInt(oPC, ACR_MOD_STARTARMORX))
+        {
+            DestroyObject(GetItemInSlot(INVENTORY_SLOT_CHEST, oPC));
+            ACR_SetPersistentInt(oPC, ACR_MOD_STARTARMORX, TRUE);
+            bSave = TRUE;
+        }
+        if (!ACR_GetPersistentInt(oPC, ACR_MOD_FIRSTAID_IT))
+        {
+            SetIdentified(CreateItemOnObject(ACR_MOD_HEALKIT_RESREF, oPC), TRUE);
+            ACR_SetPersistentInt(oPC, ACR_MOD_FIRSTAID_IT, TRUE);
+            bSave = TRUE;
+        }
+        if (GetMovementRate(oPC))
+        {
+            NotifyPlayer( oPC, NOTIFY_TYPE_ERROR, "Movement rate incorrect!", "The ACR has detected that your movement rate has been corrupted. You may continue play if you wish, but you will walk and run slower than you are allowed until the next time you log in.");
+            XPObjectAttributesSetMovement( oPC, 0);
+        }
+
+        // DO THIS FIRST
+        // restore the player's status and location
+        ACR_PCOnPCLoaded(oPC);
+
+        // process dead players
+        ACR_DeathOnPCLoaded(oPC);
+
+        // rebuild the characters journal quest entries
+        ACR_RebuildJournalQuestEntries(oPC);
+        
+        // queue up the skillpoint convo if it's an unconverted PC
+        ACR_SkillsOnPCLoaded(oPC);
+
+        // save the bic if inventory has been modified
+        if (bSave) { ACR_PCSave(oPC, FALSE); }
+                            
+        // Initialize nonlethal damage system for the PC
+        DelayCommand(4.0, ACR_NLD_OnPCLoaded(oPC));
+    
+        //  only do this if the PC is already adapted to custom skills.
+        if (GetSkillRank(0, oPC, TRUE) == 2) {
+            // Initialize DMFI for the entering player or DM
+            ExecuteScript("dmfi_mod_pcload", GetModule());
+            // initialize/award RP XP, start this after the PC is already in.
+            DelayCommand(30.0, ACR_XPOnClientLoaded(oPC));
+            // process simulated rest (spell uses handled accordingly)
+            //  delay this long enough for the status restore to take effect for HP.
+            DelayCommand(1.5, ACR_RestOnClientEnter(oPC));
+        }
+    }
+
+    ACR_SCliExtOnPCLoaded(oPC);
 }
 
-void ACR_NonLethalOnClientExit( object oDeparting) {
-	if ( _GetNLDMode( oDeparting ) ) ACR_ToggleNLDMode( oDeparting );
-}
+void ACR_ModuleOnClientLeave()
+{
+    object oPC = GetExitingObject();
 
+    // Code executed for DMs and PCs goes here.
 
-void ACR_ApplyNonlethalDamageToCreature( object oTarget, int nSubdualDamage ) {
-	int nNLDTotal = _GetNLDTotal( oTarget );
-	int nHPMax = GetMaxHitPoints( oTarget );
-	int nCap = nHPMax + 10;
-	SendMessageToPC( oTarget, "<c=orange>You take </c> " + IntToString( nSubdualDamage ) + " <c=orange> points of non-lethal damage.</c>" );
-	nNLDTotal = ( ( nNLDTotal + nSubdualDamage ) > nCap ) ? nCap : nNLDTotal + nSubdualDamage;
-	_SetNLDTotal( oTarget, nNLDTotal );
-	ACR_ApplyNLDEffects( oTarget, nNLDTotal );
-}
+    if(GetIsDM(oPC) || GetIsDMPossessed(oPC))
+    {
+        // Code only executed for DMs goes here.
 
+        // log the departure
+        ACR_LogEvent(oPC, ACR_LOG_LOGOUT, "Dungeon Master: " + ACR_SQLEncodeSpecialChars(GetName(oPC)));
+    }
+    else
+    {
+        // Code only executed for PCs goes here.
 
-////////////////////////////////////////////////////////////////////////////////
-// *** BEGIN PRIVATE FUNCTIONS ***
-////////////////////////////////////////////////////////////////////////////////
+        // log the departure
+        ACR_LogOnExit(oPC);
 
-int GetIsNonlethalImmune( object oTarget ) {
-	// Check race.
-	int iRace = GetRacialType( oTarget );
-	switch ( iRace ) {
-		case RACIAL_TYPE_CONSTRUCT:
-		case RACIAL_TYPE_UNDEAD:
-		case RACIAL_TYPE_ELEMENTAL:
-		case RACIAL_TYPE_INCORPOREAL:
-		case RACIAL_TYPE_OOZE:
-			return TRUE;
-	}
-	
-	// Check for spell effects that grant nonlethal damage immunity.
-	if ( GetHasSpellEffect( SPELL_IRON_BODY, oTarget ) ) return TRUE;
-	if ( GetHasSpellEffect( SPELL_STONE_BODY, oTarget ) ) return TRUE;
-	
-	// Feats that grant nonlethal immunity.
-	if ( GetHasFeatEffect( FEAT_OAKEN_RESILIENCE, oTarget ) ) return TRUE;
-	
-	// Classes that grant nonlethal immunity.
-	if ( GetLevelByClass( CLASS_TYPE_PALEMASTER, oTarget ) >= 10 ) return TRUE;
-	
-	// No other condition met? Then this target can take subdual damage.
-	return FALSE;
-}
+#if 0
+        object oItem = GetFirstItemInInventory(oPC);
+        // Commented this loop out for now, since we don't do anything there
+        /*
+        while(oItem != OBJECT_INVALID)
+        {
+            // Code which executes on a PC's items goes here.
+            oItem = GetNextItemInInventory();
+        }
+        */
 
-void _NLDWeaponDamage( object oTarget, object oAttacker, object oItem, int bSneak = FALSE ) {
-	// Check if the target is immune to subdual damage.
-	if ( GetIsNonlethalImmune( oTarget ) ) {
-		SendMessageToPC(oAttacker, "<c=orange>Target is immune to nonlethal damage</c>");
-		return;
-	}
-	
-	// Valid weapon to deal subdual with?
-	if ( !GetIsObjectValid( oItem ) ) {
-		oItem = GetItemInSlot( INVENTORY_SLOT_CWEAPON_R, oAttacker );
-		if ( !GetIsObjectValid( oItem ) ) {
-			SendMessageToPC( oAttacker, "<c=orange>No valid subdual weapon in hand</c>" );
-			return;
-		}
-	}
-	
-	// Get weapon data.
-	int nWeaponSize = StringToInt( Get2DAString( "baseitems", "WeaponSize", GetBaseItemType( oItem ) ) );
-	effect eHeal;
-	int nHeal = 0;
-	int nDiceDam = GetLocalInt( oItem, ACR_NLD_DICE_DAMAGE );
-	int nDiceNum = GetLocalInt( oItem, ACR_NLD_DICE_NUMBER );
-	int nDamMod;
-	int n2Hand = GetLocalInt( oItem, ACR_NLD_W2HANDED );
-	
-	// Add strength damage.
-	int nStrMod = GetAbilityModifier( ABILITY_STRENGTH, oAttacker );
-	if ( nStrMod > 0 ) {
-		nDamMod = ( n2Hand ) ? FloatToInt( IntToFloat( nStrMod ) * 1.5 ) : ( GetLocalInt( oItem, ACR_NLD_WOFFHAND ) == TRUE ) ? FloatToInt( IntToFloat( nStrMod ) * 0.5 ) : nStrMod;
-	} else {
-		nDamMod = nStrMod;
-	}
-	
-	// Check for weapon specialization.
-	if ( _NLDGetWeaponSpecialisation( oAttacker, oItem ) ) {
-		nDamMod += 2;
-		if ( _NLDGetGreaterWeaponSpecialisation( oAttacker, oItem ) ) nDamMod += 2;
-	}
-	
-	// Add enchantment damage.
-	int nEnhance = _NLDGetEnhancementBonus( oTarget, oItem );
-	nDamMod += nEnhance;
-	
-	// Check for power attack modes
-	if ( GetActionMode( oAttacker, ACTION_MODE_POWER_ATTACK ) == TRUE ) {
-		if ( n2Hand ) nDamMod += 6;
-		else nDamMod += 3;
-	} else if ( GetActionMode ( oAttacker, ACTION_MODE_IMPROVED_POWER_ATTACK ) == TRUE ) {
-		if ( n2Hand ) nDamMod += 12;
-		else nDamMod += 6;
-	}
-	
-	// Add Insightful Strike damage.
-	if ( GetHasFeat( FEAT_INSIGHTFUL_STRIKE, oAttacker )
-	  && GetEncumbranceState( oAttacker ) == ENCUMBRANCE_STATE_NORMAL
-	  && !GetIsImmune( oTarget, IMMUNITY_TYPE_SNEAK_ATTACK ) ) {
-		nDamMod += GetAbilityModifier( ABILITY_INTELLIGENCE, oAttacker );
-	}
-	
-	// Add precise strike damage.
-	if ( GetHasFeat( FEAT_PRECISE_STRIKE, oAttacker ) && GetIsObjectInvalid( GetItemInSlot( INVENTORY_SLOT_LEFTHAND, oUser ) ) ) {
-		nDamMod += d6(1);
-		if ( GetLevelByClass( CLASS_TYPE_DUELIST, oAttacker ) >= 10 ) nDamMod += d6(1);
-	}
-	
-	// Sneak attack?
-	if ( bSneak ) {
-		int nSneakAttack = GetLocalInt( oItem, ACR_NLD_SA_DICE );
-		if ( nSneakAttack > 0 ) nDamMod += d6( nSneakAttack );
-	}
-	
-	// If we have more than +5 damage from bonuses, add some healing.
-	if ( nDamMod > 5 ) {
-		nHeal += nDamMod - 5;
-	}
-	if ( nHeal < 1 ) nHeal = 1;
-	
-	// Calculate damage.
-	int nDamage = ( ( Random( nDiceDam ) + 1 ) * nDiceNum ) + nDamMod;
-	
-	// Calculate damage resistance.
-	int iDmgResist = _GetNLDamageReduction( oTarget, oItem );
-	if ( iDmgResist > nDamage ) iDmgResist = nDamage;
-	nDamage -= iDmgResist;
+#endif
+        // track resting across sessions
+        ACR_RestOnClientLeave(oPC);
+        
+        // clean up Subdual mode leftovers
+        ACR_NonLethalOnClientExit(oPC);
+           ACR_SkillsOnClientExit(oPC);
+    }
 
-	// Heal damage.
-	int nReportHealth = GetCurrentHitPoints( oTarget );
-	if ( GetObjectType( oTarget ) == OBJECT_TYPE_CREATURE ) {
-		if ( nHeal > 0 ) {
-			if ( GetCurrentHitPoints( oTarget ) < GetMaxHitPoints( oTarget ) ) {
-				eHeal = EffectHeal( nHeal );
-				AssignCommand( oTarget, ApplyEffectToObject( DURATION_TYPE_INSTANT, eHeal, oTarget ) );
-				nReportHealth = nReportHealth + nHeal;
-			}
-		}
-	}
-	
-	// Cap and set damage.
-	int nTotalDam = nDamage + _GetNLDTotal( oTarget );
-	if ( nTotalDam > GetMaxHitPoints( oTarget ) + 10 ) nTotalDam = GetMaxHitPoints( oTarget ) + 10;
-	_SetNLDTotal(oTarget, nTotalDam);
-	
-	// Report.
-	string sMsgAtk = ACR_CleanCreatureNameTextForPlayers(GetName(oAttacker))+"<c=orange> deals: </c>"+IntToString(nDamage)+"<c=orange> to </c>"+ACR_CleanCreatureNameTextForPlayers(GetName(oTarget));
-	int nSubdualHealth = nReportHealth - nTotalDam;
-	string sMsgTgt = sMsgAtk + "<c=orange>; Total subdual health is </c>" + IntToString( nSubdualHealth ) + "/" + IntToString( nReportHealth );
-	SendMessageToPC( oAttacker, sMsgTgt );
-	SendMessageToPC( oTarget, sMsgTgt );
-	
-	// Cache targets.
-	SetLocalObject( oTarget, ACR_NLD_ATTACKER, oAttacker );
-	SetLocalObject( oAttacker, ACR_NLD_TARGET, oTarget );
-	
-	// Apply NLD effects.
-	ACR_ApplyNLDEffects( oTarget,nTotalDam );
-}
-
-int _NLDGetWeaponSpecialisation( object oAttacker, object oItem ) {
-	// Save time if we aren't looking at at least a level 4 fighter.
-	if ( GetLevelByClass(CLASS_TYPE_FIGHTER, oAttacker) < 4 ) return FALSE;
-	
-	// Check for the greater weapon specialization feat.
-	int nReturn = FALSE;
-	int nType = GetBaseItemType(oItem);
-	switch ( nType ) {
-		case BASE_ITEM_BASTARDSWORD: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_BASTARDSWORD, oAttacker, TRUE ); break;
-		case BASE_ITEM_BATTLEAXE: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_BATTLEAXE, oAttacker, TRUE ); break;
-		case BASE_ITEM_CLUB: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_CLUB, oAttacker, TRUE ); break;
-		case BASE_ITEM_DAGGER: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_DAGGER, oAttacker, TRUE ); break;
-		case BASE_ITEM_DWARVENWARAXE: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_DWAXE, oAttacker, TRUE ); break;
-		case BASE_ITEM_GREATAXE: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_GREATAXE, oAttacker, TRUE ); break;
-		case BASE_ITEM_GREATSWORD: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_GREATSWORD, oAttacker, TRUE ); break;
-		case BASE_ITEM_HALBERD: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_HALBERD, oAttacker, TRUE ); break;
-		case BASE_ITEM_HANDAXE: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_HANDAXE, oAttacker, TRUE ); break;
-		case BASE_ITEM_HEAVYFLAIL: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_HEAVYFLAIL, oAttacker, TRUE ); break;
-		case BASE_ITEM_KAMA: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_KAMA, oAttacker, TRUE ); break;
-		case BASE_ITEM_KATANA: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_KATANA, oAttacker, TRUE ); break;
-		case BASE_ITEM_KUKRI: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_KUKRI, oAttacker, TRUE ); break;
-		case BASE_ITEM_LIGHTFLAIL: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_LIGHTFLAIL, oAttacker, TRUE ); break;
-		case BASE_ITEM_LIGHTHAMMER: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_LIGHTHAMMER, oAttacker, TRUE ); break;
-		case BASE_ITEM_LIGHTMACE: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_LIGHTMACE, oAttacker, TRUE ); break;
-		case BASE_ITEM_LONGSWORD: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_LONGSWORD, oAttacker, TRUE ); break;
-		case BASE_ITEM_MORNINGSTAR: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_MORNINGSTAR, oAttacker, TRUE ); break;
-		case BASE_ITEM_RAPIER: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_RAPIER, oAttacker, TRUE ); break;
-		case BASE_ITEM_SCIMITAR: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_SCIMITAR, oAttacker, TRUE ); break;
-		case BASE_ITEM_SCYTHE: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_SCYTHE, oAttacker, TRUE ); break;
-		case BASE_ITEM_SHORTSWORD: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_SHORTSWORD, oAttacker, TRUE ); break;
-		case BASE_ITEM_SICKLE: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_SICKLE, oAttacker, TRUE ); break;
-		case BASE_ITEM_SPEAR: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_SHORTSPEAR, oAttacker, TRUE ); break;
-		case BASE_ITEM_QUARTERSTAFF: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_QUARTERSTAFF, oAttacker, TRUE ); break;
-		case BASE_ITEM_WARHAMMER: nReturn = GetHasFeat( FEAT_WEAPON_SPECIALIZATION_WARHAMMER, oAttacker, TRUE ); break; 
-		case BASE_ITEM_FALCHION: nReturn = GetHasFeat( 1591, oAttacker, TRUE ); break;
-		case BASE_ITEM_WARMACE: nReturn = GetHasFeat( 1602, oAttacker, TRUE ); break;
-	}
-	return nReturn;
-}
-
-int _NLDGetGreaterWeaponSpecialisation( object oAttacker, object oItem ) {
-	// Save time if we aren't looking at at least a level 12 fighter.
-	if ( GetLevelByClass(CLASS_TYPE_FIGHTER, oAttacker) < 12 ) return FALSE;
-	
-	// Check for the greater weapon specialization feat.
-	int nReturn = FALSE;
-	int nType = GetBaseItemType(oItem);
-	switch ( nType ) {
-		case BASE_ITEM_BASTARDSWORD: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_BASTARDSWORD, oAttacker, TRUE ); break;
-		case BASE_ITEM_BATTLEAXE: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_BATTLEAXE, oAttacker, TRUE ); break;
-		case BASE_ITEM_CLUB: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_CLUB, oAttacker, TRUE ); break;
-		case BASE_ITEM_DAGGER: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_DAGGER, oAttacker, TRUE ); break;
-		case BASE_ITEM_DWARVENWARAXE: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_DWAXE, oAttacker, TRUE ); break;
-		case BASE_ITEM_GREATAXE: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_GREATAXE, oAttacker, TRUE ); break;
-		case BASE_ITEM_GREATSWORD: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_GREATSWORD, oAttacker, TRUE ); break;
-		case BASE_ITEM_HALBERD: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_HALBERD, oAttacker, TRUE ); break;
-		case BASE_ITEM_HANDAXE: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_HANDAXE, oAttacker, TRUE ); break;
-		case BASE_ITEM_HEAVYFLAIL: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_HEAVYFLAIL, oAttacker, TRUE ); break;
-		case BASE_ITEM_KAMA: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_KAMA, oAttacker, TRUE ); break;
-		case BASE_ITEM_KATANA: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_KATANA, oAttacker, TRUE ); break;
-		case BASE_ITEM_KUKRI: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_KUKRI, oAttacker, TRUE ); break;
-		case BASE_ITEM_LIGHTFLAIL: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_LIGHTFLAIL, oAttacker, TRUE ); break;
-		case BASE_ITEM_LIGHTHAMMER: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_LIGHTHAMMER, oAttacker, TRUE ); break;
-		case BASE_ITEM_LIGHTMACE: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_LIGHTMACE, oAttacker, TRUE ); break;
-		case BASE_ITEM_LONGSWORD: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_LONGSWORD, oAttacker, TRUE ); break;
-		case BASE_ITEM_MORNINGSTAR: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_MORNINGSTAR, oAttacker, TRUE ); break;
-		case BASE_ITEM_RAPIER: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_RAPIER, oAttacker, TRUE ); break;
-		case BASE_ITEM_SCIMITAR: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_SCIMITAR, oAttacker, TRUE ); break;
-		case BASE_ITEM_SCYTHE: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_SCYTHE, oAttacker, TRUE ); break;
-		case BASE_ITEM_SHORTSWORD: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_SHORTSWORD, oAttacker, TRUE ); break;
-		case BASE_ITEM_SICKLE: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_SICKLE, oAttacker, TRUE ); break;
-		case BASE_ITEM_SPEAR: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_SHORTSPEAR, oAttacker, TRUE ); break;
-		case BASE_ITEM_QUARTERSTAFF: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_QUARTERSTAFF, oAttacker, TRUE ); break;
-		case BASE_ITEM_WARHAMMER: nReturn = GetHasFeat( FEAT_GREATER_WEAPON_SPECIALIZATION_WARHAMMER, oAttacker, TRUE ); break; 
-		case BASE_ITEM_FALCHION: nReturn = GetHasFeat( 1598, oAttacker, TRUE ); break;
-		case BASE_ITEM_WARMACE: nReturn = GetHasFeat( 1609, oAttacker, TRUE ); break;
-	}
-	return nReturn;
-}
-
-int _NLDGetEnhancementBonus( object oTarget, object oItem ) {
-	int nReturn = 0;
-	
-	// Loop through item properties.
-	itemproperty iProp = GetFirstItemProperty( oItem );
-	while ( GetIsItemPropertyValid( iProp ) ) {
-		// Get property data.
-		int iType = GetItemPropertyType( iProp );
-		int iValue = GetItemPropertyCostTableValue( iProp );
-		int iParam1 = GetItemPropertyParam1Value( iProp );
-		
-		// If the enhancement bonus would be greater...
-		if ( iValue > nReturn ) {
-			switch ( iType ) {
-				case ITEM_PROPERTY_ENHANCEMENT_BONUS:
-					nReturn = GetItemPropertyCostTableValue( iProp );
-					break;
-				case ITEM_PROPERTY_ENHANCEMENT_BONUS_VS_ALIGNMENT_GROUP:
-					if ( iPara1 == IP_CONST_ALIGNMENTGROUP_ALL ) {
-						nReturn = GetItemPropertyCostTableValue( iProp );
-					} else if ( iPara1 == IP_CONST_ALIGNMENTGROUP_GOOD && GetAlignmentGoodEvil( oTarget ) == ALIGNMENT_GOOD ) {
-						nReturn = GetItemPropertyCostTableValue( iProp );
-					} else if ( iPara1 == IP_CONST_ALIGNMENTGROUP_EVIL && GetAlignmentGoodEvil( oTarget ) == ALIGNMENT_EVIL ) {
-						nReturn = GetItemPropertyCostTableValue( iProp );
-					} else if ( iPara1 == IP_CONST_ALIGNMENTGROUP_NEUTRAL && GetAlignmentGoodEvil( oTarget ) == ALIGNMENT_NEUTRAL ) {
-						nReturn = GetItemPropertyCostTableValue( iProp );
-					} else if ( iPara1 == IP_CONST_ALIGNMENTGROUP_LAWFUL && GetAlignmentLawChaos( oTarget ) == ALIGNMENT_LAWFUL ) {
-						nReturn = GetItemPropertyCostTableValue( iProp );
-					} else if ( iPara1 == IP_CONST_ALIGNMENTGROUP_CHAOTIC && GetAlignmentLawChaos( oTarget ) == ALIGNMENT_CHAOTIC ) {
-						nReturn = GetItemPropertyCostTableValue( iProp );
-					}
-					break;
-				case ITEM_PROPERTY_ENHANCEMENT_BONUS_VS_RACIAL_GROUP:
-					if ( GetRacialType( oTarget ) == iParam1 ) nReturn = GetItemPropertyCostTableValue( iProp );
-					break;
-			}
-		}
-		
-		// Next property.
-	}
-	
-	return nReturn;
-}
-
-int _GetNLDamageReduction( object oTarget, object oWeapon ) {
-	// Equipment that can provide damage resistance.
-	object oArmor = GetItemInSlot(INVENTORY_SLOT_CHEST, oTarget );
-	object oShield = GetItemInSlot( INVENTORY_SLOT_LEFTHAND, oTarget );
-	string sWeapon = GetTag( oWeapon );
-	
-	// Classes that provide damage resistance.
-	int iLevelsBarbarian = GetLevelByClass( CLASS_TYPE_BARBARIAN, oTarget );
-	int iLevelsDwarfDefend = GetLevelByClass( CLASS_TYPE_DWARVENDEFENDER, oTarget );
-	int iLevelsSpiritShaman = GetLevelByClass( CLASS_TYPE_SPIRIT_SHAMAN, oTarget );
-	int iLevelsWarlock = GetLevelByClass( CLASS_TYPE_WARLOCK, oTarget );
-	int iLevelsShadowdancer = GetLevelByClass( CLASS_TYPE_SHADOWDANCER, oTarget );
-	
-	// Determine if oTarget has DR that cannot be bypassed.
-	int iGenDR = 0;
-	if ( iLevelsDwarfDefend >= 10 ) iGenDR = 6;
-	else if ( iLevelsBarbarian >= 19 ) iGenDR = 5;
-	else if ( iLevelsBarbarian >= 16 ) iGenDR = 4;
-	else if ( iLevelsDwarfDefend >= 6 ) iGenDR = 3;
-	else if ( iLevelsBarbarian >= 13 ) iGenDR = 3;
-	else if ( iLevelsBarbarian >= 10 ) iGenDR = 2;
-	else if ( iLevelsBarbarian >= 7 ) iGenDR = 1;
-	if ( GetHasFeat( FEAT_GREATER_RESILIENCY, oTarget ) ) iGenDR += 1;
-	
-	// Determine if oTarget has DR bypassable by magic weapon.
-	int iMagicDR = 0;
-	if ( GetLevelByClass( CLASS_TYPE_MONK, oTarget ) >= 20 ) iMagicDR = 10;
-	else if ( GetHasSpellEffect( SPELL_GHOSTLY_VISAGE, oTarget ) ) iMagicDR = 5;
-	else if ( GetHasSpellEffect( SPELL_GR_SHADOW_CON_GHOSTLY_VISAGE, oTarget ) ) iMagicDR = 5;
-	else if ( GetHasSpellEffect( SPELLABILITY_AS_GHOSTLY_VISAGE, oTarget ) ) iMagicDR = 5;
-	
-	// Determine if oTarget has DR bypassable by adamantine weapons (spells only).
-	int iAdamanDR = 0;
-	if ( GetHasSpellEffect( SPELL_PREMONITION, oTarget ) ) iAdamanDR = 30;
-	else if ( GetHasSpellEffect( SPELL_SHADES_TARGET_CASTER, oTarget ) ) iAdamanDR = 30;
-	else if ( GetHasSpellEffect( SPELL_GREATER_STONESKIN, oTarget ) ) iAdamanDR = 20;
-	else if ( GetHasSpellEffect( SPELL_ETHEREAL_VISAGE, oTarget ) ) iAdamanDR = 20;
-	else if ( GetHasSpellEffect( SPELL_STONESKIN, oTarget ) ) iAdamanDR = 10;
-	else if ( GetHasSpellEffect( SPELL_SHADES_STONESKIN, oTarget ) ) iAdamanDR = 10;
-	else if ( GetHasSpellEffect( SPELL_SHADOW_SHIELD, oTarget ) ) iAdamanDR = 10;
-	else if ( GetHasSpellEffect( SPELL_SHADOW_EVADE, oTarget ) ) iAdamanDR = 10;
-	else if ( GetHasSpellEffect( SPELLABILITY_MERGE_WITH_STONE, oTarget ) ) iAdamanDR = 5;
-	
-	// Determine if oTarget has DR bypassable by cold iron weapons.
-	int iColdIronDR = 0;
-	if ( GetHasFeat( FEAT_FAVORED_SOUL_DR_COLD_IRON, oTarget ) >= 20 ) iColdIronDR = 10;
-	else if ( iLevelsWarlock >= 15 && iLevelsWarlock < 19 ) iColdIronDR = 4;
-	else if ( iLevelsWarlock >= 11 && iLevelsWarlock < 15 ) iColdIronDR = 3;
-	else if ( iLevelsWarlock >= 7 && iLevelsWarlock < 11 ) iColdIronDR = 2;
-	else if ( iLevelsWarlock >= 3 && iLevelsWarlock < 7 ) iColdIronDR = 1;
-	else if ( iLevelsWarlock >= 19 ) iColdIronDR = 5;
-	else if ( GetLevelByClass( CLASS_TYPE_SPIRIT_SHAMAN, oTarget ) >= 20 ) iColdIronDR = 5;
-	if ( GetHasFeat( FEAT_FEY_SKIN, oTarget, TRUE ) ) {
-		int iDR = 1;
-		int f = 0;
-		for ( f = 2181; f <= FEAT_FEY_SKIN; f++ ) {
-			if ( GetHasFeat( f, oTarget, TRUE ) ) iDR += 1;
-		}
-		if ( iDR > iColdIronDR ) iColdIronDR = iDR;
-	}
  
-	// Determine if oTarget has DR bypassable by silver weapons	
-	int iSilverDR = 0;
-	if ( GetHasSpellEffect( SPELL_I_DARK_FORESIGHT, oTarget ) ) iSilverDR = 10;
-	else if ( GetHasFeat( FEAT_FAVORED_SOUL_DR_SILVER, oTarget ) ) iSilverDR = 10;
-	else if ( GetHasSpellEffect( SPELL_SHADOW_EVADE, oTarget ) && ( iLevelsShadowdancer == 8 || iLevelsShadowdancer == 9 ) ) iSilverDR = 10;
-	else if ( GetRacialType( oTarget ) == RACIAL_TYPE_SHAPECHANGER ) iSilverDR = 10;
-	else if ( GetHasSpellEffect( SPELL_SHADOW_EVADE, oTarget ) && ( iLevelsShadowdancer == 6 || iLevelsShadowdancer == 7 ) ) iSilverDR = 5;
-	
-	// Check equipment for damage resistance.
-	if ( GetIsObjectValid( oArmor ) ) {
-		string sTag = GetTag( oArmor );
-		if ( TestStringAgainstPattern( "**" + ACR_NLD_MAT_ADAMANTINE + "**", sTag ) ) {
-			int iDR = 0;
-			nRank = GetArmorRank( oArmor );
-			switch ( nRank ) {
-				case ARMOR_RANK_HEAVY: iDR = 3; break;
-				case ARMOR_RANK_MEDIUM: iDR = 2; break;
-				case ARMOR_RANK_LIGHT: iDR = 1; break;
-				default: iDR = 0; break;
-			}
-			if ( iDR > iGenDR ) iGenDR = iDR;
-		}
-	}
-	if ( GetIsObjectValid( oShield ) ) {
-		string sTag = GetTag( oShield );
-		if ( TestStringAgainstPattern( "**" + ACR_NLD_MAT_ADAMANTINE + "**", sTag ) ) {
-			int iDR = 0;
-			nType = GetBaseItemType( oShield );
-			switch ( nType ) {
-				case BASE_ITEM_TOWERSHIELD: iDR = 3; break;
-				case BASE_ITEM_LARGESHIELD: iDR = 2; break;
-				case BASE_ITEM_SMALLSHIELD: iDR = 1; break;
-				default: iDR = 0; break;
-			}
-			if ( iDR > iGenDR ) iGenDR = iDR;
-		}
-	}
-	
-	// Check for DR bypasses.
-	if ( iMagicDR != 0 && _NLDGetEnhancementBonus( oTarget, oWeapon ) ) iMagicDR = 0;
-	if ( iAdamanDR != 0 && GetItemBaseMaterialType( oWeapon ) == GMATERIAL_METAL_ADAMANTINE ) iAdamanDR = 0;
-	if ( iColdIronDR != 0 && GetItemBaseMaterialType( oWeapon ) == GMATERIAL_METAL_COLD_IRON ) iColdIronDR = 0;
-	if ( iSilverDR != 0 && GetItemBaseMaterialType( oWeapon ) == GMATERIAL_METAL_ALCHEMICAL_SILVER ) iSilverDR = 0;
+    // cancel xp craft if in session
+    if (GetLocalObject(oPC,"XC_ITEM_TO_CRAFT") != OBJECT_INVALID) {
+        XPCraft_ActionCancelChanges(oPC);
+    }
+    
+    ACR_PCOnClientLeave(oPC);
+    
+    // bank logged XP
+    ACR_XPOnClientExit(oPC);
 
-	// Get the highest DR.
-	int iDamageResistance = iGenDR;
-	if ( iAdamanDR > iDamageResistance ) iDamageResistance = iAdamanDR;
-	if ( iMagicDR > iDamageResistance ) iDamageResistance = iMagicDR;
-	if ( iColdIronDR > iDamageResistance ) iDamageResistance = iColdIronDR;
-	if ( iSilverDR > iDamageResistance ) iDamageResistance = iSilverDR;
-	
-	// Handle damage resistance.
-	return iDamageResistance;
+    // clean up chatlogging pointers
+    ACR_ChatOnClientExit(oPC);
+
+    // notify database system of logout
+    ACR_DBPersistOnOutgoingPlayer(oPC);
+
+    // Let the IPC subsystem know of the logout event.
+    ACR_ServerIPC_OnClientLeave(oPC);
+
+    // Let the area instancing subsystem know of the logout event.
+    ACR_AreaInstance_OnClientLeave(oPC, FALSE);
+
+    // Notify the CE subsystem so that it can purge its local state.
+    ACR_SCliExtOnClientLeave(oPC);
 }
 
-void _GiveNLDFist( object oUser ) {
-	if ( !GetIsObjectValid( oUser ) ) return;
-	
-	object oFist = GetItemInSlot( INVENTORY_SLOT_CWEAPON_R, oUser );
-	if ( !GetIsObjectValid( oFist ) ) {
-		oFist = CreateItemOnObject( "acr_nld_fist", oUser, 1, "acr_nld_fist", FALSE );
-		FeatAdd( oUser, FEAT_WEAPON_PROFICIENCY_CREATURE, FALSE );
-		DelayCommand( 0.1, AssignCommand( oUser, ActionEquipItem( oFist, INVENTORY_SLOT_CWEAPON_R ) ) );
-		DelayCommand( 2.0, _ApplyNLDFist( oUser ) );
-	} else {
-		SendMessageToPC(oUser, "<c=orange>Already have a creature weapon. Cannot use subdual mode with this creature weapon</c>");
-	}
+void ACR_ModuleOnAcquireItem()
+{
+    object oItem = GetModuleItemAcquired();
+    object oAcquiredFrom = GetModuleItemAcquiredFrom();
+    object oAcquiredBy = GetModuleItemAcquiredBy();
+    int nItemStackSize = GetModuleItemAcquiredStackSize(), bLogEvent = TRUE;
+    string sTag;
+
+    // SendMessageToAllDMs("Acquired Item: "+GetName(oItem)+" by "+GetName(oAcquiredBy)+" with valid: "+IntToString(GetIsObjectValid(oAcquiredBy))+ " in area "+GetName(GetArea(oAcquiredBy))+" with valid: "+IntToString(GetIsObjectValid(GetArea(oAcquiredBy))));
+ 
+    // only process player acquisitions
+    if (! GetIsPC(oAcquiredBy)) { return; }
+
+    // ignore acquisition events triggered by DMs (for logging only)
+    if (GetIsDM(oAcquiredBy) || GetIsDMPossessed(oAcquiredBy)) { bLogEvent = FALSE; }
+
+    // ignore acquisition events triggered by logins (for logging only)
+    else if (! GetIsObjectValid(GetArea(oAcquiredBy))) { bLogEvent = FALSE; }
+    
+    ACR_ItemOnAcquire(oItem, oAcquiredBy, oAcquiredFrom);
+    
+    ACR_CraftingOnAcquireObject(oItem, oAcquiredBy, oAcquiredFrom);
+    
+    // track the presence of non-detection items
+    //  We don't use these yet, skip this call.
+    //ACR_ManageNonDetectionOnAcquire(oItem, oAcquiredBy);
+
+    // trap items with illegal properties
+    // Since we don't use this yet, commenting out.
+    //  if/when this is restored, should cache the list to a local array on the module
+    //   as querying the database each time is extremely inefficient.
+    /*
+    if (ACR_GetHasIllegalProperties(oItem))
+    {
+        sEvent = ACR_LOG_ACQUIRE_ILLEGAL;
+                
+        // quarantine the item?
+    }
+    */
+    
+    // log item acquisitions
+        sTag = GetTag(oItem);
+
+    if ((sTag == "acr_nld_fist") || (sTag == "acr_ignore_acquire")) {
+        sTag = GetLocalString(oItem, "ACR_IGNORE_ACQUIRE_TEMP");
+        if (sTag != "") {
+            SetTag(oItem, sTag);
+            DeleteLocalString(oItem, "ACR_IGNORE_ACQUIRE_TEMP");
+        }
+        // don't need to log this, OOC from toggling subdual mode
+    } else if (bLogEvent) {
+        ACR_LogOnAcquired(oItem, oAcquiredBy, GetStolenFlag(oItem));
+        // Also only need to process quest item acquisitions if PC is already in the mod.
+        // grant quest XP for acquired quest items
+        ACR_QuestItemOnAcquire(oAcquiredBy, oItem);
+    }
 }
 
-void _ApplyNLDFist( object oUser ) {
-	object oFist = GetItemInSlot( INVENTORY_SLOT_CWEAPON_R, oUser );
-	if ( !GetIsObjectValid( oFist ) ) return;
-	
-	int nDiceDam, nDiceNum, nSADice, nSlot, nSize, nMonk;
-	nSize = GetCreatureSize( oUser );
-	nDiceNum = 1;
-	nDiceDam = ( nSize == CREATURE_SIZE_SMALL ) ? 2 : 3;
-	
-	// Are we a monk?
-	nMonk = GetLevelByClass( CLASS_TYPE_MONK, oUser ) + GetLevelByClass( CLASS_TYPE_SACREDFIST, oUser );
-	if( nMonk >= 1 ) {
-		if ( nMonk <= 3 ) {
-			nDiceDam = ( nSize == CREATURE_SIZE_SMALL ) ? 4 : 6;
-		} else if( nMonk <= 7 ) {
-			nDiceDam = ( nSize == CREATURE_SIZE_SMALL ) ? 6 : 8;
-		} else if( nMonk <= 11 ) {
-			nDiceDam = ( nSize == CREATURE_SIZE_SMALL ) ? 8 : 10;
-		} else if ( nMonk <= 15 ) {
-			nDiceNum = (nSize == CREATURE_SIZE_SMALL) ? 1 : 2;
-			nDiceDam = (nSize == CREATURE_SIZE_SMALL) ? 10 : 6;
-		} else if ( nMonk <= 19 ) {
-			nDiceNum = 2;
-			nDiceDam = (nSize == CREATURE_SIZE_SMALL) ? 6 : 8;
-		}  else {
-			nDiceNum = 2;
-			nDiceDam = ( nSize == CREATURE_SIZE_SMALL ) ? 8 : 10;
-		}
-	}
-	
-	// Fix weapon focus feats.
-	if ( GetHasFeat( FEAT_WEAPON_FOCUS_UNARMED_STRIKE, oUser ) ) {
-		FeatAdd( oUser, FEAT_WEAPON_FOCUS_CREATURE, FALSE );
-	}
-	
-	// Get sneak attack dice.
-	nSADice = _GetNLDSneakAttackDice(oUser);
-	
-	// Store fist information.
-	SetLocalInt( oFist, ACR_NLD_DICE_DAMAGE, nDiceDam );
-	SetLocalInt( oFist, ACR_NLD_DICE_NUMBER, nDiceNum );
-	SetLocalInt( oFist, ACR_NLD_SA_DICE, nSADice );
-	SetLocalInt( oFist, ACR_NLD_WOFFHAND, FALSE );
-	SetLocalInt( oFist, ACR_NLD_W2HANDED, FALSE );
-}
-	
+void ACR_ModuleOnUnAcquireItem() {
+    object oItem = GetModuleItemLost();
+    object oLostBy = GetModuleItemLostBy();
+    string sTag;
+    
+    // only process player drops
+    if (! GetIsPC(oLostBy)) { return; }
+ 
+    // fire handler for special items.
+    ACR_ItemOnUnAcquire(oItem, oLostBy);
 
-void _NLDNaturalHealing( object oTarget, int nCnt = 0 ) {
-	// Valid object still?
-	if ( !GetIsObjectValid( oTarget ) ) return;
-	
-	// Check if we're done healing.
-	int nNLD = _GetNLDTotal( oTarget );
-	if ( nNLD < 1 ) {
-		_SetIsNLDHealing(oTarget, FALSE);
-		return;
-	}
-	
-	// Heal heartbeat?
-	nCnt += 1;
-	if ( nCnt >= ACR_NLD_HEALRATE ) {
-		nNLD -= 1;
-		_SetNLDTotal( oTarget, nNLD );
-		int nCurrentHealth = GetCurrentHitPoints( oTarget );
-		int nSubdualHealth = nCurrentHealth - nNLD;
-		SendMessageToPC(oTarget, "<c=orange>Healed 1 point of non lethal damage. Subdual Health now: </c>"+IntToString(nSubdualHealth)+"/"+IntToString(nCurrentHealth));
-		nCnt = 0;
-	}
-	
-	// Next beat.
-	DelayCommand( RoundsToSeconds(1), _NLDNaturalHealing( oTarget, nCnt ) );
-	ACR_ApplyNLDEffects( oTarget, nNLD );
+    // Nonlethal / subdual handling:
+    ACR_NLD_OnWeaponSwitch(oLostBy, oItem, FALSE);
+    
+    // destroyed item in inventory are invalid but not OBJECT_INVALID
+    // Items sold to stores fall into this category, so run scripts on them anyway
+    //if (! GetIsObjectValid(oItem)) {
+    //    SendMessageToPC(oLostBy, "Item has been destroyed.");
+    //    return; 
+    //}
+    
+    // track the presence of non-detection items
+    ACR_ManageNonDetectionOnUnAcquire(oItem, oLostBy);
+
+    // trap items with illegal properties
+    //  Again, we don't have this managed via SQL tables, large waste of resources.
+    //  commenting out for now, will replace with a locally cached version if it comes back later.
+    /*
+    if (ACR_GetHasIllegalProperties(oItem))
+    {
+        // log the event
+        ACR_LogEvent(oLostBy, ACR_LOG_DROP_ILLEGAL, "Item: " + ACR_SQLEncodeSpecialChars(GetName(oItem)) + ", By: " + ACR_SQLEncodeSpecialChars(GetName(oLostBy)));
+                
+        // quarantine the item?
+    }
+    else */
+
+
+        sTag = GetTag(oItem);
+
+    if ((sTag == "acr_nld_fist") || (sTag == "acr_ignore_acquire")) {
+        // don't need to log this, OOC from toggling subdual mode
+        sTag = GetLocalString(oItem, "ACR_IGNORE_ACQUIRE_TEMP");
+        if (sTag != "") {
+            SetTag(oItem, sTag);
+        DeleteLocalString(oItem, "ACR_IGNORE_ACQUIRE_TEMP");
+        }
+    } else {
+        // log item acquisitions
+        ACR_LogOnUnacquired(oItem, oLostBy, GetStolenFlag(oItem));
+    }
 }
 
-void _RemoveNLDStaggeredEffect( object oTarget ) {
-	effect eSubD = GetFirstEffect(oTarget);
-	object oMod = GetModule();
-	while ( GetIsEffectValid( eSubD ) ) {
-		if ( GetEffectType( eSubD ) == EFFECT_TYPE_DAZED) {
-			DelayCommand( 0.1, RemoveEffect( oTarget, eSubD ) );
-		} else if (GetEffectType(eSubD) == EFFECT_TYPE_ABILITY_DECREASE) {
-			DelayCommand( 0.2, RemoveEffect( oTarget, eSubD ) );
-		}
-		eSubD = GetNextEffect( oTarget );
-	}
+void ACR_ModuleOnActivateItem() {
+    object oItem = GetItemActivated();
+    object oActivator = GetItemActivator();
+    object oTarget = GetItemActivatedTarget();
+    location locTarget = GetItemActivatedTargetLocation();
+
+    // handle items.
+    ACR_ItemOnActivate(oItem, oActivator, oTarget, locTarget);
+
+    // log item activation
+    ACR_LogEvent(oActivator, ACR_LOG_ACTIVATE, "Item: " + ACR_SQLEncodeSpecialChars(GetName(oItem)) + ", By: " + ACR_SQLEncodeSpecialChars(GetName(oActivator)));
 }
 
-void _RemoveNLDHelplessEffect( object oTarget ) {
-	SetCommandable( TRUE, oTarget );
-	object oMod = GetModule();
-	effect eTest = GetFirstEffect( oTarget );
-	// loop through to clear DEX penalty.
-	while ( GetIsEffectValid( eTest ) ) {
-		if ( GetEffectType( eTest ) == EFFECT_TYPE_ABILITY_DECREASE) {
-			DelayCommand(0.2, RemoveEffect(oTarget, eTest));
-		}
-		eTest = GetNextEffect(oTarget);
-	}		
-	DelayCommand( 0.1,AssignCommand( oTarget, ClearAllActions() ) );
+void ACR_ModuleOnPlayerDeath() {
+    object oDead = GetLastPlayerDied();
+    object oKiller = GetLastHostileActor();
+
+    // *** check for disguises here - player names need to be restored for proper data logging on death ***
+    
+    // process the player death
+    ACR_PlayerOnDeath(oDead, oKiller);
+    // logging handled in ACR_PlayerOnDeath() - so we don't log false-positives from instakill protection.
+    ACR_NLD_OnDeath(oDead);
 }
 
-int _GetNLDSneakAttackDice( object oAttacker ) {
-	return _GetNLDSAFeatList( oAttacker );
+void ACR_ModuleOnPlayerDying() {
+    object oDying = GetLastPlayerDying();
+    object oAttacker = GetLastAttacker();
+
+    // process the player dying
+    ACR_PlayerOnDying(oDying, oAttacker);
 }
 
-void _HandleNLDSneakAttacks( object oAttacker ) {
-	string sFeatList, sFeat;
-	int nFeat, nDice = 0;
-	
-	if ( GetLevelByClass( CLASS_TYPE_ROGUE, oAttacker) >= 1 ) {
-		FeatRemove( oAttacker, FEAT_SNEAK_ATTACK );
-		nDice += 1;
-		for ( nFeat = 345; nFeat <= 353; nFeat++ ) {
-			if ( GetHasFeat( nFeat, oAttacker ) ) {
-				FeatRemove(oAttacker, nFeat);
-				nDice += 1;
-			}
-		}
-	} 
-	
-	if ( GetLevelByClass( CLASS_TYPE_ASSASSIN, oAttacker ) >= 1 ) {
-		for ( nFeat=455; nFeat<=459; nFeat++ ) {
-			if ( GetHasFeat( nFeat, oAttacker ) ) {
-				FeatRemove( oAttacker, nFeat );
-				nDice += 1;
-			}
-		}
-	}
-	
-	if ( GetLevelByClass( CLASS_TYPE_BLACKGUARD, oAttacker ) >= 1 ) {
-		for ( nFeat=460; nFeat<=462; nFeat++ ) {
-			if ( GetHasFeat( nFeat, oAttacker ) ) {
-				FeatRemove( oAttacker, nFeat );
-				nDice += 1;
-			}
-		}
-	}
-	
-	if ( GetLevelByClass( CLASS_TYPE_ARCANETRICKSTER, oAttacker ) >= 1 ) {
-		for ( nFeat=1502; nFeat<=1506; nFeat++ ) {
-			if ( GetHasFeat( nFeat, oAttacker ) ) {
-				FeatRemove(oAttacker, nFeat);
-				nDice += 1;
-			}
-		}
-	}
-	
-	if ( GetLevelByClass( CLASS_TYPE_SHADOWTHIEFOFAMN, oAttacker ) >= 1 ) {
-		for ( nFeat=1562; nFeat<=1564; nFeat++ ) {
-			if ( GetHasFeat( nFeat, oAttacker ) ) {
-				FeatRemove( oAttacker, nFeat );
-				nDice += 1;
-			}
-		}
-	}
-	
-	if ( GetLevelByClass( CLASS_NWNINE_WARDER, oAttacker ) >= 1 ) {
-		for ( nFeat=1497; nFeat <= 1499; nFeat++ ) {
-			if ( GetHasFeat( nFeat, oAttacker ) ) {
-				FeatRemove( oAttacker, nFeat );
-				nDice += 1;
-			}
-		}
-	}
-	
-	if ( GetLevelByClass( CLASS_TYPE_INVISIBLE_BLADE, oAttacker ) >= 1 ) {
-		for ( nFeat=2052; nFeat <= 2054; nFeat++ ) {
-			if ( GetHasFeat( nFeat, oAttacker ) ) {
-				FeatRemove( oAttacker, nFeat );
-				nDice += 1;
-			}
-		}
-	}
-	
-	if ( nDice > 0 ) _SetNLDSAFeatList(oAttacker, nDice);
+void ACR_ModuleOnPlayerLevelUp() {
+    object oPC = GetPCLevellingUp();
+
+    // handle the level up attempt
+    ACR_ProcessLevelUpAttempt(oPC);
+    
+    // apply any hidden skill changes  
+    ACR_SkillsOnPCLevelUp(oPC);
+
+    // apply extra languages if necessary
+    ACR_LanguagesOnLevelUp(oPC);
+
+    // check for major changes to anatomy.
+    ACR_CheckBodyPartsOnLevelUp(oPC);
+    
+    // log the level up attempt
+    ACR_LogEvent(oPC, ACR_LOG_LEVELUP, "Character: " + ACR_SQLEncodeSpecialChars(GetName(oPC)) + ", Level: " + IntToString(GetHitDice(oPC)));
 }
 
-void _RestoreNLDSneakAttackFeats( object oPC ) { 
-	int i, nFeat, nLevel;
-	
-	// Restore any missing rogue feats
-	nLevel = GetLevelByClass( CLASS_TYPE_ROGUE, oPC );
-	if ( nLevel >= 1 ) {
-		FeatAdd( oPC, FEAT_SNEAK_ATTACK, TRUE );
-		i = 3;
-		nFeat = SneakAttack2;
-		while( i <= 19 && i <= nLevel ) {
-			FeatAdd(oPC, nFeat, TRUE);
-			i += 2;
-			nFeat += 1;
-		}
-	}
-	
-	// Restore any missing assassin feats
-	nLevel = GetLevelByClass( CLASS_TYPE_ASSASSIN, oPC );
-	if ( nLevel >= 1 ) {
-		i = 1;
-		nFeat = FEAT_PRESTIGE_DEATH_ATTACK_1;
-		while ( i <= 9 && i <= nLevel ) {
-			FeatAdd(oPC, nFeat, TRUE);
-			i += 2;
-			nFeat += 1;
-		}
-	}
-
-	// Restore any missing blackguard feats
-	nLevel = GetLevelByClass( CLASS_TYPE_BLACKGUARD, oPC );
-	if ( nLevel >= 4 ) {
-		i = 4;
-		nFeat = FEAT_BLACKGUARD_SNEAK_ATTACK_1D6;
-		while ( i <= 10 && i <= nLevel ) {
-			FeatAdd(oPC, nFeat, TRUE);
-			i += 3;
-			nFeat += 1;
-		}
-	}
-	
-	// Restore any missing arcane trickster feats
-	nLevel = GetLevelByClass( CLASS_TYPE_ARCANETRICKSTER, oPC );
-	if ( nLevel >= 2 ) {
-		i = 2;
-		nFeat = FEAT_ARCTRICKSTER_SNEAK_ATTACK_1;
-		while ( i <= 10 && i <= nLevel ) {
-			FeatAdd(oPC, nFeat, TRUE);
-			i += 2;
-			nFeat += 1;
-		}
-	}
-	
-	// Restore any missing shadow thief of amn feats
-	nLevel = GetLevelByClass( CLASS_TYPE_SHADOWTHIEFOFAMN, oPC );
-	if ( nLevel >= 1 ) {
-		i = 1;
-		nFeat = FEAT_SHADOWTHIEFAMN_SNEAK_ATTACK_1;
-		while ( i <= 5 && i <= nLevel ) {
-			FeatAdd(oPC, nFeat, TRUE);
-			i += 2;
-			nFeat += 1;
-		}
-	}
-	
-	// Restore any missing neverwinter nine feats
-	nLevel = GetLevelByClass( CLASS_NWNINE_WARDER, oPC );
-	if ( nLevel >= 3 ) {
-		FeatAdd( oPC, FEAT_NW9_SNEAK_ATTACK_1, TRUE );
-		FeatAdd( oPC, FEAT_NW9_SNEAK_ATTACK_2, TRUE );
-		FeatAdd( oPC, FEAT_NW9_SNEAK_ATTACK_3, TRUE );
-	}
-	
-	// Restore any missing invisible blade feats
-	nLevel = GetLevelByClass( CLASS_TYPE_INVISIBLE_BLADE, oPC );
-	if ( nLevel >= 1 ) {
-		i = 1;
-		nFeat = FEAT_BLEEDING_WOUND_I;
-		while ( i <= 5 && i <= nLevel ) {
-			FeatAdd(oPC, nFeat, TRUE);
-			i += 2;
-			nFeat += 1;
-		}
-	}
+void ACR_ModuleOnPlayerRespawn() {
+    object oPC = GetLastRespawnButtonPresser();
 }
 
-int _GetNLDSAFeatList( object oAttacker ) {
-	return GetLocalInt( oAttacker, ACR_NLD_SNEAKATTACK );
+void ACR_ModuleOnPlayerRest() {
+    object oPC = GetLastPCRested();
+    int nRestState = GetLastRestEventType();
+
+    ACR_OnPlayerRest(oPC, nRestState);
 }
 
-void _SetNLDSAFeatList( object oAttacker, int nFeatList ) {
-	SetLocalInt( oAttacker, ACR_NLD_SNEAKATTACK, nFeatList );
+void ACR_ModuleOnHeartbeat() {
 }
 
-int _GetNLDMode( object oUser ) {
-	return GetLocalInt( oUser, ACR_NLD_MODE );
+void ACR_ModuleOnUserDefined() {
+    int nEvent = GetUserDefinedEventNumber();
 }
 
-void _SetNLDMode( object oUser, int bMode ) {
-	SetLocalInt( oUser, ACR_NLD_MODE, bMode );
-	string sMessage;
-	if ( bMode ) {
-		sMessage = "<c=orange>Subdual Mode Activated</c>";
-		FloatingTextStringOnCreature( "<c=orange>Subdual Mode Activated</c>", oUser, FALSE, 3.0 );
-	} else {
-		sMessage = "<c=blue>Subdual Mode Deactivated</c>";
-		FloatingTextStringOnCreature( "<c=orange>Subdual Mode Deactivated</c>", oUser, FALSE, 3.0 );
-		DeleteLocalObject( oUser, ACR_NLD_TARGET );
-	}
-	ACR_NLD_ReportTotal( oUser, oUser, _GetNLDTotal( oUser ) );
+void ACR_ModuleOnPlayerEquip() {
+    object oItem = GetPCItemLastEquipped();
+    object oPC = GetPCItemLastEquippedBy();
+    
+    // Crafting system hook.
+    ACR_CraftOnEquipItem(oPC, oItem);
+    
+    // handle equipped items.
+    ACR_ItemOnEquip(oItem, oPC);
+    
+    // handle nonlethal damage modes
+    ACR_NLD_OnWeaponSwitch(oPC, oItem);
+
+    // Do feat-specific stuff.
+    ACR_FeatOnEquipItem(oPC, oItem);
 }
 
-int _GetNLDState( object oTarget ) {
-	return GetLocalInt(oTarget, ACR_NLD_STATE);
+void ACR_ModuleOnPlayerUnequip() {
+    object oItem = GetPCItemLastUnequipped();
+    object oPC = GetPCItemLastUnequippedBy();
+    
+    // handle unequipped items
+    ACR_ItemOnUnEquip(oItem, oPC);
+    
+    // Subdual / nonlethal handling
+    DelayCommand(0.1, ACR_NLD_OnWeaponSwitch(oPC, oItem, FALSE));
+    
+    // Do feat-specific stuff.
+    ACR_FeatOnUnequipItem(oPC, oItem);    
 }
 
-void _SetNLDState( object oTarget, int nState ) {
-	SetLocalInt(oTarget, ACR_NLD_STATE, nState);
+void ACR_ModuleOnCutsceneAbort() {
+    object oPC = GetLastPCToCancelCutscene();
+
+    // End the scrying effect for the PC aborting the cutscene
+    if (ACR_GetIsScrying(oPC)) { ACR_ScryEnd(oPC); }
 }
 
-int _GetNLDTotal( object oTarget ) {
-	return GetLocalInt(oTarget, ACR_NLD_DAMAGE_TOTAL);
+string _ParseLang(object oSpeaker, string sText)
+{
+    string sLangPick;
+    int n;
+
+    n = FindSubString(sText,"@");
+
+    // @Abcdef -> abc
+    sText = GetStringLowerCase(GetStringRight(GetSubString(sText, n, 4),3));
+
+    sLangPick = ACR_LangAbbToLangID(sText);
+
+    if (!_IsLanguageKnown(oSpeaker, sLangPick) && !GetIsDM(oSpeaker) && !GetIsDMPossessed(oSpeaker)) {
+        SendMessageToPC(oSpeaker, "You don't know how to speak "+ACR_LangIDToString(sLangPick)+".");
+        return GetLocalString(oSpeaker, "DefaultLanguage");
+    }
+
+    return sLangPick;
 }
 
-void _SetNLDTotal( object oTarget, int nAmount ) {
-	SetLocalInt(oTarget, ACR_NLD_DAMAGE_TOTAL, nAmount);
+int ACR_ModuleOnChat(object oSpeaker, object oTarget, int nMode, string sText)
+{
+    int len;
+    string sMessage, sCommand, c, sLangPick;
+
+    // iterate the RPXP function to indicate an active PC
+    ACR_RPXPMarkActive(oSpeaker);
+
+    switch (nMode) {
+        case CHAT_MODE_SERVER:
+            // Local server console said something, check for server admin cmd
+            // But not if this isn't the first player on the server, else we
+            // handle the command once per every player.
+            if (oTarget != GetFirstPC())
+                return TRUE;
+        case CHAT_MODE_SILENT_SHOUT:
+            // DM channel command, check for server admin cmd
+            len = GetStringLength(sText);
+            c = GetStringLowerCase(GetStringLeft(sText, 4));
+
+            if (c == "#sa " || c == "!sa ")
+            {
+                if (ACR_SrvAdmin_OnChat(oSpeaker, GetStringRight(sText, len-4)))
+                    return FALSE;
+                return TRUE;
+            }
+        case CHAT_MODE_SHOUT:
+            return TRUE;
+        case CHAT_MODE_TELL:
+            // Record the last tell to and last tell from player ids for the
+            // re-tell and reply commands.
+            SetLocalInt(oSpeaker, ACR_MOD_LAST_TELL_TO, ACR_GetPlayerID(oTarget));
+            SetLocalInt(oTarget, ACR_MOD_LAST_TELL_FROM, ACR_GetPlayerID(oSpeaker));
+            return TRUE;
+    }
+
+    len = GetStringLength(sText);
+
+    c = GetStringLeft(sText, 1);
+
+    // Is this someone setting a listening anchor?
+    if(sText == "#1" || sText == "#2" || sText == "#3" || sText == "#4" || sText == "#5" || sText == "#6" || sText == "#7" || sText == "#8" || sText == "#9" || sText == "#0")
+    {
+           object PlayerAvatar = GetOwnedCharacter(oSpeaker);
+        oTarget = GetPlayerCurrentTarget(oSpeaker);
+        if(!GetIsObjectValid(oTarget))
+        {
+                // Allow setting an empty target to delete an already set mouthpiece target.
+                  object SpeakTo;
+                  if ((SpeakTo = GetLocalObject(PlayerAvatar, "SpeakTo_" + sText)) != OBJECT_INVALID)
+                {
+                    DeleteLocalObject(PlayerAvatar, "SpeakTo_" + sText);
+                    SendMessageToPC(oSpeaker, "Clearing speak to association for " + sText);
+
+                    if (GetLocalObject(SpeakTo, "MouthPiece") == PlayerAvatar)
+                        DeleteLocalObject(SpeakTo, "MouthPiece");
+                }
+                else
+                {
+                SendMessageToPC(oSpeaker, "You must select an object to do that.");
+                }
+            return FALSE;
+        }
+        if(GetIsPC(oTarget))
+        {
+            SendMessageToPC(oSpeaker, "If you're that eager to write for all of the characters in this story, perhaps you should take up fanfiction?");
+            return FALSE;
+        }
+        if(GetIsDM(PlayerAvatar) || GetLocalInt(oTarget, "HENCHMAN_LEADER") == ACR_GetPlayerID(oSpeaker) || GetMaster(oTarget) == oSpeaker)
+        {
+                  // Check if another player owned this mouthpiece.  If so then try
+                // and remove the association on their and and warn the previous
+                // controller.
+                  object PreviousMouthPiece = GetLocalObject(oTarget, "MouthPiece");
+                if (PreviousMouthPiece != OBJECT_INVALID && PreviousMouthPiece != PlayerAvatar)
+                {
+                    SendMessageToPC(PreviousMouthPiece, "Mouthpiece (speak-to) control lost for object: " + GetName(oTarget) + " because another player or DM has taken control.");
+
+                    int i;
+                    for (i = 1; i < 10; i += 1)
+                    {
+                        if (GetLocalObject(PreviousMouthPiece, "SpeakTo_#" + IntToString(i)) == oTarget)
+                        {
+                            DeleteLocalObject(PreviousMouthPiece, "SpeakTo_#" + IntToString(i));
+                        }
+                    }
+                }
+            SetLocalObject(PlayerAvatar, "SpeakTo_" + sText, oTarget);
+            SetLocalObject(oTarget, "MouthPiece", PlayerAvatar);
+            SendMessageToPC(oSpeaker, "Setting "+GetName(oTarget)+" as anchored to "+sText+".");
+            return FALSE;
+        }
+        SendMessageToPC(oSpeaker, "You cannot anchor your chat to that object.");
+        return FALSE;
+    }
+    // Is this someone speaking through the anchor?
+    else if(GetStringLeft(sText, 2) == "#1" || GetStringLeft(sText, 2) == "#2" || GetStringLeft(sText, 2) == "#3" || GetStringLeft(sText, 2) == "#4" || GetStringLeft(sText, 2) == "#5" || GetStringLeft(sText, 2) == "#6" || GetStringLeft(sText, 2) == "#7" || GetStringLeft(sText, 2) == "#8" || GetStringLeft(sText, 2) == "#9" || GetStringLeft(sText, 2) == "#0")
+    {
+           object PlayerAvatar = GetOwnedCharacter(oSpeaker);
+        string sAnchor = "SpeakTo_" + GetStringLeft(sText, 2);
+        object oAnchor = GetLocalObject(PlayerAvatar, sAnchor);
+        sText = GetStringRight(sText, len-3);
+        c = GetStringLeft(sText, 1);
+
+        // We haven't anchored to this number; maybe we're trying to grab by a tag?
+        if(!GetIsObjectValid(oAnchor))
+        {
+            oTarget = GetObjectByTag(sText);
+            if(!GetIsObjectValid(oTarget))
+            {
+                SendMessageToPC(oSpeaker, "You must specify a valid object tag to do that.");
+                return FALSE;
+            }
+            if(GetIsPC(oTarget))
+            {
+                SendMessageToPC(oSpeaker, "If you're that eager to write for all of the characters in this story, perhaps you should take up fanfiction?");
+                return FALSE;
+            }
+            if(GetIsDM(oSpeaker) || GetLocalInt(oTarget, "HENCHMAN_LEADER") == ACR_GetPlayerID(oSpeaker) || GetMaster(oTarget) == oSpeaker)
+            {
+                SetLocalObject(PlayerAvatar, sAnchor, oTarget);
+                SetLocalObject(oTarget, "MouthPiece", PlayerAvatar);
+                SendMessageToPC(oSpeaker, "Setting "+GetName(oTarget)+" as anchored to "+sText+".");
+                return FALSE;
+            }
+            SendMessageToPC(oSpeaker, "You cannot anchor your chat to that object.");
+            return FALSE;
+        }
+
+        int nTalkVolume = TALKVOLUME_TALK;
+        if(nMode == CHAT_MODE_WHISPER) nTalkVolume = TALKVOLUME_WHISPER;
+
+        // We assume that DMs know what they're doing. Their targets can speak foreign languages.
+        if(GetIsDM(PlayerAvatar))
+        {
+                 if (FindSubString(sText, "@") != -1)
+                {
+                sLangPick = _ParseLang(PlayerAvatar, sText);
+                sText = _RemoveLangTag(sText);
+                }
+                else
+                {
+                    sLangPick = GetLocalString(PlayerAvatar, "DefaultLanguage");
+                }
+            int nHandleLang = _HandleLang(oAnchor, sText, nMode, sLangPick, PlayerAvatar);
+            if (nHandleLang)
+            {
+                AssignCommand(oAnchor, _SpeakString(sText, nTalkVolume));
+            }
+            return FALSE;
+        }
+  
+        // Players we can't trust as much. Their anchors can only speak common.
+        else
+        {
+            sLangPick = "common";
+                int nHandleLang = _HandleLang(oAnchor, sText, nMode, sLangPick, PlayerAvatar);
+                if (nHandleLang)
+                {
+                AssignCommand(oAnchor, _SpeakString(sText, nTalkVolume));
+                }
+        }
+        return FALSE;
+    }
+
+    // roll command
+    if (c == "#" || c == "!")
+    {
+        // Check first for server admin cmd, which needs unedited casing
+        c = GetStringLowerCase(GetStringLeft(sText, 4));
+
+        if (c == "#sa " || c == "!sa ")
+        {
+            ACR_SrvAdmin_OnChat(oSpeaker, GetStringRight(sText, len-4));
+            return FALSE;
+        }
+        else if (ACR_ServerIPC_OnChat(oSpeaker, nMode, sText))
+        {
+            return FALSE;
+        }
+
+        sCommand = GetStringRight(GetStringLowerCase(sText), len-1);
+        
+        ParseRoll(oSpeaker, sCommand);
+
+        return FALSE;
+    }
+
+    sLangPick = GetLocalString(oSpeaker, "DefaultLanguage");
+
+    // the player is attempting to specify a different language.
+    if (c == "@" || TestStringAgainstPattern("**@**",sText)) {
+        sLangPick = _ParseLang(oSpeaker, sText);
+        sText = _RemoveLangTag(sText);
+    }
+    
+
+    return _HandleLang(oSpeaker, sText, nMode, sLangPick, oSpeaker);
 }
 
-int _GetLastNLDamage( object oTarget ) {
-	return GetLocalInt(oTarget,ACR_NLD_DAMAGE);
+
+int ACR_GetModuleStatus(int nStatus) {
+    return (GetLocalInt(GetModule(), ACR_MOD_STATUS) & nStatus);
 }
 
-void _SetLastNLDamage( object oTarget, int nDamage ) {
-	SetLocalInt(oTarget,ACR_NLD_DAMAGE,nDamage);
+void ACR_SetModuleStatus(int nStatus) {
+    object oModule = GetModule();
+    SetLocalInt(oModule, ACR_MOD_STATUS, GetLocalInt(oModule, ACR_MOD_STATUS) | nStatus);
 }
 
-int _GetIsNLDHealing( object oTarget ) {
-	return GetLocalInt(oTarget, ACR_NLD_HEALING);
+int _MouthPieceNotInRange(object oMouthPiece, object oSpeaker, float fDistance)
+{
+    // Switch to the controlled character in case the DM avatar is possessing
+    // someone and thus shunted to limbo.
+    oMouthPiece = GetControlledCharacter(oMouthPiece);
+
+    // If the objects aren't in the same area, then they are out of range for
+    // normal message hearing.
+    if (GetArea(oMouthPiece) != GetArea(oSpeaker))
+        return TRUE;
+
+    // If the distance between the objects exceeds the nominal transmission
+    // distance for the associated talk type, then they are out of range for
+    // normal message hearing.
+    if (GetDistanceBetween(oMouthPiece, oSpeaker) > fDistance)
+        return TRUE;
+
+    // Otherwise, the message will be heard normally and won't need to be
+    // relayed explicitly.
+    return FALSE;
 }
 
-void _SetIsNLDHealing( object oTarget, int bHeal ) {
-	SetLocalInt(oTarget, ACR_NLD_HEALING, bHeal);
+int _HandleLang(object oSpeaker, string sText, int nMode, string sLangPick, object DMFIToolOwner)
+{
+    // If we are to override language processing then stop now.  This is used
+    // when we are distributing the scrambled version of a phrase that has been
+    // voice thrown with a non-"common" language.  We have to suppress the
+    // usual language handling here because :
+    //
+    // - For the voice throwing case we do language handling on the *send* side,
+    //   rather than as a respons to a chat event.  This takes care of sending
+    //   the translated text to those who ought to receive it.
+    // - Then, on the send side, we send the scrambled version.  This is either
+    //   done with SendChatMessage with the callback invoke suppressed (if the
+    //   sender was a PC), in which case we would never get into _HandleLang for
+    //   that case.  But if the sender was an NPC, we do ultimately re-enter the
+    //   language handler for the scrambled text - and in that case we must
+    //   recognize that we already distributed text to mouthpiece receivers.  If
+    //   we didn't then they would get a mouthpiece redirection with the
+    //   scrambled text with a language of "Common".
+
+#if DEBUG_LANG
+    WriteTimestampedLogEntry("_HandleLang(" + GetName(oSpeaker) + ", " + sText + ", " + IntToString(nMode) + ", " + sLangPick + ", " + GetName(DMFIToolOwner) + ")");
+#endif
+
+    if (GetLocalInt(oSpeaker, ACR_MOD_SUPPRESS_LANGUAGE))
+    {
+#if DEBUG_LANG
+        WriteTimestampedLogEntry("Suppressing processing of language handling.");
+#endif
+        return TRUE;
+    }
+
+    object oTool = _GetDMFITool(DMFIToolOwner);
+    string sNewString;
+    
+    if (sLangPick == "")
+        sLangPick = "common";
+
+    if (sLangPick == "common")
+    {
+        sNewString = sText;
+    }
+    else
+    {
+        object oTool = _GetDMFITool(DMFIToolOwner);
+        sNewString = DMFI_ProcessLanguage(sText, sLangPick, oTool);
+    }
+
+    _DistributeTranslation(sText, sNewString, sLangPick, oSpeaker, nMode);
+
+    return FALSE;
 }
 
-void _DoSubduedAnimation( object oTarget ) { 
-	int nState = _GetNLDState( oTarget );
-	// if the target is still helpless, play the animation again.
-	if ( nState == ACR_NLD_STATE_HELPLESS ) {
-		PlayCustomAnimation(oTarget, "proneb", 1);
-		DelayCommand( 2.0, _DoSubduedAnimation( oTarget ) );
-	}
+void ACR_ModuleInitHealthChecks()
+{
+    object Obj;
+    int HighestObjectId = ObjectToInt(GetModule());
+
+    // Start the latency monitor script up.  The latency monitor requires CLR
+    // script support to function.  See LatencyMonitor\LatencyMonitor.cs for
+    // more details on how to use server latency measurements.
+
+    ExecuteScript("latencymonitor", OBJECT_SELF);
+
+    // Connect the latency monitor to the health monitor script.
+
+    SetGlobalString("ACR_SERVER_LATENCY_SCRIPT", "acr_healthmonitor");
+
+    // Find the first object id assigned to dynamic objects so that the health
+    // monitor subsystem can distinguish statically placed objects from those
+    // that have been dynamically instantiated.
+    Obj = CreateObject(OBJECT_TYPE_WAYPOINT, "nw_waypoint001", GetStartingLocation(), FALSE);
+
+    if (Obj != OBJECT_INVALID)
+    {
+        HighestObjectId = ObjectToInt(Obj);
+        DestroyObject(Obj);
+    }
+
+    WriteTimestampedLogEntry("Dynamically created objects start at ObjectId=" + IntToString(HighestObjectId));
+    SetGlobalInt("ACR_FIRST_DYNAMIC_OBJECT_ID", HighestObjectId);
+}
+
+void ACR_StartModuleInitHealthChecks()
+{
+    // This function is just here so that a more obvious name shows up in the
+    // stack trace if you boot the server when not in JIT mode and hit a TMI.
+    // A TMI here means that you should boot the server in JIT mode.
+
+    ACR_ModuleInitHealthChecks();
+}
+
+void ACR_SweepAreaOfUnneededObjects(object AreaObject)
+{
+    // Simply call the area instance cleanp function, which also handles cleanup
+    // of a dynamically instantiated area copy.
+
+    ACR_AreaInstance_StartupCleanup(AreaObject);
+}
+
+void ACR_PerformModuleStartupCleanup()
+{
+    object AreaObject;
+
+    // Queue a cleanup task for each area that exists in the module.  The tasks
+    // run in separate DelayCommands as they iterate over large numbers of
+    // objects and may otherwise trip the instruction or loop count limits if
+    // done all in one go.
+
+    AreaObject = GetFirstArea();
+
+    while (AreaObject != OBJECT_INVALID)
+    {
+        DelayCommand(0.0001f, ACR_SweepAreaOfUnneededObjects(AreaObject));
+        AreaObject = GetNextArea();
+    }
+}
+
+void ACR_ModuleInit_ForceLinkageForCLRScripts()
+{
+    // This code never runs.  It is simply here to force the compiler to include
+    // certain symbols that CLR script code requires.
+
+    ACR_AsyncSQLQueryEx("", OBJECT_INVALID);
+    ACR_GetPersistentString(OBJECT_INVALID, "");
+    ACR_GetServerAddressFromDatabase();
+    ACR_SetPersistentString(OBJECT_INVALID, "", "");
+    ACR_SQLQuery("");
+    ACR_FlushQueryQueue(OBJECT_INVALID);
+    ACR_PCSave(OBJECT_INVALID);
+    ACR_GetVersion();
+    ACR_DeletePersistentVariable(OBJECT_INVALID, "");
+    ACR_GetBuildDate();
+    ACR_GetHAKBuildDate();
+    ACR_IncrementStatistic("DUMMY_STATISTIC");
+    ACR_GetHAKVersion();
 }
