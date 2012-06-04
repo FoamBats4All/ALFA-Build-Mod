@@ -18,6 +18,7 @@ void main() {
 	// Get duration and limit.
 	float fDuration = ACR_GetSpellDuration( oCaster, ACR_DURATION_TYPE_PER_CL, ACR_DURATION_1R );
 	int nMaxTargets = GetCasterLevel( oCaster );
+	WriteTimestampedLogEntry( "Caster: " + GetName( oCaster ) + " [" + IntToString(nMaxTargets) + "]" );
 	
 	// Loop through all in the field of effect.
 	WriteTimestampedLogEntry( "acr_s0_feather_fall -- State 003" );
