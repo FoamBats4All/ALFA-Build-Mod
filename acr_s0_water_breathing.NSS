@@ -15,8 +15,11 @@ void main() {
 	
 	// Get duration and limit.
 	float fDuration = ACR_GetSpellDuration( oCaster, ACR_DURATION_TYPE_PER_CL, ACR_DURATION_2H );
+	SendMessageToPC( oCaster, "Duration: " + FloatToString( fDuration ) );
 	
 	// Apply the spell effect.
-	effect eWaterBreathing = EffectVisualEffect( VFX_HIT_DROWN );
+	effect eVFX = EffectVisualEffect( VFX_HIT_DROWN );
+	effect eSelfImmunity = EffectSpellImmunity( SPELL_WATER_BREATHING );
+	effect eWaterBreathing = EffectLinkEffects( eVFX, eSelfImmunity );
 	ApplyEffectToObject( DURATION_TYPE_TEMPORARY, eWaterBreathing, oTarget, fDuration );
 }
