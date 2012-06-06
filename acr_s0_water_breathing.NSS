@@ -20,7 +20,7 @@ void main() {
 	float fDuration = ACR_GetSpellDuration( oCaster, ACR_DURATION_TYPE_PER_CL, ACR_DURATION_2H );
 	
 	// Apply the spell effect.
-	effect eWaterBreathing = EffectDarkness();
+	effect eWaterBreathing = SetEffectSpellId( EffectDarkness(), GetSpellId() );
 	ApplyEffectToObject( DURATION_TYPE_TEMPORARY, eWaterBreathing, oTarget, fDuration );
 	
 	// Establish warning.
