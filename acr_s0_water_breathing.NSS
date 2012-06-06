@@ -7,7 +7,7 @@
 
 const float WATER_BREATHING_RADIUS = RADIUS_SIZE_SMALL;
 
-void _ApplyWaterBreathing( object oTarget, float fDuration ) {
+void _ApplyWaterBreathing( object oCaster, object oTarget, float fDuration ) {
 	// Signal event.
 	SignalEvent( oTarget, EventSpellCastAt( oCaster, GetSpellId(), FALSE ) );
 	
@@ -26,7 +26,7 @@ void main() {
 	// Get the caster and location of the target.
 	object oCaster = OBJECT_SELF;
 	object oTarget = GetSpellTargetObject();
-	object oLocation = GetSpellTargetLocation();
+	location lTarget = GetSpellTargetLocation();
 	
 	// DEBUG
 	SendMessageToPC( oCaster, "acr_s0_water_breathing v1.0.1" );
@@ -36,22 +36,22 @@ void main() {
 	
 	// Do we have a target that isn't the caster? Focus only on them.
 	if ( GetIsObjectValid( oTarget ) && oTarget != oCaster ) {
-		_ApplyWaterBreathing( oTarget, fDuration );
+		_ApplyWaterBreathing( oCaster, oTarget, fDuration );
 	} else {
 		// Otherwise get the number of targets to affect.
 		int nTargetCount = 0;
-		oTarget = GetFirstObjectInShape( SHAPE_SPHERE, WATER_BREATHING_RADIUS, lLocal, FALSE, OBJECT_TYPE_CREATURE );
+		oTarget = GetFirstObjectInShape( SHAPE_SPHERE, WATER_BREATHING_RADIUS, lTarget, FALSE, OBJECT_TYPE_CREATURE );
 		while ( GetIsObjectValid( oTarget ) ) {
 			nTargetCount++;
-			oTarget = GetNextObjectInShape( SHAPE_SPHERE, WATER_BREATHING_RADIUS, lLocal, FALSE, OBJECT_TYPE_CREATURE );
+			oTarget = GetNextObjectInShape( SHAPE_SPHERE, WATER_BREATHING_RADIUS, lTarget, FALSE, OBJECT_TYPE_CREATURE );
 		}
 		
 		// Apply effect to all in area.
 		fDuration = fDuration / nTargetCount;
-		oTarget = GetFirstObjectInShape( SHAPE_SPHERE, WATER_BREATHING_RADIUS, lLocal, FALSE, OBJECT_TYPE_CREATURE );
+		oTarget = GetFirstObjectInShape( SHAPE_SPHERE, WATER_BREATHING_RADIUS, lTarget, FALSE, OBJECT_TYPE_CREATURE );
 		while ( GetIsObjectValid( oTarget ) ) {
-			_ApplyWaterBreathing( oTarget, fDuration );
-			oTarget = GetNextObjectInShape( SHAPE_SPHERE, WATER_BREATHING_RADIUS, lLocal, FALSE, OBJECT_TYPE_CREATURE );
+			_ApplyWaterBreathing( oCaster, oTarget, fDuration );
+			oTarget = GetNextObjectInShape( SHAPE_SPHERE, WATER_BREATHING_RADIUS, lTarget, FALSE, OBJECT_TYPE_CREATURE );
 		}
 	}
 }
