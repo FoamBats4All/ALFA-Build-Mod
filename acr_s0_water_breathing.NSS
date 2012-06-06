@@ -17,8 +17,6 @@ void main() {
 	float fDuration = ACR_GetSpellDuration( oCaster, ACR_DURATION_TYPE_PER_CL, ACR_DURATION_2H );
 	
 	// Apply the spell effect.
-	effect eVFX = EffectVisualEffect( VFX_HIT_DROWN );
 	effect eWaterBreathing = EffectSpellImmunity( SPELL_ALL_SPELLS );
-	ApplyEffectToObject( DURATION_TYPE_INSTANT, eVFX, oTarget );
 	ApplyEffectToObject( DURATION_TYPE_TEMPORARY, eWaterBreathing, oTarget, fDuration );
 }
