@@ -13,10 +13,16 @@ void main() {
 	object oCaster = OBJECT_SELF;
     object oTarget = GetSpellTargetObject();
 	
+	// Signal event.
+    SignalEvent( oTarget, EventSpellCastAt( oCaster, GetSpellId(), FALSE ) );
+	
 	// Get duration and limit.
 	float fDuration = ACR_GetSpellDuration( oCaster, ACR_DURATION_TYPE_PER_CL, ACR_DURATION_2H );
 	
 	// Apply the spell effect.
 	effect eWaterBreathing = EffectDarkness();
 	ApplyEffectToObject( DURATION_TYPE_TEMPORARY, eWaterBreathing, oTarget, fDuration );
+	
+	// Establish warning.
+	WarnWhenSpellExpires( oTarget, GetSpellId(), "<C=lightblue><i>Water Breathing</i> has expired.</C>", fDuration );
 }
