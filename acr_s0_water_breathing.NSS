@@ -18,7 +18,7 @@ void main() {
 	
 	// Apply the spell effect.
 	effect eVFX = EffectVisualEffect( VFX_HIT_DROWN );
-	effect eWaterBreathing = EffectSpellImmunity( SPELL_WATER_BREATHING );
+	effect eWaterBreathing = EffectSpellImmunity( SPELL_ALL_SPELLS );
 	ApplyEffectToObject( DURATION_TYPE_INSTANT, eVFX, oTarget );
 	ApplyEffectToObject( DURATION_TYPE_TEMPORARY, eWaterBreathing, oTarget, fDuration );
 }
