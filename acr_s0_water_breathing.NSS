@@ -12,17 +12,15 @@ void main() {
 	// Get the caster and location of the target.
 	object oCaster = OBJECT_SELF;
     object oTarget = GetSpellTargetObject();
-	int nSpellId = 4013;
-	SendMessageToPC( oCaster, IntToString( GetSpellId() ) );
 	
 	// Signal event.
-    SignalEvent( oTarget, EventSpellCastAt( oCaster, nSpellId, FALSE ) );
+    SignalEvent( oTarget, EventSpellCastAt( oCaster, GetSpellId(), FALSE ) );
 	
 	// Get duration and limit.
 	float fDuration = ACR_GetSpellDuration( oCaster, ACR_DURATION_TYPE_PER_CL, ACR_DURATION_2H );
 	
 	// Apply the spell effect.
-	effect eWaterBreathing = SetEffectSpellId( EffectDarkness(), nSpellId );
+	effect eWaterBreathing = EffectLinkEffects( EffectSpellImmunity( SPELL_DROWN ), EffectSpellImmunity( SPELL_MASS_DROWN ) );
 	ApplyEffectToObject( DURATION_TYPE_TEMPORARY, eWaterBreathing, oTarget, fDuration );
 	
 	// Establish warning.
