@@ -19,6 +19,9 @@ void _ApplyWaterBreathing( object oCaster, object oTarget, float fDuration ) {
 	effect eVfx = EffectVisualEffect( VFX_HIT_DROWN );
 	ApplyEffectToObject( DURATION_TYPE_INSTANT, eVfx, oTarget );
 	
+	// DEBUG
+	SendMessageToPC( oTarget, "Duration: " + FloatToString( fDuration ) );
+	
 	// Establish warning.
 	WarnWhenSpellExpires( oTarget, GetSpellId(), "<C=lightblue><i>Water Breathing</i> has expired.</C>", fDuration );
 }
@@ -31,9 +34,6 @@ void main() {
 	object oCaster = OBJECT_SELF;
 	object oTarget = GetSpellTargetObject();
 	location lTarget = GetSpellTargetLocation();
-	
-	// DEBUG
-	SendMessageToPC( oCaster, "acr_s0_water_breathing v1.0.1" );
 	
 	// Get duration limit.
 	float fDuration = ACR_GetSpellDuration( oCaster, ACR_DURATION_TYPE_PER_CL, ACR_DURATION_2H );
