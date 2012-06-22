@@ -12,8 +12,12 @@ void _ApplyWaterBreathing( object oCaster, object oTarget, float fDuration ) {
 	SignalEvent( oTarget, EventSpellCastAt( oCaster, GetSpellId(), FALSE ) );
 	
 	// Apply the spell effect.
-	effect eWaterBreathing = EffectLinkEffects( EffectSpellImmunity( SPELL_DROWN ), EffectSpellImmunity( SPELL_MASS_DROWN ) );
-	ApplyEffectToObject( DURATION_TYPE_TEMPORARY, eWaterBreathing, oTarget, fDuration );
+	effect eDrownImmunity = EffectLinkEffects( EffectSpellImmunity( SPELL_DROWN ), EffectSpellImmunity( SPELL_MASS_DROWN ) );
+	ApplyEffectToObject( DURATION_TYPE_TEMPORARY, eDrownImmunity, oTarget, fDuration );
+	
+	// Apply a visual feedback effect.
+	effect eVfx = EffectVisualEffect( VFX_HIT_DROWN );
+	ApplyEffectToObject( DURATION_TYPE_INSTANT, eVfx, oTarget );
 	
 	// Establish warning.
 	WarnWhenSpellExpires( oTarget, GetSpellId(), "<C=lightblue><i>Water Breathing</i> has expired.</C>", fDuration );
