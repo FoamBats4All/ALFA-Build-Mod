@@ -1,5 +1,5 @@
 NDB V1.0
-0000098 0000023 0005370 0000206 0000577
+0000099 0000023 0005373 0000206 0000577
 n00 ginc_debug
 n01 acr_debug_i
 n02 acr_time_i
@@ -37,67 +37,68 @@ n33 acr_portal_i
 n34 dmfi_inc_sendtex
 n35 dmfi_inc_tool
 n36 dmfi_inc_inc_com
-n37 acr_pps_i
-n38 acr_list_i
-n39 x2_inc_itemprop
-n40 acr_nonlethal_i
-n41 x0_i0_match
-n42 x0_i0_petrify
-n43 x0_i0_assoc
-n44 nw_i0_spells
-n45 x0_i0_partywide
-n46 x0_i0_transport
-n47 x0_i0_common
-n48 nw_i0_plot
-n49 x0_i0_behavior
-n50 x0_i0_modes
-n51 x0_i0_voice
-n52 x0_i0_debug
-n53 x0_i0_equip
-n54 ginc_2da
-n55 ginc_event_handlers
-n56 x0_i0_talent
-n57 x0_i0_combat
-n58 x0_i0_spawncond
-n59 x0_i0_walkway
-n60 x0_i0_anims
-n61 x0_i0_henchman
-n62 nwn2_inc_metmag
-n63 x0_i0_spells
-n64 nwn2_inc_spells
-n65 acr_effects_i
-n66 acr_skills_i
-n67 acr_resting_i
-n68 acr_mobloot_i
-n69 acr_spawn_i
-n70 acr_scry_i
-n71 acr_quest_i
-n72 acr_chat_i
-n73 acr_items_i
-n74 acr_language_i
-n75 acr_feat_i
-n76 acr_prc_bladesinger_i
-n77 acr_feat_events_i
-n78 acr_server_misc_i
-n79 acr_srvadmin_i
-n80 acr_version_i
-n81 acr_scliext_i
-n82 acr_area_instance_i
-n83 acr_report_i
-n84 dmfi_inc_langexe
-n85 dmfi_inc_initial
-n86 dmfi_inc_lang
-n87 acr_roll_i
-n88 nwnx_craft_system
-n89 acr_tradescroll_i
-n90 ginc_vars
-n91 ginc_item
-n92 x2_inc_spellhook
-n93 acr_spells_i
-n94 acr_craft_creation_i
-n95 acr_notifications_i
-n96 acr_mod_events_i
-N97 acf_mod_onplayerdying
+n37 acr_version_i
+n38 acr_conversions_i
+n39 acr_pps_i
+n40 acr_list_i
+n41 x2_inc_itemprop
+n42 acr_nonlethal_i
+n43 x0_i0_match
+n44 x0_i0_petrify
+n45 x0_i0_assoc
+n46 nw_i0_spells
+n47 x0_i0_partywide
+n48 x0_i0_transport
+n49 x0_i0_common
+n50 nw_i0_plot
+n51 x0_i0_behavior
+n52 x0_i0_modes
+n53 x0_i0_voice
+n54 x0_i0_debug
+n55 x0_i0_equip
+n56 ginc_2da
+n57 ginc_event_handlers
+n58 x0_i0_talent
+n59 x0_i0_combat
+n60 x0_i0_spawncond
+n61 x0_i0_walkway
+n62 x0_i0_anims
+n63 x0_i0_henchman
+n64 nwn2_inc_metmag
+n65 x0_i0_spells
+n66 nwn2_inc_spells
+n67 acr_effects_i
+n68 acr_skills_i
+n69 acr_resting_i
+n70 acr_mobloot_i
+n71 acr_spawn_i
+n72 acr_scry_i
+n73 acr_quest_i
+n74 acr_chat_i
+n75 acr_items_i
+n76 acr_language_i
+n77 acr_feat_i
+n78 acr_prc_bladesinger_i
+n79 acr_feat_events_i
+n80 acr_server_misc_i
+n81 acr_srvadmin_i
+n82 acr_scliext_i
+n83 acr_area_instance_i
+n84 acr_report_i
+n85 dmfi_inc_langexe
+n86 dmfi_inc_initial
+n87 dmfi_inc_lang
+n88 acr_roll_i
+n89 nwnx_craft_system
+n90 acr_tradescroll_i
+n91 ginc_vars
+n92 ginc_item
+n93 x2_inc_spellhook
+n94 acr_spells_i
+n95 acr_craft_creation_i
+n96 acr_notifications_i
+n97 acr_mod_events_i
+N98 acf_mod_onplayerdying
 s 03 vector
 sf f x
 sf f y
@@ -3943,6 +3944,17 @@ fp o
 f ffffffff ffffffff 002 v DMFI_ManageInventory
 fp o
 fp o
+f ffffffff ffffffff 000 s ACR_VERSION
+f ffffffff ffffffff 000 s ACR_HAK_BUILD_DATE
+f ffffffff ffffffff 000 s ACR_HAK_VERSION
+f ffffffff ffffffff 000 s ACR_GetVersion
+f ffffffff ffffffff 000 s ACR_GetBuildDate
+f ffffffff ffffffff 000 s ACR_GetHAKVersion
+f ffffffff ffffffff 000 s ACR_GetHAKBuildDate
+f ffffffff ffffffff 000 s ACR_CONVERSION_MAXIMUM
+f ffffffff ffffffff 002 i TryUpdateCharacterToNewestVersion
+fp o
+fp s
 f ffffffff ffffffff 000 f ACR_PPS_CYCLE
 f ffffffff ffffffff 000 i ACR_PPS_CACHE_CYCLE
 f ffffffff ffffffff 000 s ACR_PPS_COUNT
@@ -7710,13 +7722,6 @@ fp o
 f ffffffff ffffffff 002 o ACR_SrvAdmin_TranslateObject
 fp s
 fp o
-f ffffffff ffffffff 000 s ACR_VERSION
-f ffffffff ffffffff 000 s ACR_HAK_BUILD_DATE
-f ffffffff ffffffff 000 s ACR_HAK_VERSION
-f ffffffff ffffffff 000 s ACR_GetVersion
-f ffffffff ffffffff 000 s ACR_GetBuildDate
-f ffffffff ffffffff 000 s ACR_GetHAKVersion
-f ffffffff ffffffff 000 s ACR_GetHAKBuildDate
 f ffffffff ffffffff 000 i ACR_SCLIEXT_FEATURE_PER_AREA_MAP_CONTROLS
 f ffffffff ffffffff 000 i ACR_SCLIEXT_FEATURE_NO_MAP_ENVIRON
 f ffffffff ffffffff 000 i ACR_SCLIEXT_FEATURE_NO_MAP_DOORS
@@ -9471,6 +9476,8 @@ fp f
 fp o
 f ffffffff ffffffff 001 v ACR_CheckBodyPartsOnLevelUp
 fp o
+f ffffffff ffffffff 001 v _createPlayerGUIs
+fp o
 f ffffffff ffffffff 000 v ACR_ModuleOnUnAcquireItem
 f 00000103 0000010b 000 v main
 f 0000000d 00000015 000 v #loader
@@ -9790,12 +9797,12 @@ l19 0000080 000000f1 000000f1
 l19 0000081 000000f1 000000f1
 l19 0000082 000000f1 000000f1
 l19 0000083 000000f1 000000f1
-l97 0000047 00000103 00000109
-l97 0000050 00000109 0000010b
-l96 0001193 0000010b 00000110
-l96 0001194 00000110 0000011b
-l96 0001197 0000011b 00000131
-l96 0001198 00000137 00000139
+l98 0000047 00000103 00000109
+l98 0000050 00000109 0000010b
+l97 0001204 0000010b 00000110
+l97 0001205 00000110 0000011b
+l97 0001208 0000011b 00000131
+l97 0001209 00000137 00000139
 l11 0000418 00000139 00000163
 l11 0000421 00000163 0000017c
 l11 0000422 0000017c 00000195
@@ -10155,18 +10162,18 @@ l24 0000830 00002e0f 00002ea4
 l24 0000831 00002eaa 00002eb2
 l25 0000672 00002eb2 00002ede
 l25 0000673 00002ede 00002ee6
-l37 0000240 00002ee6 00002ef3
-l37 0000243 00002eff 00002f0f
-l37 0000246 00002f1b 00002f74
-l37 0000250 00002f74 00002f7c
-l37 0000251 00002f82 00002f96
-l37 0000252 00002f9c 00002f9e
-l37 0000253 00002f9e 00002fb2
-l37 0000257 00002fb2 00002fba
-l37 0000258 00002fc0 00002fce
-l37 0000260 00002fce 00002fd6
-l37 0000917 00002fd6 0000300e
-l37 0000918 0000300e 00003016
+l39 0000241 00002ee6 00002ef3
+l39 0000244 00002eff 00002f0f
+l39 0000247 00002f1b 00002f74
+l39 0000251 00002f74 00002f7c
+l39 0000252 00002f82 00002f96
+l39 0000253 00002f9c 00002f9e
+l39 0000254 00002f9e 00002fb2
+l39 0000258 00002fb2 00002fba
+l39 0000259 00002fc0 00002fce
+l39 0000261 00002fce 00002fd6
+l39 0000944 00002fd6 0000300e
+l39 0000945 0000300e 00003016
 l01 0000194 00003016 0000301c
 l01 0000195 0000301c 00003034
 l01 0000196 00003034 00003050
@@ -10205,23 +10212,23 @@ l01 0000295 00003304 00003336
 l01 0000298 00003336 00003346
 l01 0000299 0000334c 0000337e
 l01 0000302 0000337e 00003386
-l37 0000291 00003386 00003396
-l37 0000294 00003396 0000339e
-l37 0000296 000033a4 000033b1
-l37 0000301 000033b1 000033e3
-l37 0000303 000033e9 000033f6
-l37 0000304 000033f6 00003425
-l37 0000306 00003425 00003435
-l37 0000307 0000343b 00003456
-l37 0000310 0000345c 0000346c
-l37 0000311 0000346c 00003480
-l37 0000313 00003486 000034b5
-l37 0000314 000034bb 000034bd
-l37 0000316 000034bd 000034e6
-l37 0000319 000034e6 000038b3
-l37 0000344 000038bf 000038c1
-l37 0000346 000038c1 00003c63
-l37 0000372 00003c69 00003c71
+l39 0000292 00003386 00003396
+l39 0000295 00003396 0000339e
+l39 0000297 000033a4 000033b1
+l39 0000302 000033b1 000033e3
+l39 0000304 000033e9 000033f6
+l39 0000305 000033f6 00003425
+l39 0000307 00003425 00003435
+l39 0000308 0000343b 00003456
+l39 0000311 0000345c 0000346c
+l39 0000312 0000346c 00003480
+l39 0000314 00003486 000034b5
+l39 0000315 000034bb 000034bd
+l39 0000317 000034bd 000034e6
+l39 0000320 000034e6 000038b3
+l39 0000345 000038bf 000038c1
+l39 0000347 000038c1 00003c63
+l39 0000373 00003c69 00003c71
 l24 0000862 00003c71 00003c7e
 l24 0000863 00003c7e 00003c8b
 l24 0000864 00003c8b 00003c98
@@ -10241,11 +10248,11 @@ l36 0000450 00003eaa 00003ebe
 l36 0000456 00003ec4 00003ee9
 l36 0000458 00003ee9 00003f05
 l36 0000459 00003f0b 00003f13
-l37 0000902 00003f13 00003f2b
-l37 0000904 00003f31 00003fd0
-l37 0000905 00003fd0 00003fd6
-l37 0000908 00003fd6 00003fe3
-l37 0000913 00003fe3 00003feb
+l39 0000929 00003f13 00003f2b
+l39 0000931 00003f31 00003fd0
+l39 0000932 00003fd0 00003fd6
+l39 0000935 00003fd6 00003fe3
+l39 0000940 00003fe3 00003feb
 l24 0000984 00003feb 00004022
 l24 0000985 00004022 0000402a
 l25 0000667 0000402a 00004056
