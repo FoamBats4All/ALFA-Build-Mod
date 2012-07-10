@@ -1,64 +1,127 @@
-//::///////////////////////////////////////////////
-//:: Battletide
-//:: X2_S0_BattTideA
-//:: Copyright (c) 2001 Bioware Corp.
-//:://////////////////////////////////////////////
-/*
-    You create an aura that steals energy from your
-    enemies. Your enemies suffer a -2 circumstance
-    penalty on saves, attack rolls, and damage rolls,
-    once entering the aura. On casting, you gain a
-    +2 circumstance bonus to your saves, attack rolls,
-    and damage rolls.
-*/
-//:://////////////////////////////////////////////
-//:: Created By: Andrew Nobbs
-//:: Created On: Dec 04, 2002
-//:://////////////////////////////////////////////
-//:: Last Updated By: Andrew Nobbs 06/06/03
+////////////////////////////////////////////////////////////////////////////////
+//
+//  System Name : ALFA Core Rules
+//     Filename : acr_conversions_i
+//    $Revision:: 1          $ current version of the file
+//        $Date:: 2012-01-07#$ date the file was created or modified
+//       Author : Basilica
+//
+//    Var Prefix: ACR_VERSION
+//  Dependencies: NWNX
+//
+//  Description
+//  This file contains the version number string for the ACR.
+//
+//  Revision History
+//  2012/01/07  Basilica    - Created.
+//  2012/04/16  Basilica    - Return build date.
+//
+////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////
+// Includes ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
-#include "NW_I0_SPELLS"
-#include "x0_i0_spells"
-#include "x2_i0_spells"
+#include "acr_version_i"
 
-#include "x2_inc_spellhook"
+////////////////////////////////////////////////////////////////////////////////
+// Constants ///////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
-void main()
+const string ACR_CONVERSION_MAXIMUM = "ACR_CONVERSION_MAXIMUM";
+
+////////////////////////////////////////////////////////////////////////////////
+// Structures //////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+// Global Variables ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+// Function Prototypes /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+// Tries to convert oPC from sVersion to the current ACR version.
+// Returns TRUE on success.
+int TryUpdateCharacterToNewestVersion( object oPC, string sCurrentVersion );
+
+// Swap a feat, if the PC has the feat already.
+void _SwapFeat( object oPC, int OldFeat, int NewFeat );
+
+////////////////////////////////////////////////////////////////////////////////
+// Function Definitions ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+int TryUpdateCharacterToNewestVersion( object oPC, string sCurrentVersion )
 {
+    string sTargetVersion = GetLocalString(GetModule(), ACR_CONVERSION_MAXIMUM);
+    if(sTargetVersion == "")
+        sTargetVersion = ACR_VERSION;
 
-    //Declare major variables
-    effect eLink = CreateBadTideEffectsLink();
-    effect eLink2 = CreateGoodTideEffectsLink();
-    //effect eVis = EffectVisualEffect(VFX_HIT_SPELL_TRANSMUTATION);	// handled by CreateBadTideEffectsLink() and CreateGoodTideEffectsLink()
-    effect eFind;
-    object oTarget = GetEnteringObject();
-    object oCreator = GetAreaOfEffectCreator();
-    float fDelay;
+    float fTargetVersion = StringToFloat(sTargetVersion);
+    int bChanged = FALSE;
 
-    //Check faction of spell targets.
-    if(spellsIsTarget(oTarget, SPELL_TARGET_SELECTIVEHOSTILE, oCreator))
+    if(sCurrentVersion == "" && fTargetVersion > 1.865) // v1.86 -> v1.87
     {
-        //Fire cast spell at event for the specified target
-        SignalEvent(oTarget, EventSpellCastAt(OBJECT_SELF, GetSpellId()));
-        //Make a SR check
-        if(!MyResistSpell(GetAreaOfEffectCreator(), oTarget))
-        {
-            //Make a Fort Save
-            if(!MySavingThrow(SAVING_THROW_WILL, oTarget, GetSpellSaveDC(), SAVING_THROW_TYPE_NEGATIVE))
-            {
-               fDelay = GetRandomDelay(0.75, 1.75);
-               //Apply the VFX impact and linked effects
-               //DelayCommand(fDelay, ApplyEffectToObject(DURATION_TYPE_INSTANT, eVis, oTarget));	// handled by CreateBadTideEffectsLink() and CreateGoodTideEffectsLink()
-               DelayCommand(fDelay, ApplyEffectToObject(DURATION_TYPE_PERMANENT, eLink, oTarget));
-            }
-        }
+        // Replace Combat Expertise with the ACR version.
+        _SwapFeat( oPC, FEAT_COMBAT_EXPERTISE, FEAT_ACR_COMBAT_EXPERTISE );
+        _SwapFeat( oPC, FEAT_IMPROVED_COMBAT_EXPERTISE, FEAT_ACR_IMPROVED_COMBAT_EXPERTISE );
+        
+        // Before ACR 1.87, the new skill focus feats pointed to the wrong TLK entries.
+        // These swaps give the player the skill focus they thought they picked.
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_CRFT_BOW, FEAT_SKILL_FOCUS_CRFT_WPN );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_CRFT_ARM, FEAT_SKILL_FOCUS_CRFT_BOW );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_CRFT_ALCH, FEAT_SKILL_FOCUS_CRFT_ARM );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_PERF_WIND, FEAT_SKILL_FOCUS_CRFT_ALCH );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_PERF_STRG, FEAT_SKILL_FOCUS_PERF_WIND );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_PERF_SING, FEAT_SKILL_FOCUS_PERF_STRG );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_PERF_PERC, FEAT_SKILL_FOCUS_PERF_SING );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_PERF_ORAT, FEAT_SKILL_FOCUS_PERF_PERC );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_PERF_KEYB, FEAT_SKILL_FOCUS_PERF_ORAT );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_PERF_DANC, FEAT_SKILL_FOCUS_PERF_KEYB );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_PERF_COMD, FEAT_SKILL_FOCUS_PERF_DANC );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_PERF_ACT, FEAT_SKILL_FOCUS_PERF_COMD );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_KNOW_RELG, FEAT_SKILL_FOCUS_PERF_ACT );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_KNOW_PLAN, FEAT_SKILL_FOCUS_KNOW_RELG );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_KNOW_NOBL, FEAT_SKILL_FOCUS_KNOW_PLAN );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_KNOW_NATR, FEAT_SKILL_FOCUS_KNOW_NOBL );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_KNOW_LOC, FEAT_SKILL_FOCUS_KNOW_NATR );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_KNOW_HIST, FEAT_SKILL_FOCUS_KNOW_LOC );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_KNOW_GEO, FEAT_SKILL_FOCUS_KNOW_HIST );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_KNOW_ENG, FEAT_SKILL_FOCUS_KNOW_GEO );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_KNOW_DUNG, FEAT_SKILL_FOCUS_KNOW_ENG );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_KNOW_ARC, FEAT_SKILL_FOCUS_KNOW_DUNG );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_USE_ROPE, FEAT_SKILL_FOCUS_KNOW_ARC );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_SWIM, FEAT_SKILL_FOCUS_USE_ROPE );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_SPK_LANG, FEAT_SKILL_FOCUS_SWIM );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_SENS_MOTV, FEAT_SKILL_FOCUS_SPK_LANG );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_RIDE_ACR, FEAT_SKILL_FOCUS_SENS_MOTV );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_JUMP, FEAT_SKILL_FOCUS_RIDE_ACR );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_HAND_ANIM, FEAT_SKILL_FOCUS_JUMP );
+        _SwapFeat( oPC, FEAT_SKILL_FOCUS_GATH_INFO, FEAT_SKILL_FOCUS_HAND_ANIM );
+		
+		// Give wizards their new cantrips.
+		if ( GetLevelByClass( CLASS_TYPE_WIZARD, oPC ) >= 1 ) {
+			int nPosition;
+			for ( int i = 0; i < 4; i++ ) {
+				if ( GetClassByPosition( i, oPC ) == CLASS_TYPE_WIZARD ) {
+					nPosition = i;
+					break;
+				}
+			}
+			
+			SetSpellKnown( oPC, POSITION, SPELL, TRUE, FALSE );
+		}
+		
+        bChanged = TRUE;
     }
-    else if(oTarget == oCreator)
-    {
-        //Apply the VFX impact and linked effects
-        SignalEvent(oTarget, EventSpellCastAt(OBJECT_SELF, GetSpellId(), FALSE));
-        //ApplyEffectToObject(DURATION_TYPE_INSTANT, eVis, oTarget);	// handled by CreateBadTideEffectsLink() and CreateGoodTideEffectsLink()
-        //ApplyEffectToObject(DURATION_TYPE_PERMANENT, eLink2, oTarget);
+    return bChanged;
+}
+
+void _SwapFeat( object oPC, int OldFeat, int NewFeat ) {
+    if ( GetHasFeat( OldFeat, oPC ) ) {
+        FeatAdd( oPC, NewFeat, FALSE, FALSE );
+        FeatRemove( oPC, OldFeat );
     }
 }
