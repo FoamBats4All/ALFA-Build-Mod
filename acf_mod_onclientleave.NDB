@@ -1,5 +1,5 @@
 NDB V1.0
-0000099 0000023 0005412 0000536 0001512
+0000100 0000023 0005435 0000536 0001512
 n00 ginc_debug
 n01 acr_debug_i
 n02 acr_time_i
@@ -97,8 +97,9 @@ n93 x2_inc_spellhook
 n94 acr_spells_i
 n95 acr_craft_creation_i
 n96 acr_notifications_i
-n97 acr_mod_events_i
-N98 acf_mod_onclientleave
+n97 acr_combat_actions_i
+n98 acr_mod_events_i
+N99 acf_mod_onclientleave
 s 03 vector
 sf f x
 sf f y
@@ -9420,6 +9421,47 @@ f ffffffff ffffffff 001 t0022 GetBodyTintSet
 fp o
 f ffffffff ffffffff 001 t0022 GetHeadTintSet
 fp o
+f ffffffff ffffffff 000 i ACR_COMBAT_ACTION_COOLDOWN_TIME
+f ffffffff ffffffff 000 s ACR_COMBAT_ACTION_TIMESTAMP
+f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_OPEN_MENU
+f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_COMBAT_EXPERTISE_MENU
+f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_POWER_ATTACK_MENU
+f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_POWER_ATTACK_TOGGLE
+f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_COMBAT_EXPERTISE_TOGGLE
+f ffffffff ffffffff 000 s POWER_ATTACK_MODE_ACTIVE
+f ffffffff ffffffff 000 s COMBAT_EXPERTISE_MODE_ACTIVE
+f ffffffff ffffffff 000 s POST_SPELLCAST_NO_COMBAT_MODE
+f ffffffff ffffffff 001 v CombatActionsOnItemEquip
+fp o
+f ffffffff ffffffff 001 v FightNormally
+fp o
+f ffffffff ffffffff 001 v FightDefensively
+fp o
+f ffffffff ffffffff 001 v FightTotallyDefensively
+fp o
+f ffffffff ffffffff 002 v FightWithExpertise
+fp o
+fp i
+f ffffffff ffffffff 001 i GetIsFightingDefensively
+fp o
+f ffffffff ffffffff 003 v _FightDefensively
+fp o
+fp i
+fp i
+f ffffffff ffffffff 002 v _NotifyCombatAction
+fp s
+fp o
+f ffffffff ffffffff 001 i _TrySwitchModes
+fp o
+f ffffffff ffffffff 001 v _ClearCombatModes
+fp o
+f ffffffff ffffffff 003 v _HandlePowExpGUIEvent
+fp o
+fp i
+fp i
+f ffffffff ffffffff 002 v CombatActionsOnEquip
+fp o
+fp o
 f ffffffff ffffffff 000 s _ONLOAD_DEBUG
 f ffffffff ffffffff 000 s ACR_MOD_STATUS
 f ffffffff ffffffff 000 s ACR_MOD_SPELLBOOK
@@ -9510,6 +9552,10 @@ fp s
 fp o
 fp i
 f ffffffff ffffffff 000 v ACR_ModuleInit_ForceLinkageForCLRScripts
+f ffffffff ffffffff 001 v _createPlayerGUIs
+fp o
+f ffffffff ffffffff 001 v _updatePlayerGUIs
+fp o
 f ffffffff ffffffff 005 v _DistributeTranslationToMouthPieces
 fp s
 fp s
@@ -9517,8 +9563,6 @@ fp o
 fp f
 fp o
 f ffffffff ffffffff 001 v ACR_CheckBodyPartsOnLevelUp
-fp o
-f ffffffff ffffffff 001 v _createPlayerGUIs
 fp o
 f ffffffff ffffffff 000 v ACR_ModuleOnUnAcquireItem
 f 00000103 00000117 000 v main
@@ -10169,29 +10213,29 @@ l19 0000080 000000f1 000000f1
 l19 0000081 000000f1 000000f1
 l19 0000082 000000f1 000000f1
 l19 0000083 000000f1 000000f1
-l98 0000049 00000103 00000105
-l98 0000050 00000105 00000107
-l98 0000051 00000107 00000109
-l98 0000053 00000109 0000010f
-l98 0000055 00000115 00000117
-l97 0001003 00000117 0000011c
-l97 0001007 0000011c 00000146
-l97 0001012 0000014c 00000195
-l97 0001014 0000019b 0000019d
-l97 0001019 0000019d 000001ab
-l97 0001034 000001ab 000001b9
-l97 0001037 000001b9 000001c7
-l97 0001038 000001c7 000001d5
-l97 0001043 000001d5 000001fe
-l97 0001044 00000204 0000021a
-l97 0001047 0000021a 00000228
-l97 0001050 00000228 00000236
-l97 0001053 00000236 00000244
-l97 0001056 00000244 00000252
-l97 0001059 00000252 00000260
-l97 0001062 00000260 00000274
-l97 0001065 00000274 00000282
-l97 0001066 00000288 0000028a
+l99 0000049 00000103 00000105
+l99 0000050 00000105 00000107
+l99 0000051 00000107 00000109
+l99 0000053 00000109 0000010f
+l99 0000055 00000115 00000117
+l98 0001020 00000117 0000011c
+l98 0001024 0000011c 00000146
+l98 0001029 0000014c 00000195
+l98 0001031 0000019b 0000019d
+l98 0001036 0000019d 000001ab
+l98 0001051 000001ab 000001b9
+l98 0001054 000001b9 000001c7
+l98 0001055 000001c7 000001d5
+l98 0001060 000001d5 000001fe
+l98 0001061 00000204 0000021a
+l98 0001064 0000021a 00000228
+l98 0001067 00000228 00000236
+l98 0001070 00000236 00000244
+l98 0001073 00000244 00000252
+l98 0001076 00000252 00000260
+l98 0001079 00000260 00000274
+l98 0001082 00000274 00000282
+l98 0001083 00000288 0000028a
 l24 0000690 0000028a 000002cd
 l24 0000691 000002cd 000002d5
 l29 0000219 000002d5 000002da
