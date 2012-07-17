@@ -1,5 +1,5 @@
 NDB V1.0
-0000071 0000011 0004584 0000015 0000078
+0000071 0000011 0004591 0000015 0000078
 n00 ginc_debug
 n01 x0_i0_enemy
 n02 x0_inc_generic
@@ -1871,6 +1871,7 @@ f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_7
 f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_8
 f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_9
 f ffffffff ffffffff 000 i SPELL_WATER_BREATHING
+f ffffffff ffffffff 000 i SPELL_GLIBNESS
 f ffffffff ffffffff 000 i SPELL_CRAFT
 f ffffffff ffffffff 000 i SKILL_BALANCE
 f ffffffff ffffffff 000 i SKILL_CLIMB
@@ -2448,6 +2449,8 @@ f ffffffff ffffffff 001 i GetSpellIdOfItemPropertySubtype
 fp i
 f ffffffff ffffffff 001 i GetSpellLevelOfItemProperty
 fp e4
+f ffffffff ffffffff 001 i GetMasterSpellId
+fp i
 f ffffffff ffffffff 002 i GetNextEntryInStringList
 fp s
 fp i
@@ -4960,6 +4963,11 @@ fp i
 f ffffffff ffffffff 001 v ACR_PCExportSingleCharacter
 fp o
 f ffffffff ffffffff 001 i ACR_PPSIsPlayerQuarantined
+fp o
+f ffffffff ffffffff 002 v ACR_LogOfflineMessage
+fp o
+fp s
+f ffffffff ffffffff 001 v ACR_ReportOfflineMessages
 fp o
 f ffffffff ffffffff 003 v _playerRestoreLocation
 fp o
@@ -7561,6 +7569,8 @@ fp i
 f ffffffff ffffffff 001 v _despawnQuestCreature
 fp o
 f ffffffff ffffffff 000 s _CRE_NO_AI
+f ffffffff ffffffff 000 s ACR_CRE_ISUNDEAD
+f ffffffff ffffffff 000 i ACR_CRE_FORCE_NOT_UNDEAD
 f 000001bb 00000212 001 v _startRunning
 fp o
 f ffffffff ffffffff 000 v ACR_CreatureOnSpawnIn
@@ -7578,6 +7588,8 @@ f ffffffff ffffffff 000 v ACR_CreatureOnPerception
 f ffffffff ffffffff 000 v ACR_CreatureOnUserDefined
 f ffffffff ffffffff 002 v ACR_CreatureIdentify
 fp o
+fp o
+f ffffffff ffffffff 001 i ACR_GetIsUndead
 fp o
 f 00000103 00000150 000 v main
 f 0000000d 00000015 000 v #loader
@@ -7665,13 +7677,13 @@ l70 0000050 00000109 00000127
 l70 0000051 0000012d 00000138
 l70 0000052 00000138 0000014e
 l70 0000055 0000014e 00000150
-l69 0000190 00000150 00000155
-l69 0000192 00000155 0000015a
-l69 0000194 00000160 0000016c
-l69 0000199 0000016c 00000190
-l69 0000201 00000196 000001b3
-l69 0000203 000001b9 000001bb
-l69 0000118 000001bb 000001d6
-l69 0000119 000001dc 000001f3
-l69 0000121 000001f3 0000020a
-l69 0000122 0000020a 00000212
+l69 0000195 00000150 00000155
+l69 0000197 00000155 0000015a
+l69 0000199 00000160 0000016c
+l69 0000204 0000016c 00000190
+l69 0000206 00000196 000001b3
+l69 0000208 000001b9 000001bb
+l69 0000123 000001bb 000001d6
+l69 0000124 000001dc 000001f3
+l69 0000126 000001f3 0000020a
+l69 0000127 0000020a 00000212

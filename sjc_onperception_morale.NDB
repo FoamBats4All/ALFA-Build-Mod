@@ -1,5 +1,5 @@
 NDB V1.0
-0000071 0000011 0004584 0000044 0000169
+0000071 0000011 0004591 0000044 0000169
 n00 ginc_debug
 n01 x0_i0_enemy
 n02 x0_inc_generic
@@ -1871,6 +1871,7 @@ f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_7
 f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_8
 f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_9
 f ffffffff ffffffff 000 i SPELL_WATER_BREATHING
+f ffffffff ffffffff 000 i SPELL_GLIBNESS
 f ffffffff ffffffff 000 i SPELL_CRAFT
 f ffffffff ffffffff 000 i SKILL_BALANCE
 f ffffffff ffffffff 000 i SKILL_CLIMB
@@ -2448,6 +2449,8 @@ f ffffffff ffffffff 001 i GetSpellIdOfItemPropertySubtype
 fp i
 f ffffffff ffffffff 001 i GetSpellLevelOfItemProperty
 fp e4
+f ffffffff ffffffff 001 i GetMasterSpellId
+fp i
 f ffffffff ffffffff 002 i GetNextEntryInStringList
 fp s
 fp i
@@ -4960,6 +4963,11 @@ fp i
 f ffffffff ffffffff 001 v ACR_PCExportSingleCharacter
 fp o
 f ffffffff ffffffff 001 i ACR_PPSIsPlayerQuarantined
+fp o
+f ffffffff ffffffff 002 v ACR_LogOfflineMessage
+fp o
+fp s
+f ffffffff ffffffff 001 v ACR_ReportOfflineMessages
 fp o
 f ffffffff ffffffff 003 v _playerRestoreLocation
 fp o
@@ -7561,6 +7569,8 @@ fp i
 f ffffffff ffffffff 001 v _despawnQuestCreature
 fp o
 f ffffffff ffffffff 000 s _CRE_NO_AI
+f ffffffff ffffffff 000 s ACR_CRE_ISUNDEAD
+f ffffffff ffffffff 000 i ACR_CRE_FORCE_NOT_UNDEAD
 f ffffffff ffffffff 001 v _startRunning
 fp o
 f ffffffff ffffffff 000 v ACR_CreatureOnSpawnIn
@@ -7578,6 +7588,8 @@ f 00000a1d 00000a71 000 v ACR_CreatureOnPerception
 f ffffffff ffffffff 000 v ACR_CreatureOnUserDefined
 f ffffffff ffffffff 002 v ACR_CreatureIdentify
 fp o
+fp o
+f ffffffff ffffffff 001 i ACR_GetIsUndead
 fp o
 f 00000103 00000a1d 000 v main
 f 0000000d 00000015 000 v #loader
@@ -7759,10 +7771,10 @@ l70 0000165 000009ce 00000a01
 l70 0000169 00000a07 00000a09
 l70 0000171 00000a09 00000a15
 l70 0000201 00000a1b 00000a1d
-l69 0000377 00000a1d 00000a22
-l69 0000381 00000a22 00000a46
-l69 0000383 00000a4c 00000a69
-l69 0000385 00000a6f 00000a71
+l69 0000382 00000a1d 00000a22
+l69 0000386 00000a22 00000a46
+l69 0000388 00000a4c 00000a69
+l69 0000390 00000a6f 00000a71
 l18 0000239 00000a71 00000a83
 l18 0000240 00000a83 00000a95
 l18 0000241 00000a95 00000aaf

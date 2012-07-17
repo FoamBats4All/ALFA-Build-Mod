@@ -3,6 +3,7 @@
 #include "acr_language_i"
 #include "acr_xp_i"
 #include "dmfi_inc_initial"
+#include "acr_resting_i"
 
 // 2008/08/12  AcadiusLost - added able learner exception, 1.13 compatibility
 // 2009/07/07  AcadiusLost - update to new skill functions for NWN2 patch 1.23

@@ -1,5 +1,5 @@
 NDB V1.0
-0000071 0000011 0004585 0000925 0003034
+0000071 0000011 0004592 0000925 0003034
 n00 ginc_debug
 n01 x0_i0_enemy
 n02 x0_inc_generic
@@ -1871,6 +1871,7 @@ f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_7
 f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_8
 f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_9
 f ffffffff ffffffff 000 i SPELL_WATER_BREATHING
+f ffffffff ffffffff 000 i SPELL_GLIBNESS
 f ffffffff ffffffff 000 i SPELL_CRAFT
 f ffffffff ffffffff 000 i SKILL_BALANCE
 f ffffffff ffffffff 000 i SKILL_CLIMB
@@ -2448,6 +2449,8 @@ f ffffffff ffffffff 001 i GetSpellIdOfItemPropertySubtype
 fp i
 f ffffffff ffffffff 001 i GetSpellLevelOfItemProperty
 fp e4
+f ffffffff ffffffff 001 i GetMasterSpellId
+fp i
 f ffffffff ffffffff 002 i GetNextEntryInStringList
 fp s
 fp i
@@ -4960,6 +4963,11 @@ fp i
 f ffffffff ffffffff 001 v ACR_PCExportSingleCharacter
 fp o
 f ffffffff ffffffff 001 i ACR_PPSIsPlayerQuarantined
+fp o
+f ffffffff ffffffff 002 v ACR_LogOfflineMessage
+fp o
+fp s
+f ffffffff ffffffff 001 v ACR_ReportOfflineMessages
 fp o
 f ffffffff ffffffff 003 v _playerRestoreLocation
 fp o
@@ -7561,6 +7569,8 @@ fp i
 f ffffffff ffffffff 001 v _despawnQuestCreature
 fp o
 f ffffffff ffffffff 000 s _CRE_NO_AI
+f ffffffff ffffffff 000 s ACR_CRE_ISUNDEAD
+f ffffffff ffffffff 000 i ACR_CRE_FORCE_NOT_UNDEAD
 f 000003fe 00000455 001 v _startRunning
 fp o
 f ffffffff ffffffff 000 v ACR_CreatureOnSpawnIn
@@ -7578,6 +7588,8 @@ f ffffffff ffffffff 000 v ACR_CreatureOnPerception
 f ffffffff ffffffff 000 v ACR_CreatureOnUserDefined
 f ffffffff ffffffff 002 v ACR_CreatureIdentify
 fp o
+fp o
+f ffffffff ffffffff 001 i ACR_GetIsUndead
 fp o
 f 00000455 000004fe 000 v TrollRessurect
 f 00000103 00000398 000 v main
@@ -8590,15 +8602,15 @@ l70 0000049 00000316 00000348
 l70 0000052 0000034e 00000370
 l70 0000054 00000370 00000390
 l70 0000055 00000396 00000398
-l69 0000222 00000398 000003a3
-l69 0000227 000003a3 000003af
-l69 0000231 000003af 000003d3
-l69 0000233 000003d9 000003f6
-l69 0000235 000003fc 000003fe
-l69 0000118 000003fe 00000419
-l69 0000119 0000041f 00000436
-l69 0000121 00000436 0000044d
-l69 0000122 0000044d 00000455
+l69 0000227 00000398 000003a3
+l69 0000232 000003a3 000003af
+l69 0000236 000003af 000003d3
+l69 0000238 000003d9 000003f6
+l69 0000240 000003fc 000003fe
+l69 0000123 000003fe 00000419
+l69 0000124 0000041f 00000436
+l69 0000126 00000436 0000044d
+l69 0000127 0000044d 00000455
 l70 0000016 00000455 0000047f
 l70 0000017 0000047f 0000048a
 l70 0000018 0000048a 000004b9

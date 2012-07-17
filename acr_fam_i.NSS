@@ -177,7 +177,7 @@ void ACR_FamiliarDeathCheckHB( object oMaster, object oFamiliar ) {
 		}
 	}
 	
-	DelayCommand( ACR_FAM_DEATH_CHECK_HB, ACR_FamiliarDeathCheckHB() );
+	DelayCommand( ACR_FAM_DEATH_CHECK_HB, ACR_FamiliarDeathCheckHB( oMaster, oFamiliar ) );
 }
 
 void ACR_FamiliarOnDeath( object oFamiliar = OBJECT_SELF ) {

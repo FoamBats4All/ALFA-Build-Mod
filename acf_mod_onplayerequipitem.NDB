@@ -1,5 +1,5 @@
 NDB V1.0
-0000100 0000023 0005435 0000126 0000540
+0000104 0000023 0005554 0000126 0000540
 n00 ginc_debug
 n01 acr_debug_i
 n02 acr_time_i
@@ -77,29 +77,33 @@ n73 acr_quest_i
 n74 acr_chat_i
 n75 acr_items_i
 n76 acr_language_i
-n77 acr_feat_i
-n78 acr_prc_bladesinger_i
-n79 acr_feat_events_i
-n80 acr_server_misc_i
-n81 acr_srvadmin_i
-n82 acr_scliext_i
-n83 acr_area_instance_i
-n84 acr_report_i
-n85 dmfi_inc_langexe
-n86 dmfi_inc_initial
-n87 dmfi_inc_lang
-n88 acr_roll_i
-n89 nwnx_craft_system
-n90 acr_tradescroll_i
-n91 ginc_vars
-n92 ginc_item
-n93 x2_inc_spellhook
-n94 acr_spells_i
-n95 acr_craft_creation_i
-n96 acr_notifications_i
-n97 acr_combat_actions_i
-n98 acr_mod_events_i
-N99 acf_mod_onplayerequipitem
+n77 acr_pchide_i
+n78 acr_feat_i
+n79 acr_prc_bladesinger_i
+n80 acr_feat_events_i
+n81 acr_server_misc_i
+n82 acr_srvadmin_i
+n83 acr_scliext_i
+n84 acr_area_instance_i
+n85 acr_report_i
+n86 dmfi_inc_langexe
+n87 dmfi_inc_initial
+n88 dmfi_inc_lang
+n89 acr_roll_i
+n90 nwnx_craft_system
+n91 acr_tradescroll_i
+n92 ginc_vars
+n93 ginc_item
+n94 x2_inc_spellhook
+n95 acr_events_i
+n96 acr_vfx_i
+n97 acr_creature_i
+n98 acr_spells_i
+n99 acr_craft_creation_i
+n100 acr_notifications_i
+n101 acr_combat_actions_i
+n102 acr_mod_events_i
+N103 acf_mod_onplayerequipitem
 s 03 vector
 sf f x
 sf f y
@@ -628,6 +632,7 @@ f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_7
 f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_8
 f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_9
 f ffffffff ffffffff 000 i SPELL_WATER_BREATHING
+f ffffffff ffffffff 000 i SPELL_GLIBNESS
 f ffffffff ffffffff 000 i SPELL_CRAFT
 f ffffffff ffffffff 000 i SKILL_BALANCE
 f ffffffff ffffffff 000 i SKILL_CLIMB
@@ -1413,6 +1418,8 @@ f ffffffff ffffffff 001 i GetSpellIdOfItemPropertySubtype
 fp i
 f ffffffff ffffffff 001 i GetSpellLevelOfItemProperty
 fp e4
+f ffffffff ffffffff 001 i GetMasterSpellId
+fp i
 f ffffffff ffffffff 002 i GetNextEntryInStringList
 fp s
 fp i
@@ -4037,6 +4044,11 @@ fp i
 f ffffffff ffffffff 001 v ACR_PCExportSingleCharacter
 fp o
 f ffffffff ffffffff 001 i ACR_PPSIsPlayerQuarantined
+fp o
+f ffffffff ffffffff 002 v ACR_LogOfflineMessage
+fp o
+fp s
+f ffffffff ffffffff 001 v ACR_ReportOfflineMessages
 fp o
 f ffffffff ffffffff 003 v _playerRestoreLocation
 fp o
@@ -7632,6 +7644,12 @@ f ffffffff ffffffff 001 s ACR_LangAbbToLangID
 fp s
 f ffffffff ffffffff 001 s _RemoveLangTag
 fp s
+f ffffffff ffffffff 000 s ACR_PCH_RESREF
+f ffffffff ffffffff 000 i ACR_PCH_SLOT
+f ffffffff ffffffff 001 o ACR_GetPCHide
+fp o
+f ffffffff ffffffff 001 v _InitializePCHide
+fp o
 f ffffffff ffffffff 000 f ACR_FEAT_HEARTBEAT_DELAY
 f ffffffff ffffffff 000 s ACR_FEAT_HEARTBEAT_FLAG
 f ffffffff ffffffff 000 s ACR_FEAT_HEARTBEAT_QUEUE
@@ -7645,6 +7663,13 @@ f ffffffff ffffffff 003 v _ContinueCustomFeatHeartbeat
 fp o
 fp i
 fp s
+f ffffffff ffffffff 001 v ACR_FeatsOnPCLevelUp
+fp o
+f ffffffff ffffffff 004 v _GiveSkillFocusBonus
+fp o
+fp o
+fp i
+fp i
 f ffffffff ffffffff 002 v ACR_StartCustomFeatHeartbeat
 fp o
 fp i
@@ -8199,6 +8224,9 @@ fp s
 f ffffffff ffffffff 002 i ACR_RollCompareLeft
 fp s
 fp s
+f ffffffff ffffffff 002 i ACR_Roll
+fp i
+fp i
 f ffffffff ffffffff 000 s XPCraft_DATABASE_PREFIX
 f ffffffff ffffffff 000 s _CRAFT_SYSTEM_NAME
 f ffffffff ffffffff 001 s XPCraft_GetPCID
@@ -8588,6 +8616,7 @@ f ffffffff ffffffff 000 s ACR_CRAFT_PROPERTY_ACTIVATION
 f ffffffff ffffffff 000 s ACR_CRAFT_SPELLS_IMBUED
 f ffffffff ffffffff 000 s ACR_CRAFT_STACK_SIZE
 f ffffffff ffffffff 000 s ACR_CRAFT_TAG
+f ffffffff ffffffff 000 s ACR_CRAFT_CAST_SPELL_IPS
 f 0000017b 00000245 002 v ACR_CraftOnEquipItem
 fp o
 fp o
@@ -9261,6 +9290,171 @@ f ffffffff ffffffff 000 v X2BreakConcentrationSpells
 f ffffffff ffffffff 001 i X2GetBreakConcentrationCondition
 fp o
 f ffffffff ffffffff 000 v X2DoBreakConcentrationCheck
+f ffffffff ffffffff 000 i ACR_EVENT_CLIENT_ENTER
+f ffffffff ffffffff 000 i ACR_EVENT_FIRST_CLIENT_ENTER
+f ffffffff ffffffff 000 i ACR_EVENT_CLIENT_LEAVE
+f ffffffff ffffffff 000 i ACR_EVENT_ITEM_ACTIVATED
+f ffffffff ffffffff 000 i ACR_EVENT_INVENTORY_DISTURBED
+f ffffffff ffffffff 000 i ACR_EVENT_PC_EQUIPED
+f ffffffff ffffffff 000 i ACR_EVENT_PC_UNEQUIPED
+f ffffffff ffffffff 000 i ACR_EVENT_SPELL_CAST_AT
+f ffffffff ffffffff 000 i ACR_EVENT_SPELL_CAST_FROM
+f ffffffff ffffffff 000 s ACR_EVENT_TYPE
+f ffffffff ffffffff 000 o ACR_GetEventTarget
+f ffffffff ffffffff 000 i ACR_GetEventType
+f ffffffff ffffffff 000 i DAMAGE_TYPE_BASE_WEAPON
+f ffffffff ffffffff 000 s EFFECT_VISUAL
+f ffffffff ffffffff 000 s EFFECT_PHYSICAL
+f ffffffff ffffffff 000 s EFFECT_DAMAGE
+f ffffffff ffffffff 000 s SHAFT_RED_TAG
+f ffffffff ffffffff 000 s SHAFT_BLUE_TAG
+f ffffffff ffffffff 000 s SHAFT_CYAN_TAG
+f ffffffff ffffffff 000 s SHAFT_WHITE_TAG
+f ffffffff ffffffff 000 s SHAFT_GREEN_TAG
+f ffffffff ffffffff 000 s SHAFT_ORANGE_TAG
+f ffffffff ffffffff 000 s SHAFT_YELLOW_TAG
+f ffffffff ffffffff 000 s SHAFT_PURPLE_TAG
+f ffffffff ffffffff 000 s ON_OPEN_EVENT
+f ffffffff ffffffff 000 s ON_CLOSE_EVENT
+f ffffffff ffffffff 000 s ON_ENTER_EVENT
+f ffffffff ffffffff 000 s ON_EXIT_EVENT
+f ffffffff ffffffff 000 s ON_LOCK_EVENT
+f ffffffff ffffffff 000 s ON_UNLOCK_EVENT
+f ffffffff ffffffff 000 s ON_USED_EVENT
+f ffffffff ffffffff 000 s ON_ATTACK_EVENT
+f ffffffff ffffffff 000 s ON_DAMAGED_EVENT
+f ffffffff ffffffff 000 s ON_SPELLCAST_EVENT
+f ffffffff ffffffff 000 s ON_SPAWN_EVENT
+f ffffffff ffffffff 000 s ON_DEATH_EVENT
+f ffffffff ffffffff 000 s ON_DISTURBED_EVENT
+f ffffffff ffffffff 000 s ON_HEARTBEAT_EVENT
+f ffffffff ffffffff 000 s ON_DISARM_EVENT
+f ffffffff ffffffff 000 s ON_PERCEPTION_EVENT
+f ffffffff ffffffff 000 s ON_CLICK_EVENT
+f ffffffff ffffffff 000 i VFX_FLAG_ON_OPEN
+f ffffffff ffffffff 000 i VFX_FLAG_ON_CLOSE
+f ffffffff ffffffff 000 i VFX_FLAG_ON_LOCK
+f ffffffff ffffffff 000 i VFX_FLAG_ON_UNLOCK
+f ffffffff ffffffff 000 i VFX_FLAG_ON_USED
+f ffffffff ffffffff 000 i VFX_FLAG_ON_ATTACK
+f ffffffff ffffffff 000 i VFX_FLAG_ON_DAMAGED
+f ffffffff ffffffff 000 i VFX_FLAG_ON_SPELLCAST
+f ffffffff ffffffff 000 i VFX_FLAG_ON_SPAWN
+f ffffffff ffffffff 000 i VFX_FLAG_ON_DEATH
+f ffffffff ffffffff 000 i VFX_FLAG_ON_DISTURBED
+f ffffffff ffffffff 000 i VFX_FLAG_ON_HEARTBEAT
+f ffffffff ffffffff 000 i VFX_FLAG_ON_DISARM
+f ffffffff ffffffff 000 i VFX_FLAG_ON_PERCEPTION
+f ffffffff ffffffff 000 i VFX_FLAG_ON_ENTER
+f ffffffff ffffffff 000 i VFX_FLAG_ON_EXIT
+f ffffffff ffffffff 000 i VFX_FLAG_ON_CLICK
+f ffffffff ffffffff 002 v ACR_VFXOnAttack
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_VFXOnClose
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_VFXOnExit
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_VFXOnDamage
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_VFXOnDeath
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_VFXOnDisarm
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_VFXOnDisturb
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_VFXOnLock
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_VFXOnUnLock
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_VFXOnOpen
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_VFXOnEnter
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_VFXOnUsed
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_VFXOnClick
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_VFXOnSpellCastAt
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_VFXOnPerception
+fp o
+fp o
+f ffffffff ffffffff 001 v ACR_VFXOnHeartBeat
+fp o
+f ffffffff ffffffff 001 v ACR_VFXOnSpawn
+fp o
+f ffffffff ffffffff 001 i _getVFXConstant
+fp s
+f ffffffff ffffffff 003 i _getSavingThrow
+fp o
+fp s
+fp i
+f ffffffff ffffffff 001 s _getLightShaft
+fp s
+f ffffffff ffffffff 003 v _applyVisualEffect
+fp s
+fp o
+fp i
+f ffffffff ffffffff 003 v _applyPhysicalEffect
+fp s
+fp o
+fp i
+f ffffffff ffffffff 003 i _applyDamage
+fp s
+fp s
+fp o
+f ffffffff ffffffff 006 v _vFXTrace
+fp t0000
+fp t0000
+fp i
+fp i
+fp f
+fp i
+f ffffffff ffffffff 005 v _vFXPulse
+fp t0000
+fp t0000
+fp i
+fp i
+fp f
+f ffffffff ffffffff 001 t0000 _createVectorFromString
+fp s
+f ffffffff ffffffff 000 s _CRE_NO_AI
+f ffffffff ffffffff 000 s ACR_CRE_ISUNDEAD
+f ffffffff ffffffff 000 i ACR_CRE_FORCE_NOT_UNDEAD
+f ffffffff ffffffff 001 v _startRunning
+fp o
+f ffffffff ffffffff 000 v ACR_CreatureOnSpawnIn
+f ffffffff ffffffff 000 v ACR_CreatureOnSpellCastAt
+f ffffffff ffffffff 000 v ACR_CreatureOnPhysicallyAttacked
+f ffffffff ffffffff 000 v ACR_CreatureOnDamaged
+f ffffffff ffffffff 000 v ACR_CreatureOnDeath
+f ffffffff ffffffff 000 v ACR_CreatureOnBlocked
+f ffffffff ffffffff 000 v ACR_CreatureOnEndCombatRound
+f ffffffff ffffffff 000 v ACR_CreatureOnConversation
+f ffffffff ffffffff 000 v ACR_CreatureOnInventoryDisturbed
+f ffffffff ffffffff 000 v ACR_CreatureOnHeartBeat
+f ffffffff ffffffff 000 v ACR_CreatureOnRested
+f ffffffff ffffffff 000 v ACR_CreatureOnPerception
+f ffffffff ffffffff 000 v ACR_CreatureOnUserDefined
+f ffffffff ffffffff 002 v ACR_CreatureIdentify
+fp o
+fp o
+f ffffffff ffffffff 001 i ACR_GetIsUndead
+fp o
 f ffffffff ffffffff 003 f ACR_GetSpellDuration
 fp o
 fp i
@@ -9278,6 +9472,37 @@ fp o
 fp i
 fp s
 fp f
+f ffffffff ffffffff 007 v ACR_SpellCure
+fp o
+fp i
+fp i
+fp i
+fp i
+fp i
+fp i
+f ffffffff ffffffff 007 v ACR_SpellsInflictTouchAttack
+fp o
+fp i
+fp i
+fp i
+fp i
+fp i
+fp i
+f ffffffff ffffffff 008 v ACR_SpellsHealOrHarmTarget
+fp o
+fp i
+fp i
+fp i
+fp i
+fp i
+fp i
+fp i
+f ffffffff ffffffff 005 i ACR_GetCureDamageTotal
+fp o
+fp i
+fp i
+fp i
+fp i
 f ffffffff ffffffff 003 i _GetLevelIfHasFeat
 fp i
 fp o
@@ -9769,12 +9994,12 @@ l14 0000043 000000f1 000000f1
 l14 0000048 000000f1 000000f1
 l14 0000049 000000f1 000000f1
 l14 0000050 000000f1 000000f1
-l15 0000055 000000f1 000000f1
-l15 0000056 000000f1 000000f1
-l15 0000057 000000f1 000000f1
 l15 0000058 000000f1 000000f1
-l15 0000062 000000f1 000000f1
-l15 0000067 000000f1 000000f1
+l15 0000059 000000f1 000000f1
+l15 0000060 000000f1 000000f1
+l15 0000061 000000f1 000000f1
+l15 0000065 000000f1 000000f1
+l15 0000070 000000f1 000000f1
 l16 0000021 000000f1 000000f1
 l16 0000022 000000f1 000000f1
 l16 0000023 000000f1 000000f1
@@ -9803,20 +10028,20 @@ l19 0000080 000000f1 000000f1
 l19 0000081 000000f1 000000f1
 l19 0000082 000000f1 000000f1
 l19 0000083 000000f1 000000f1
-l99 0000047 00000103 00000109
-l99 0000050 00000109 0000010b
-l98 0001270 0000010b 00000110
-l98 0001271 00000110 00000115
-l98 0001274 00000115 0000012b
-l98 0001277 0000012b 00000141
-l98 0001280 00000141 0000015d
-l98 0001283 0000015d 00000173
-l98 0001284 00000179 0000017b
-l15 0000583 0000017b 0000018b
-l15 0000584 00000191 00000211
-l15 0000585 00000211 0000023d
-l15 0000587 0000023d 00000245
-l15 0000207 00000245 00000279
+l103 0000047 00000103 00000109
+l103 0000050 00000109 0000010b
+l102 0001276 0000010b 00000110
+l102 0001277 00000110 00000115
+l102 0001280 00000115 0000012b
+l102 0001283 0000012b 00000141
+l102 0001286 00000141 0000015d
+l102 0001289 0000015d 00000173
+l102 0001290 00000179 0000017b
+l15 0000623 0000017b 0000018b
+l15 0000624 00000191 00000211
+l15 0000625 00000211 0000023d
+l15 0000627 0000023d 00000245
+l15 0000210 00000245 00000279
 l75 0000102 00000281 0000028e
 l75 0000103 0000028e 000002a1
 l75 0000104 000002a1 000002ae
@@ -10179,23 +10404,23 @@ l42 0001431 00002f33 00002f57
 l42 0001432 00002f57 00002f5f
 l42 0001585 00002f5f 00002f97
 l42 0001586 00002f97 00002f9f
-l79 0000057 00002f9f 00002fb8
-l79 0000058 00002fcc 00002fe5
-l79 0000059 00002ff9 00003001
-l78 0000077 00003001 00003011
-l78 0000079 00003011 00003049
-l78 0000084 0000304f 00003057
-l78 0000123 00003057 0000306f
-l78 0000124 0000306f 0000309f
-l78 0000125 000030bf 000030da
-l78 0000127 000030fa 00003112
-l78 0000128 00003112 00003142
-l78 0000130 00003162 00003175
-l78 0000131 00003175 00003188
-l78 0000132 00003188 000031b6
-l78 0000133 000031b6 000031c6
-l78 0000135 000031e0 000031fc
-l78 0000136 00003202 0000320a
+l80 0000057 00002f9f 00002fb8
+l80 0000058 00002fcc 00002fe5
+l80 0000059 00002ff9 00003001
+l79 0000077 00003001 00003011
+l79 0000079 00003011 00003049
+l79 0000084 0000304f 00003057
+l79 0000123 00003057 0000306f
+l79 0000124 0000306f 0000309f
+l79 0000125 000030bf 000030da
+l79 0000127 000030fa 00003112
+l79 0000128 00003112 00003142
+l79 0000130 00003162 00003175
+l79 0000131 00003175 00003188
+l79 0000132 00003188 000031b6
+l79 0000133 000031b6 000031c6
+l79 0000135 000031e0 000031fc
+l79 0000136 00003202 0000320a
 l67 0000319 0000320a 00003220
 l67 0000321 00003220 0000324a
 l67 0000322 0000324a 00003252
@@ -10214,23 +10439,23 @@ l67 0000175 00003374 000033ba
 l67 0000176 000033c0 000033c8
 l67 0000153 000033c8 0000340d
 l67 0000158 0000340d 00003415
-l78 0000087 00003415 00003428
-l78 0000088 00003428 0000343d
-l78 0000089 00003443 00003453
-l78 0000090 00003453 0000347b
-l78 0000095 00003487 00003489
-l78 0000096 000034a3 000034ab
-l28 0000902 000034ab 000034bb
-l28 0000903 000034bb 000034c5
-l28 0000905 000034e5 000034f2
-l28 0000906 000034f2 00003505
-l28 0000907 00003505 0000351a
-l28 0000908 00003520 0000352d
-l28 0000909 0000352d 00003591
-l28 0000911 00003597 000035b2
-l28 0000914 000035b8 000035d4
-l28 0000915 000035da 000035e2
-l28 0000895 000035e2 0000361c
-l28 0000896 00003622 0000363c
-l28 0000898 0000363c 0000368b
-l28 0000899 0000368b 00003693
+l79 0000087 00003415 00003428
+l79 0000088 00003428 0000343d
+l79 0000089 00003443 00003453
+l79 0000090 00003453 0000347b
+l79 0000095 00003487 00003489
+l79 0000096 000034a3 000034ab
+l28 0000911 000034ab 000034bb
+l28 0000912 000034bb 000034c5
+l28 0000914 000034e5 000034f2
+l28 0000915 000034f2 00003505
+l28 0000916 00003505 0000351a
+l28 0000917 00003520 0000352d
+l28 0000918 0000352d 00003591
+l28 0000920 00003597 000035b2
+l28 0000923 000035b8 000035d4
+l28 0000924 000035da 000035e2
+l28 0000904 000035e2 0000361c
+l28 0000905 00003622 0000363c
+l28 0000907 0000363c 0000368b
+l28 0000908 0000368b 00003693
