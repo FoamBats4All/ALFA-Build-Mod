@@ -1,5 +1,5 @@
 NDB V1.0
-0000104 0000023 0005554 0000103 0000316
+0000104 0000023 0005612 0000103 0000316
 n00 ginc_debug
 n01 acr_debug_i
 n02 acr_time_i
@@ -75,33 +75,33 @@ n71 acr_spawn_i
 n72 acr_scry_i
 n73 acr_quest_i
 n74 acr_chat_i
-n75 acr_items_i
-n76 acr_language_i
-n77 acr_pchide_i
-n78 acr_feat_i
-n79 acr_prc_bladesinger_i
-n80 acr_feat_events_i
-n81 acr_server_misc_i
-n82 acr_srvadmin_i
-n83 acr_scliext_i
-n84 acr_area_instance_i
-n85 acr_report_i
-n86 dmfi_inc_langexe
-n87 dmfi_inc_initial
-n88 dmfi_inc_lang
-n89 acr_roll_i
-n90 nwnx_craft_system
-n91 acr_tradescroll_i
-n92 ginc_vars
-n93 ginc_item
-n94 x2_inc_spellhook
-n95 acr_events_i
-n96 acr_vfx_i
-n97 acr_creature_i
-n98 acr_spells_i
-n99 acr_craft_creation_i
-n100 acr_notifications_i
-n101 acr_combat_actions_i
+n75 acr_combat_actions_i
+n76 acr_items_i
+n77 acr_language_i
+n78 acr_pchide_i
+n79 acr_feat_i
+n80 acr_prc_bladesinger_i
+n81 acr_feat_events_i
+n82 acr_server_misc_i
+n83 acr_srvadmin_i
+n84 acr_scliext_i
+n85 acr_area_instance_i
+n86 acr_report_i
+n87 dmfi_inc_langexe
+n88 dmfi_inc_initial
+n89 dmfi_inc_lang
+n90 acr_roll_i
+n91 nwnx_craft_system
+n92 acr_tradescroll_i
+n93 ginc_vars
+n94 ginc_item
+n95 x2_inc_spellhook
+n96 acr_events_i
+n97 acr_vfx_i
+n98 acr_creature_i
+n99 acr_spells_i
+n100 acr_craft_creation_i
+n101 acr_notifications_i
 n102 acr_mod_events_i
 N103 acf_mod_onplayerunequipitem
 s 03 vector
@@ -631,6 +631,8 @@ f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_6
 f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_7
 f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_8
 f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_9
+f ffffffff ffffffff 000 i SPELL_FEATHER_FALL
+f ffffffff ffffffff 000 i SPELL_DIMENSIONAL_ANCHOR
 f ffffffff ffffffff 000 i SPELL_WATER_BREATHING
 f ffffffff ffffffff 000 i SPELL_GLIBNESS
 f ffffffff ffffffff 000 i SPELL_CRAFT
@@ -1529,6 +1531,18 @@ f ffffffff ffffffff 000 f HOUR_TO_SECONDS
 f ffffffff ffffffff 000 i TIME_YEAR_START
 f ffffffff ffffffff 000 i ALFA2_FR_YEAR_START
 f ffffffff ffffffff 000 i ALFA2_RL_YEAR_START
+f ffffffff ffffffff 000 i ACR_TIME_SECONDS_SINCE_START
+f ffffffff ffffffff 000 i ACR_TIME_MINUTES_SINCE_START
+f ffffffff ffffffff 000 i ACR_TIME_HOURS_SINCE_START
+f ffffffff ffffffff 000 i ACR_TIME_DAYS_SINCE_START
+f ffffffff ffffffff 000 i ACR_TIME_MONTHS_SINCE_START
+f ffffffff ffffffff 000 i ACR_TIME_YEARS_SINCE_START
+f ffffffff ffffffff 000 i ACR_TIME_SECONDS_IN_UTC
+f ffffffff ffffffff 000 i ACR_TIME_MINUTES_IN_UTC
+f ffffffff ffffffff 000 i ACR_TIME_HOURS_IN_UTC
+f ffffffff ffffffff 000 i ACR_TIME_DAYS_IN_UTC
+f ffffffff ffffffff 000 i ACR_TIME_MONTHS_IN_UTC
+f ffffffff ffffffff 000 i ACR_TIME_YEARS_IN_UTC
 f ffffffff ffffffff 000 s _TIME_RATIO_LF
 f ffffffff ffffffff 000 s ACR_MODULE_TIME
 f ffffffff ffffffff 000 v ACR_InitializeTime
@@ -1573,6 +1587,9 @@ fp i
 fp i
 fp i
 f ffffffff ffffffff 000 v _CalcDate
+f ffffffff ffffffff 000 i ACR_GetRealDaysSinceStart
+f ffffffff ffffffff 000 i ACR_GetRealMonthsSinceStart
+f ffffffff ffffffff 000 i ACR_GetRealYearsSinceStart
 f ffffffff ffffffff 000 i ACR_GetFRWeekday
 f ffffffff ffffffff 000 s ACR_LOG_BAN
 f ffffffff ffffffff 000 s ACR_LOG_LOAD
@@ -4016,6 +4033,7 @@ f ffffffff ffffffff 000 s ACR_PPS_QUARANTINE_WP_TAG
 f ffffffff ffffffff 000 s ACR_PPS_QUARANTINED
 f ffffffff ffffffff 000 s ACR_PPS_QUARANTINED_AUTOPORTAL_TARGET
 f ffffffff ffffffff 000 s ACR_PPS_DEBUG_ID
+f ffffffff ffffffff 000 s ACR_OFFMSG_COLOR
 f ffffffff ffffffff 003 v ACR_PCSave
 fp o
 fp i
@@ -7532,6 +7550,47 @@ f ffffffff ffffffff 001 v ACR_ChatOnClientEnter
 fp o
 f ffffffff ffffffff 001 v ACR_ChatOnClientExit
 fp o
+f ffffffff ffffffff 000 i ACR_COMBAT_ACTION_COOLDOWN_TIME
+f ffffffff ffffffff 000 s ACR_COMBAT_ACTION_TIMESTAMP
+f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_OPEN_MENU
+f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_COMBAT_EXPERTISE_MENU
+f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_POWER_ATTACK_MENU
+f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_POWER_ATTACK_TOGGLE
+f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_COMBAT_EXPERTISE_TOGGLE
+f ffffffff ffffffff 000 s POWER_ATTACK_MODE_ACTIVE
+f ffffffff ffffffff 000 s COMBAT_EXPERTISE_MODE_ACTIVE
+f ffffffff ffffffff 000 s POST_SPELLCAST_NO_COMBAT_MODE
+f ffffffff ffffffff 001 v CombatActionsOnItemEquip
+fp o
+f ffffffff ffffffff 001 v FightNormally
+fp o
+f ffffffff ffffffff 001 v FightDefensively
+fp o
+f ffffffff ffffffff 001 v FightTotallyDefensively
+fp o
+f ffffffff ffffffff 002 v FightWithExpertise
+fp o
+fp i
+f ffffffff ffffffff 001 i GetIsFightingDefensively
+fp o
+f ffffffff ffffffff 003 v _FightDefensively
+fp o
+fp i
+fp i
+f ffffffff ffffffff 002 v _NotifyCombatAction
+fp s
+fp o
+f ffffffff ffffffff 001 i _TrySwitchModes
+fp o
+f ffffffff ffffffff 001 v _ClearCombatModes
+fp o
+f ffffffff ffffffff 003 v _HandlePowExpGUIEvent
+fp o
+fp i
+fp i
+f ffffffff ffffffff 002 v CombatActionsOnEquip
+fp o
+fp o
 f ffffffff ffffffff 000 s ACR_MOD_SPELLBOOK_RESREF
 f ffffffff ffffffff 000 s ACR_MOD_HOLYSYMBOL_RESREF
 f ffffffff ffffffff 000 s ACR_MOD_HEALKIT_RESREF
@@ -7569,6 +7628,10 @@ fp o
 fp o
 fp o
 fp e2
+f ffffffff ffffffff 003 i ACR_HasActiveItemProperty
+fp o
+fp i
+fp i
 f ffffffff ffffffff 000 s ACR_CHARACTER_REGION
 f ffffffff ffffffff 000 i ACR_REGIONS_START
 f ffffffff ffffffff 000 i ACR_REGIONS_END
@@ -7646,9 +7709,11 @@ f ffffffff ffffffff 001 s _RemoveLangTag
 fp s
 f ffffffff ffffffff 000 s ACR_PCH_RESREF
 f ffffffff ffffffff 000 i ACR_PCH_SLOT
+f ffffffff ffffffff 001 v ACR_InitializePCHide
+fp o
 f ffffffff ffffffff 001 o ACR_GetPCHide
 fp o
-f ffffffff ffffffff 001 v _InitializePCHide
+f ffffffff ffffffff 001 v ACR_CopyPropertiesToHide
 fp o
 f ffffffff ffffffff 000 f ACR_FEAT_HEARTBEAT_DELAY
 f ffffffff ffffffff 000 s ACR_FEAT_HEARTBEAT_FLAG
@@ -9455,12 +9520,50 @@ fp o
 fp o
 f ffffffff ffffffff 001 i ACR_GetIsUndead
 fp o
+f ffffffff ffffffff 000 f ACR_DURATION_GLOBAL_SCALE
+f ffffffff ffffffff 000 f ACR_DURATION_10M_SCALE
+f ffffffff ffffffff 000 f ACR_DURATION_HOUR_SCALE
+f ffffffff ffffffff 000 i ACR_DURATION_TYPE_STATIC
+f ffffffff ffffffff 000 i ACR_DURATION_TYPE_PER_CL
+f ffffffff ffffffff 000 f ACR_DURATION_1R
+f ffffffff ffffffff 000 f ACR_DURATION_6S
+f ffffffff ffffffff 000 f ACR_DURATION_60S
+f ffffffff ffffffff 000 f ACR_DURATION_1M
+f ffffffff ffffffff 000 f ACR_DURATION_10M
+f ffffffff ffffffff 000 f ACR_DURATION_1H
+f ffffffff ffffffff 000 f ACR_DURATION_2H
+f ffffffff ffffffff 000 f ACR_DURATION_24H
+f ffffffff ffffffff 000 s ACR_SPELL_DESCRIPT_VAR_PREFIX
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_ACID
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_AIR
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_CHAOTIC
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_COLD
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_DARKNESS
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_DEATH
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_EARTH
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_ELECTRICITY
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_EVIL
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_FEAR
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_FIRE
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_FORCE
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_GOOD
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_LANGUAGE_DEP
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_LAWFUL
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_LIGHT
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_MIND_AFFECTING
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_SONIC
+f ffffffff ffffffff 000 i ACR_SPELL_DESCRIPT_WATER
+f ffffffff ffffffff 000 i ACR_PrecastEvent
+f ffffffff ffffffff 000 i ACR_PostcastEvent
 f ffffffff ffffffff 003 f ACR_GetSpellDuration
 fp o
 fp i
 fp f
 f ffffffff ffffffff 002 i ACR_GetCorrectCasterLevel
 fp o
+fp i
+f ffffffff ffffffff 002 v ACR_SetIsDomainSpell
+fp i
 fp i
 f ffffffff ffffffff 004 v WarnWhenSpellExpires
 fp o
@@ -9503,6 +9606,8 @@ fp i
 fp i
 fp i
 fp i
+f ffffffff ffffffff 001 s _GetDomainVarName
+fp i
 f ffffffff ffffffff 003 i _GetLevelIfHasFeat
 fp i
 fp o
@@ -9510,6 +9615,8 @@ fp i
 f ffffffff ffffffff 003 i _GetPracticedSpellcasterCL
 fp o
 fp i
+fp i
+f ffffffff ffffffff 001 i ACR_GetIsDomainSpell
 fp i
 f ffffffff ffffffff 001 i ACR_GetHighestCasterLevel
 fp o
@@ -9645,47 +9752,6 @@ fp o
 f ffffffff ffffffff 001 t0022 GetBodyTintSet
 fp o
 f ffffffff ffffffff 001 t0022 GetHeadTintSet
-fp o
-f ffffffff ffffffff 000 i ACR_COMBAT_ACTION_COOLDOWN_TIME
-f ffffffff ffffffff 000 s ACR_COMBAT_ACTION_TIMESTAMP
-f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_OPEN_MENU
-f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_COMBAT_EXPERTISE_MENU
-f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_POWER_ATTACK_MENU
-f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_POWER_ATTACK_TOGGLE
-f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_COMBAT_EXPERTISE_TOGGLE
-f ffffffff ffffffff 000 s POWER_ATTACK_MODE_ACTIVE
-f ffffffff ffffffff 000 s COMBAT_EXPERTISE_MODE_ACTIVE
-f ffffffff ffffffff 000 s POST_SPELLCAST_NO_COMBAT_MODE
-f ffffffff ffffffff 001 v CombatActionsOnItemEquip
-fp o
-f ffffffff ffffffff 001 v FightNormally
-fp o
-f ffffffff ffffffff 001 v FightDefensively
-fp o
-f ffffffff ffffffff 001 v FightTotallyDefensively
-fp o
-f ffffffff ffffffff 002 v FightWithExpertise
-fp o
-fp i
-f ffffffff ffffffff 001 i GetIsFightingDefensively
-fp o
-f ffffffff ffffffff 003 v _FightDefensively
-fp o
-fp i
-fp i
-f ffffffff ffffffff 002 v _NotifyCombatAction
-fp s
-fp o
-f ffffffff ffffffff 001 i _TrySwitchModes
-fp o
-f ffffffff ffffffff 001 v _ClearCombatModes
-fp o
-f ffffffff ffffffff 003 v _HandlePowExpGUIEvent
-fp o
-fp i
-fp i
-f ffffffff ffffffff 002 v CombatActionsOnEquip
-fp o
 fp o
 f ffffffff ffffffff 000 s _ONLOAD_DEBUG
 f ffffffff ffffffff 000 s ACR_MOD_STATUS
@@ -9904,10 +9970,10 @@ l01 0000062 00000048 00000056
 l01 0000064 00000056 00000065
 l01 0000065 00000065 00000074
 l01 0000066 00000074 00000083
-l02 0000074 00000083 00000083
-l02 0000075 00000083 00000083
 l02 0000076 00000083 00000083
 l02 0000077 00000083 00000083
+l02 0000078 00000083 00000083
+l02 0000079 00000083 00000083
 l03 0000144 00000083 00000083
 l03 0000145 00000083 00000083
 l03 0000146 00000083 00000083
@@ -10013,26 +10079,26 @@ l102 0001297 00000115 0000012b
 l102 0001300 0000012b 00000164
 l102 0001303 00000164 0000017a
 l102 0001304 00000180 00000182
-l75 0000402 00000182 0000018f
-l75 0000403 0000018f 000001bb
-l75 0000405 000001bb 0000020b
-l75 0000406 00000211 00000232
-l75 0000409 00000232 0000024a
-l75 0000410 0000024a 00000265
-l75 0000411 00000265 00000272
-l75 0000413 00000272 00000282
-l75 0000414 00000288 000002bf
-l75 0000416 000002bf 000002d2
-l75 0000417 000002d2 000002e9
-l75 0000418 000002ef 00000304
-l75 0000419 00000304 0000030a
-l75 0000421 0000030a 00000325
-l75 0000423 0000032b 0000034c
-l75 0000427 00000352 00000365
-l75 0000428 0000036b 00000381
-l75 0000432 00000381 000003a0
-l75 0000433 000003a0 000003b3
-l75 0000435 000003b9 000003c1
+l76 0000409 00000182 0000018f
+l76 0000410 0000018f 000001bb
+l76 0000412 000001bb 0000020b
+l76 0000413 00000211 00000232
+l76 0000416 00000232 0000024a
+l76 0000417 0000024a 00000265
+l76 0000418 00000265 00000272
+l76 0000420 00000272 00000282
+l76 0000421 00000288 000002bf
+l76 0000423 000002bf 000002d2
+l76 0000424 000002d2 000002e9
+l76 0000425 000002ef 00000304
+l76 0000426 00000304 0000030a
+l76 0000428 0000030a 00000325
+l76 0000430 0000032b 0000034c
+l76 0000434 00000352 00000365
+l76 0000435 0000036b 00000381
+l76 0000439 00000381 000003a0
+l76 0000440 000003a0 000003b3
+l76 0000442 000003b9 000003c1
 l67 0000347 000003c1 000003da
 l67 0000348 000003da 000003fa
 l67 0000350 000003fa 0000040d
@@ -10155,25 +10221,25 @@ l42 0001431 0000150a 0000152e
 l42 0001432 0000152e 00001536
 l42 0001585 00001536 0000156e
 l42 0001586 0000156e 00001576
-l80 0000062 00001576 0000158c
-l80 0000063 0000158c 00001594
-l80 0000057 00001594 000015ad
-l80 0000058 000015c1 000015da
-l80 0000059 000015ee 000015f6
-l79 0000077 000015f6 00001606
-l79 0000079 00001606 0000163e
-l79 0000084 00001644 0000164c
-l79 0000123 0000164c 00001664
-l79 0000124 00001664 00001694
-l79 0000125 000016b4 000016cf
-l79 0000127 000016ef 00001707
-l79 0000128 00001707 00001737
-l79 0000130 00001757 0000176a
-l79 0000131 0000176a 0000177d
-l79 0000132 0000177d 000017ab
-l79 0000133 000017ab 000017bb
-l79 0000135 000017d5 000017f1
-l79 0000136 000017f7 000017ff
+l81 0000062 00001576 0000158c
+l81 0000063 0000158c 00001594
+l81 0000057 00001594 000015ad
+l81 0000058 000015c1 000015da
+l81 0000059 000015ee 000015f6
+l80 0000077 000015f6 00001606
+l80 0000079 00001606 0000163e
+l80 0000084 00001644 0000164c
+l80 0000123 0000164c 00001664
+l80 0000124 00001664 00001694
+l80 0000125 000016b4 000016cf
+l80 0000127 000016ef 00001707
+l80 0000128 00001707 00001737
+l80 0000130 00001757 0000176a
+l80 0000131 0000176a 0000177d
+l80 0000132 0000177d 000017ab
+l80 0000133 000017ab 000017bb
+l80 0000135 000017d5 000017f1
+l80 0000136 000017f7 000017ff
 l67 0000319 000017ff 00001815
 l67 0000321 00001815 0000183f
 l67 0000322 0000183f 00001847
@@ -10192,12 +10258,12 @@ l67 0000175 00001969 000019af
 l67 0000176 000019b5 000019bd
 l67 0000153 000019bd 00001a02
 l67 0000158 00001a02 00001a0a
-l79 0000087 00001a0a 00001a1d
-l79 0000088 00001a1d 00001a32
-l79 0000089 00001a38 00001a48
-l79 0000090 00001a48 00001a70
-l79 0000095 00001a7c 00001a7e
-l79 0000096 00001a98 00001aa0
+l80 0000087 00001a0a 00001a1d
+l80 0000088 00001a1d 00001a32
+l80 0000089 00001a38 00001a48
+l80 0000090 00001a48 00001a70
+l80 0000095 00001a7c 00001a7e
+l80 0000096 00001a98 00001aa0
 l28 0000911 00001aa0 00001ab0
 l28 0000912 00001ab0 00001aba
 l28 0000914 00001ada 00001ae7

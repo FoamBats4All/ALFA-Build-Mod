@@ -1,5 +1,5 @@
 NDB V1.0
-0000012 0000002 0000745 0000095 0000195
+0000012 0000002 0000762 0000088 0000187
 n00 ginc_debug
 n01 acr_time_i
 n02 nwnx_include
@@ -412,6 +412,8 @@ f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_6
 f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_7
 f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_8
 f ffffffff ffffffff 000 i SPELL_ELDRITCH_BLAST_9
+f ffffffff ffffffff 000 i SPELL_FEATHER_FALL
+f ffffffff ffffffff 000 i SPELL_DIMENSIONAL_ANCHOR
 f ffffffff ffffffff 000 i SPELL_WATER_BREATHING
 f ffffffff ffffffff 000 i SPELL_GLIBNESS
 f ffffffff ffffffff 000 i SPELL_CRAFT
@@ -1257,6 +1259,18 @@ f ffffffff ffffffff 000 f HOUR_TO_SECONDS
 f ffffffff ffffffff 000 i TIME_YEAR_START
 f ffffffff ffffffff 000 i ALFA2_FR_YEAR_START
 f ffffffff ffffffff 000 i ALFA2_RL_YEAR_START
+f ffffffff ffffffff 000 i ACR_TIME_SECONDS_SINCE_START
+f ffffffff ffffffff 000 i ACR_TIME_MINUTES_SINCE_START
+f ffffffff ffffffff 000 i ACR_TIME_HOURS_SINCE_START
+f ffffffff ffffffff 000 i ACR_TIME_DAYS_SINCE_START
+f ffffffff ffffffff 000 i ACR_TIME_MONTHS_SINCE_START
+f ffffffff ffffffff 000 i ACR_TIME_YEARS_SINCE_START
+f ffffffff ffffffff 000 i ACR_TIME_SECONDS_IN_UTC
+f ffffffff ffffffff 000 i ACR_TIME_MINUTES_IN_UTC
+f ffffffff ffffffff 000 i ACR_TIME_HOURS_IN_UTC
+f ffffffff ffffffff 000 i ACR_TIME_DAYS_IN_UTC
+f ffffffff ffffffff 000 i ACR_TIME_MONTHS_IN_UTC
+f ffffffff ffffffff 000 i ACR_TIME_YEARS_IN_UTC
 f ffffffff ffffffff 000 s _TIME_RATIO_LF
 f ffffffff ffffffff 000 s ACR_MODULE_TIME
 f ffffffff ffffffff 000 v ACR_InitializeTime
@@ -1270,9 +1284,9 @@ f ffffffff ffffffff 000 i ACR_GetGameMillisecondsSinceStart
 f ffffffff ffffffff 000 i ACR_GetGameSecondsSinceStart
 f ffffffff ffffffff 000 i ACR_GetGameMinutesSinceStart
 f ffffffff ffffffff 000 i ACR_GetGameHoursSinceStart
-f 00001407 00001452 000 i ACR_GetGameDaysSinceStart
-f 00001452 0000149d 000 i ACR_GetGameMonthsSinceStart
-f 0000149d 000014ce 000 i ACR_GetGameYearsSinceStart
+f 00001407 0000144c 000 i ACR_GetGameDaysSinceStart
+f ffffffff ffffffff 000 i ACR_GetGameMonthsSinceStart
+f ffffffff ffffffff 000 i ACR_GetGameYearsSinceStart
 f ffffffff ffffffff 001 f ACR_GetSecondsUntilNextHour
 fp i
 f ffffffff ffffffff 000 f ACR_GetGameToRealTimeRatio
@@ -1301,6 +1315,9 @@ fp i
 fp i
 fp i
 f ffffffff ffffffff 000 v _CalcDate
+f ffffffff ffffffff 000 i ACR_GetRealDaysSinceStart
+f ffffffff ffffffff 000 i ACR_GetRealMonthsSinceStart
+f ffffffff ffffffff 000 i ACR_GetRealYearsSinceStart
 f ffffffff ffffffff 000 i ACR_GetFRWeekday
 f 00000050 000000b5 001 i StartingConditional
 fp s
@@ -1393,19 +1410,12 @@ v 000012be 00001358 0000000c s VarName
 v 000012db 00001358 00000010 s VarPrefix
 v 000013bc 00001405 00000000 s #retval
 v 000013bc 000013ff 00000004 s sString
-v 00001407 00001450 00000000 i #retval
-v 00001407 0000144a 00000004 i nMonths
-v 0000140f 0000144a 00000008 i nDays
-v 00001452 0000149b 00000000 i #retval
-v 00001452 00001495 00000004 i nYears
-v 0000145a 00001495 00000008 i nMonths
-v 0000149d 000014cc 00000000 i #retval
-v 0000149d 000014c6 00000004 i nYears
+v 00001407 0000144a 00000000 i #retval
 l00 0000048 00000017 0000002e
-l01 0000074 0000002e 0000002e
-l01 0000075 0000002e 0000002e
 l01 0000076 0000002e 0000002e
 l01 0000077 0000002e 0000002e
+l01 0000078 0000002e 0000002e
+l01 0000079 0000002e 0000002e
 l11 0000006 00000050 00000055
 l11 0000007 00000055 00000069
 l11 0000008 00000069 00000081
@@ -1585,14 +1595,6 @@ l06 0001835 00001382 000013ae
 l06 0001836 000013b4 000013bc
 l06 0000690 000013bc 000013ff
 l06 0000691 000013ff 00001407
-l01 0000280 00001407 0000140f
-l01 0000281 0000140f 0000142e
-l01 0000282 0000142e 0000144a
-l01 0000283 00001450 00001452
-l01 0000287 00001452 0000145a
-l01 0000288 0000145a 00001479
-l01 0000289 00001479 00001495
-l01 0000290 0000149b 0000149d
-l01 0000294 0000149d 000014aa
-l01 0000295 000014aa 000014c6
-l01 0000296 000014cc 000014ce
+l01 0000279 00001407 00001412
+l01 0000280 00001412 0000144a
+l01 0000281 0000144a 0000144c
