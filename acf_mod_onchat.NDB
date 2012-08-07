@@ -1,5 +1,5 @@
 NDB V1.0
-0000104 0000023 0005612 0000849 0005298
+0000104 0000023 0005622 0000849 0005298
 n00 ginc_debug
 n01 acr_debug_i
 n02 acr_time_i
@@ -1293,6 +1293,10 @@ f ffffffff ffffffff 001 s GetObjectTypeName
 fp i
 f ffffffff ffffffff 001 s GetBaseItemTypeName
 fp o
+f ffffffff ffffffff 001 i GetBaseArmorClass
+fp o
+f ffffffff ffffffff 001 i GetACEnhancementBonus
+fp o
 f ffffffff ffffffff 001 i GetBaseSpellFailure
 fp o
 f ffffffff ffffffff 001 i GetTotalSpellFailure
@@ -1901,31 +1905,6 @@ f ffffffff ffffffff 002 i ACR_GetCasterLevel
 fp o
 fp i
 f ffffffff ffffffff 002 i ACR_GetMinSpellCL
-fp i
-fp i
-f ffffffff ffffffff 003 i ACR_ScrollUse
-fp o
-fp o
-fp i
-f ffffffff ffffffff 002 i _DetermineScrollAttempt
-fp o
-fp i
-f ffffffff ffffffff 003 i _ScrollCastDiff
-fp i
-fp i
-fp i
-f ffffffff ffffffff 004 i _AttemptScrollUse
-fp i
-fp i
-fp o
-fp i
-f ffffffff ffffffff 004 i _ScrollMishapCheck
-fp o
-fp i
-fp i
-fp i
-f ffffffff ffffffff 003 v _ProcessMishap
-fp o
 fp i
 fp i
 f ffffffff ffffffff 000 s ACR_SERVER_IPC_SERVERCOM_SCRIPT
@@ -6726,7 +6705,7 @@ fp e0
 fp e0
 fp i
 fp i
-f ffffffff ffffffff 000 i ACR_EFFECT_SOURCE_START
+f ffffffff ffffffff 000 i _ACR_EFFECT_SOURCE_START
 f ffffffff ffffffff 000 i ACR_EFFECT_SOURCE_RESTING
 f ffffffff ffffffff 000 i ACR_EFFECT_SOURCE_COMBAT_ACTION
 f ffffffff ffffffff 000 i ACR_EFFECT_SOURCE_FATIGUE
@@ -6744,6 +6723,17 @@ f ffffffff ffffffff 005 v ApplyEffectFromSource
 fp i
 fp i
 fp e0
+fp o
+fp f
+f ffffffff ffffffff 005 v ApplyEffectFromSpell
+fp i
+fp i
+fp e0
+fp o
+fp f
+f ffffffff ffffffff 004 v ApplyTrackingEffectFromSpell
+fp i
+fp i
 fp o
 fp f
 f ffffffff ffffffff 002 v RemoveAllEffectsFromSource
@@ -7778,6 +7768,7 @@ f ffffffff ffffffff 000 i ACR_SERVER_MISC_FETCH_DATABASE_CONNECTION
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_COLUMN_DATABASE_CONNECTION
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_AFFECTED_ROW_COUNT_DATABASE_CONNECTION
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_ESCAPE_STRING_DATABASE_CONNECTION
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_STACK_TRACE
 f 000050f8 0000513c 000 i ACR_ExecuteServerUpdaterScript
 f ffffffff ffffffff 001 o ACR_InternalCreateAreaInstance
 fp o
@@ -7804,6 +7795,7 @@ fp i
 f ffffffff ffffffff 002 s ACR_EscapeStringDatabaseConnection
 fp i
 fp s
+f ffffffff ffffffff 000 s ACR_GetStackTrace
 f 0000401e 000040ad 007 i ACR_CallServerMiscScript
 fp i
 fp i
@@ -9608,6 +9600,38 @@ fp i
 fp i
 f ffffffff ffffffff 001 s _GetDomainVarName
 fp i
+f ffffffff ffffffff 006 v PersistACBonusFromSpell
+fp o
+fp i
+fp i
+fp i
+fp f
+fp e0
+f ffffffff ffffffff 003 i ACR_ScrollUse
+fp o
+fp o
+fp i
+f ffffffff ffffffff 002 i _DetermineScrollAttempt
+fp o
+fp i
+f ffffffff ffffffff 003 i _ScrollCastDiff
+fp i
+fp i
+fp i
+f ffffffff ffffffff 004 i _AttemptScrollUse
+fp i
+fp i
+fp o
+fp i
+f ffffffff ffffffff 004 i _ScrollMishapCheck
+fp o
+fp i
+fp i
+fp i
+f ffffffff ffffffff 003 v _ProcessMishap
+fp o
+fp i
+fp i
 f ffffffff ffffffff 003 i _GetLevelIfHasFeat
 fp i
 fp o
@@ -9620,6 +9644,26 @@ f ffffffff ffffffff 001 i ACR_GetIsDomainSpell
 fp i
 f ffffffff ffffffff 001 i ACR_GetHighestCasterLevel
 fp o
+f ffffffff ffffffff 003 i _GetPersistentACBonusTarget
+fp o
+fp i
+fp i
+f ffffffff ffffffff 006 v _AddPersistentACBonusEffects
+fp o
+fp i
+fp i
+fp i
+fp f
+fp e0
+f ffffffff ffffffff 008 v _PersistACBonusFromSpell
+fp o
+fp i
+fp i
+fp i
+fp i
+fp f
+fp e0
+fp i
 f ffffffff ffffffff 000 s ACR_CRAFT_STORE_PREFIX
 f ffffffff ffffffff 000 s ACR_CRAFT_STORE_POTION
 f ffffffff ffffffff 000 s ACR_CRAFT_STORE_WAND
@@ -10933,8 +10977,8 @@ l102 0001525 000013a7 000013cd
 l102 0001526 000013cd 000013eb
 l102 0001530 000013eb 0000142f
 l102 0001531 00001435 0000143d
-l30 0000438 0000143d 00001466
-l30 0000439 00001466 0000146e
+l30 0000437 0000143d 00001466
+l30 0000438 00001466 0000146e
 l83 0000132 0000146e 00001478
 l83 0000136 00001478 00001488
 l83 0000139 0000148e 000014a9
@@ -11266,16 +11310,16 @@ l24 0001413 00003f57 00003f99
 l24 0001414 00003f9f 00003fa1
 l24 0001415 00003fa1 00003fc4
 l24 0001416 00003fca 00003fcc
-l82 0000233 00003fcc 00004016
-l82 0000241 00004016 0000401e
-l82 0000340 0000401e 0000402b
-l82 0000341 0000402b 00004038
-l82 0000342 00004038 00004045
-l82 0000343 00004045 00004052
-l82 0000344 00004052 0000405f
-l82 0000345 0000405f 0000406c
-l82 0000347 0000406c 000040a5
-l82 0000348 000040a5 000040ad
+l82 0000242 00003fcc 00004016
+l82 0000250 00004016 0000401e
+l82 0000369 0000401e 0000402b
+l82 0000370 0000402b 00004038
+l82 0000371 00004038 00004045
+l82 0000372 00004045 00004052
+l82 0000373 00004052 0000405f
+l82 0000374 0000405f 0000406c
+l82 0000376 0000406c 000040a5
+l82 0000377 000040a5 000040ad
 l83 0000375 000040ad 000040af
 l83 0000377 000040af 000040bf
 l83 0000378 000040c5 000040e5
@@ -11414,8 +11458,8 @@ l83 0000495 00005095 000050ab
 l83 0000497 000050ab 000050c9
 l83 0000498 000050c9 000050e4
 l83 0000500 000050f0 000050f8
-l82 0000191 000050f8 0000513a
-l82 0000198 0000513a 0000513c
+l82 0000200 000050f8 0000513a
+l82 0000207 0000513a 0000513c
 l102 0001315 0000513c 0000513e
 l102 0001316 0000513e 00005140
 l102 0001318 00005140 00005166
@@ -15924,8 +15968,8 @@ l68 0001140 000387a4 000387fa
 l68 0001143 000387fa 0003882c
 l68 0001145 0003882c 00038848
 l68 0001146 0003884e 00038856
-l28 0001196 00038856 00038897
-l28 0001197 00038897 0003889f
+l28 0001208 00038856 00038897
+l28 0001209 00038897 0003889f
 l68 0001151 0003889f 000388ac
 l68 0001152 000388ac 000388ae
 l68 0001154 000388ae 000388bc
@@ -15936,12 +15980,12 @@ l68 0001161 000388eb 00038935
 l68 0001162 00038948 0003895d
 l68 0001161 0003895d 000389a7
 l68 0001163 000389b3 000389bb
-l28 0001168 000389bb 000389bf
-l28 0001170 000389bf 000389dd
-l28 0001171 000389f0 00038a1a
-l28 0001172 00038a20 00038a35
-l28 0001170 00038a35 00038a53
-l28 0001174 00038a5f 00038a67
+l28 0001180 000389bb 000389bf
+l28 0001182 000389bf 000389dd
+l28 0001183 000389f0 00038a1a
+l28 0001184 00038a20 00038a35
+l28 0001182 00038a35 00038a53
+l28 0001186 00038a5f 00038a67
 l68 0000205 00038a67 00038a69
 l68 0000206 00038a69 00038a6b
 l68 0000208 00038a6b 00038a89

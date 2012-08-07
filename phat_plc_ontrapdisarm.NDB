@@ -1,5 +1,5 @@
 NDB V1.0
-0000067 0000010 0004357 0000232 0001050
+0000067 0000010 0004355 0000232 0001050
 n00 ginc_debug
 n01 acr_debug_i
 n02 x0_i0_enemy
@@ -1174,6 +1174,10 @@ fp o
 f ffffffff ffffffff 001 s GetObjectTypeName
 fp i
 f ffffffff ffffffff 001 s GetBaseItemTypeName
+fp o
+f ffffffff ffffffff 001 i GetBaseArmorClass
+fp o
+f ffffffff ffffffff 001 i GetACEnhancementBonus
 fp o
 f ffffffff ffffffff 001 i GetBaseSpellFailure
 fp o
@@ -2677,31 +2681,6 @@ f ffffffff ffffffff 002 i ACR_GetCasterLevel
 fp o
 fp i
 f ffffffff ffffffff 002 i ACR_GetMinSpellCL
-fp i
-fp i
-f ffffffff ffffffff 003 i ACR_ScrollUse
-fp o
-fp o
-fp i
-f ffffffff ffffffff 002 i _DetermineScrollAttempt
-fp o
-fp i
-f ffffffff ffffffff 003 i _ScrollCastDiff
-fp i
-fp i
-fp i
-f ffffffff ffffffff 004 i _AttemptScrollUse
-fp i
-fp i
-fp o
-fp i
-f ffffffff ffffffff 004 i _ScrollMishapCheck
-fp o
-fp i
-fp i
-fp i
-f ffffffff ffffffff 003 v _ProcessMishap
-fp o
 fp i
 fp i
 f ffffffff ffffffff 000 s ACR_SERVER_IPC_SERVERCOM_SCRIPT
@@ -6747,7 +6726,7 @@ fp e0
 fp e0
 fp i
 fp i
-f ffffffff ffffffff 000 i ACR_EFFECT_SOURCE_START
+f ffffffff ffffffff 000 i _ACR_EFFECT_SOURCE_START
 f ffffffff ffffffff 000 i ACR_EFFECT_SOURCE_RESTING
 f ffffffff ffffffff 000 i ACR_EFFECT_SOURCE_COMBAT_ACTION
 f ffffffff ffffffff 000 i ACR_EFFECT_SOURCE_FATIGUE
@@ -6765,6 +6744,17 @@ f ffffffff ffffffff 005 v ApplyEffectFromSource
 fp i
 fp i
 fp e0
+fp o
+fp f
+f ffffffff ffffffff 005 v ApplyEffectFromSpell
+fp i
+fp i
+fp e0
+fp o
+fp f
+f ffffffff ffffffff 004 v ApplyTrackingEffectFromSpell
+fp i
+fp i
 fp o
 fp f
 f ffffffff ffffffff 002 v RemoveAllEffectsFromSource
@@ -8235,24 +8225,24 @@ l23 0000629 00009764 0000977e
 l23 0000631 0000977e 00009799
 l23 0000633 0000979f 000097b9
 l23 0000634 000097bf 000097c7
-l34 0000220 000097c7 000097dd
-l34 0000221 000097dd 0000984a
-l34 0000222 0000984a 00009852
-l34 0000324 00009852 0000989b
-l34 0000325 000098a1 000098b6
-l34 0000326 000098b6 000098bc
-l34 0000328 000098bc 000098ca
-l34 0000329 000098ca 000098df
-l34 0000330 000098df 0000990e
-l34 0000331 0000990e 00009916
-l34 0000446 00009916 00009934
-l34 0000447 00009934 00009941
-l34 0000449 00009941 00009953
-l34 0000451 00009959 0000996b
-l34 0000456 0000996b 00009995
-l34 0000457 000099a1 000099a3
-l34 0000459 000099bb 000099e5
-l34 0000461 000099eb 000099f3
+l34 0000219 000097c7 000097dd
+l34 0000220 000097dd 0000984a
+l34 0000221 0000984a 00009852
+l34 0000323 00009852 0000989b
+l34 0000324 000098a1 000098b6
+l34 0000325 000098b6 000098bc
+l34 0000327 000098bc 000098ca
+l34 0000328 000098ca 000098df
+l34 0000329 000098df 0000990e
+l34 0000330 0000990e 00009916
+l34 0000445 00009916 00009934
+l34 0000446 00009934 00009941
+l34 0000448 00009941 00009953
+l34 0000450 00009959 0000996b
+l34 0000455 0000996b 00009995
+l34 0000456 000099a1 000099a3
+l34 0000458 000099bb 000099e5
+l34 0000460 000099eb 000099f3
 l16 0000744 000099f3 00009a24
 l16 0000745 00009a24 00009a2c
 l16 0000730 00009a2c 00009a62

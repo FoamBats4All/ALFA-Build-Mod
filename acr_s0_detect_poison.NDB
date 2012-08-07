@@ -1,5 +1,5 @@
 NDB V1.0
-0000066 0000015 0004415 0000147 0000525
+0000066 0000015 0004413 0000147 0000525
 n00 ginc_debug
 n01 acr_debug_i
 n02 acr_time_i
@@ -1195,6 +1195,10 @@ f ffffffff ffffffff 001 s GetObjectTypeName
 fp i
 f ffffffff ffffffff 001 s GetBaseItemTypeName
 fp o
+f ffffffff ffffffff 001 i GetBaseArmorClass
+fp o
+f ffffffff ffffffff 001 i GetACEnhancementBonus
+fp o
 f ffffffff ffffffff 001 i GetBaseSpellFailure
 fp o
 f ffffffff ffffffff 001 i GetTotalSpellFailure
@@ -1571,31 +1575,6 @@ f ffffffff ffffffff 002 i ACR_GetCasterLevel
 fp o
 fp i
 f ffffffff ffffffff 002 i ACR_GetMinSpellCL
-fp i
-fp i
-f ffffffff ffffffff 003 i ACR_ScrollUse
-fp o
-fp o
-fp i
-f ffffffff ffffffff 002 i _DetermineScrollAttempt
-fp o
-fp i
-f ffffffff ffffffff 003 i _ScrollCastDiff
-fp i
-fp i
-fp i
-f ffffffff ffffffff 004 i _AttemptScrollUse
-fp i
-fp i
-fp o
-fp i
-f ffffffff ffffffff 004 i _ScrollMishapCheck
-fp o
-fp i
-fp i
-fp i
-f ffffffff ffffffff 003 v _ProcessMishap
-fp o
 fp i
 fp i
 f ffffffff ffffffff 000 s ACR_LOG_BAN
@@ -7246,7 +7225,7 @@ fp e0
 fp e0
 fp i
 fp i
-f ffffffff ffffffff 000 i ACR_EFFECT_SOURCE_START
+f ffffffff ffffffff 000 i _ACR_EFFECT_SOURCE_START
 f ffffffff ffffffff 000 i ACR_EFFECT_SOURCE_RESTING
 f ffffffff ffffffff 000 i ACR_EFFECT_SOURCE_COMBAT_ACTION
 f ffffffff ffffffff 000 i ACR_EFFECT_SOURCE_FATIGUE
@@ -7264,6 +7243,17 @@ f ffffffff ffffffff 005 v ApplyEffectFromSource
 fp i
 fp i
 fp e0
+fp o
+fp f
+f ffffffff ffffffff 005 v ApplyEffectFromSpell
+fp i
+fp i
+fp e0
+fp o
+fp f
+f ffffffff ffffffff 004 v ApplyTrackingEffectFromSpell
+fp i
+fp i
 fp o
 fp f
 f ffffffff ffffffff 002 v RemoveAllEffectsFromSource
@@ -7997,8 +7987,8 @@ l64 0001140 00001c20 00001c76
 l64 0001143 00001c76 00001ca8
 l64 0001145 00001ca8 00001cc4
 l64 0001146 00001cca 00001cd2
-l22 0001196 00001cd2 00001d13
-l22 0001197 00001d13 00001d1b
+l22 0001208 00001cd2 00001d13
+l22 0001209 00001d13 00001d1b
 l64 0001151 00001d1b 00001d28
 l64 0001152 00001d28 00001d2a
 l64 0001154 00001d2a 00001d38
@@ -8009,12 +7999,12 @@ l64 0001161 00001d67 00001db1
 l64 0001162 00001dc4 00001dd9
 l64 0001161 00001dd9 00001e23
 l64 0001163 00001e2f 00001e37
-l22 0001168 00001e37 00001e3b
-l22 0001170 00001e3b 00001e59
-l22 0001171 00001e6c 00001e96
-l22 0001172 00001e9c 00001eb1
-l22 0001170 00001eb1 00001ecf
-l22 0001174 00001edb 00001ee3
+l22 0001180 00001e37 00001e3b
+l22 0001182 00001e3b 00001e59
+l22 0001183 00001e6c 00001e96
+l22 0001184 00001e9c 00001eb1
+l22 0001182 00001eb1 00001ecf
+l22 0001186 00001edb 00001ee3
 l64 0000247 00001ee3 00001eed
 l64 0000248 00001eed 00001eef
 l64 0000250 00001eef 00001f0d
