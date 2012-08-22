@@ -1,5 +1,5 @@
 NDB V1.0
-0000104 0000023 0005622 0000103 0000316
+0000104 0000023 0005626 0000103 0000316
 n00 ginc_debug
 n01 acr_debug_i
 n02 acr_time_i
@@ -7699,7 +7699,7 @@ f ffffffff ffffffff 001 s _RemoveLangTag
 fp s
 f ffffffff ffffffff 000 s ACR_PCH_RESREF
 f ffffffff ffffffff 000 i ACR_PCH_SLOT
-f ffffffff ffffffff 001 v ACR_InitializePCHide
+f ffffffff ffffffff 001 o ACR_InitializePCHide
 fp o
 f ffffffff ffffffff 001 o ACR_GetPCHide
 fp o
@@ -8673,6 +8673,9 @@ f ffffffff ffffffff 000 s ACR_CRAFT_PROPERTY_ACTIVATION
 f ffffffff ffffffff 000 s ACR_CRAFT_SPELLS_IMBUED
 f ffffffff ffffffff 000 s ACR_CRAFT_STACK_SIZE
 f ffffffff ffffffff 000 s ACR_CRAFT_TAG
+f ffffffff ffffffff 000 s ACR_CRAFT_COST
+f ffffffff ffffffff 000 s ACR_CRAFT_MINIMUM_CASTER_LEVEL
+f ffffffff ffffffff 000 s ACR_CRAFT_XP_COST
 f ffffffff ffffffff 000 s ACR_CRAFT_CAST_SPELL_IPS
 f ffffffff ffffffff 002 v ACR_CraftOnEquipItem
 fp o
@@ -8682,6 +8685,8 @@ fp t0014
 f ffffffff ffffffff 002 o MakeCraftingProjectFromItem
 fp o
 fp i
+f ffffffff ffffffff 001 i GetIsCraftingProject
+fp o
 f ffffffff ffffffff 001 i CraftingFeatNeeded
 fp o
 f ffffffff ffffffff 001 s GetCraftingSpellsRequired
@@ -8701,6 +8706,8 @@ fp o
 fp o
 fp o
 fp i
+f ffffffff ffffffff 001 i _GetCraftingXPCost
+fp i
 f ffffffff ffffffff 001 t0014 GetCraftingStatus
 fp o
 f ffffffff ffffffff 001 v SaveCraftingStatus
@@ -8714,8 +8721,6 @@ fp o
 fp t0014
 fp i
 f ffffffff ffffffff 001 v CraftingOnPCLoaded
-fp o
-f ffffffff ffffffff 001 i GetIsCraftingProject
 fp o
 f ffffffff ffffffff 001 i GetIsProjectReadyForWork
 fp t0014
@@ -10081,12 +10086,12 @@ l14 0000043 000000f1 000000f1
 l14 0000048 000000f1 000000f1
 l14 0000049 000000f1 000000f1
 l14 0000050 000000f1 000000f1
-l15 0000058 000000f1 000000f1
-l15 0000059 000000f1 000000f1
-l15 0000060 000000f1 000000f1
 l15 0000061 000000f1 000000f1
-l15 0000065 000000f1 000000f1
-l15 0000070 000000f1 000000f1
+l15 0000062 000000f1 000000f1
+l15 0000063 000000f1 000000f1
+l15 0000064 000000f1 000000f1
+l15 0000068 000000f1 000000f1
+l15 0000073 000000f1 000000f1
 l16 0000021 000000f1 000000f1
 l16 0000022 000000f1 000000f1
 l16 0000023 000000f1 000000f1
@@ -10308,17 +10313,17 @@ l80 0000089 00001a5d 00001a6d
 l80 0000090 00001a6d 00001a95
 l80 0000095 00001aa1 00001aa3
 l80 0000096 00001abd 00001ac5
-l28 0000923 00001ac5 00001ad5
-l28 0000924 00001ad5 00001adf
-l28 0000926 00001aff 00001b0c
-l28 0000927 00001b0c 00001b1f
-l28 0000928 00001b1f 00001b34
-l28 0000929 00001b3a 00001b47
-l28 0000930 00001b47 00001bab
-l28 0000932 00001bb1 00001bcc
-l28 0000935 00001bd2 00001bee
-l28 0000936 00001bf4 00001bfc
-l28 0000916 00001bfc 00001c36
-l28 0000917 00001c3c 00001c56
-l28 0000919 00001c56 00001ca5
-l28 0000920 00001ca5 00001cad
+l28 0000924 00001ac5 00001ad5
+l28 0000925 00001ad5 00001adf
+l28 0000927 00001aff 00001b0c
+l28 0000928 00001b0c 00001b1f
+l28 0000929 00001b1f 00001b34
+l28 0000930 00001b3a 00001b47
+l28 0000931 00001b47 00001bab
+l28 0000933 00001bb1 00001bcc
+l28 0000936 00001bd2 00001bee
+l28 0000937 00001bf4 00001bfc
+l28 0000917 00001bfc 00001c36
+l28 0000918 00001c3c 00001c56
+l28 0000920 00001c56 00001ca5
+l28 0000921 00001ca5 00001cad

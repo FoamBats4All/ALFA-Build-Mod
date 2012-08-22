@@ -1,5 +1,5 @@
 NDB V1.0
-0000107 0000023 0005676 0000107 0000466
+0000107 0000023 0005680 0000107 0000466
 n00 ginc_debug
 n01 acr_debug_i
 n02 acr_time_i
@@ -7702,7 +7702,7 @@ f ffffffff ffffffff 001 s _RemoveLangTag
 fp s
 f ffffffff ffffffff 000 s ACR_PCH_RESREF
 f ffffffff ffffffff 000 i ACR_PCH_SLOT
-f ffffffff ffffffff 001 v ACR_InitializePCHide
+f ffffffff ffffffff 001 o ACR_InitializePCHide
 fp o
 f ffffffff ffffffff 001 o ACR_GetPCHide
 fp o
@@ -8676,6 +8676,9 @@ f ffffffff ffffffff 000 s ACR_CRAFT_PROPERTY_ACTIVATION
 f ffffffff ffffffff 000 s ACR_CRAFT_SPELLS_IMBUED
 f ffffffff ffffffff 000 s ACR_CRAFT_STACK_SIZE
 f ffffffff ffffffff 000 s ACR_CRAFT_TAG
+f ffffffff ffffffff 000 s ACR_CRAFT_COST
+f ffffffff ffffffff 000 s ACR_CRAFT_MINIMUM_CASTER_LEVEL
+f ffffffff ffffffff 000 s ACR_CRAFT_XP_COST
 f ffffffff ffffffff 000 s ACR_CRAFT_CAST_SPELL_IPS
 f ffffffff ffffffff 002 v ACR_CraftOnEquipItem
 fp o
@@ -8685,6 +8688,8 @@ fp t0014
 f ffffffff ffffffff 002 o MakeCraftingProjectFromItem
 fp o
 fp i
+f ffffffff ffffffff 001 i GetIsCraftingProject
+fp o
 f ffffffff ffffffff 001 i CraftingFeatNeeded
 fp o
 f ffffffff ffffffff 001 s GetCraftingSpellsRequired
@@ -8704,6 +8709,8 @@ fp o
 fp o
 fp o
 fp i
+f ffffffff ffffffff 001 i _GetCraftingXPCost
+fp i
 f ffffffff ffffffff 001 t0014 GetCraftingStatus
 fp o
 f ffffffff ffffffff 001 v SaveCraftingStatus
@@ -8717,8 +8724,6 @@ fp o
 fp t0014
 fp i
 f ffffffff ffffffff 001 v CraftingOnPCLoaded
-fp o
-f ffffffff ffffffff 001 i GetIsCraftingProject
 fp o
 f ffffffff ffffffff 001 i GetIsProjectReadyForWork
 fp t0014
@@ -10180,12 +10185,12 @@ l14 0000043 000000f1 000000f1
 l14 0000048 000000f1 000000f1
 l14 0000049 000000f1 000000f1
 l14 0000050 000000f1 000000f1
-l15 0000058 000000f1 000000f1
-l15 0000059 000000f1 000000f1
-l15 0000060 000000f1 000000f1
 l15 0000061 000000f1 000000f1
-l15 0000065 000000f1 000000f1
-l15 0000070 000000f1 000000f1
+l15 0000062 000000f1 000000f1
+l15 0000063 000000f1 000000f1
+l15 0000064 000000f1 000000f1
+l15 0000068 000000f1 000000f1
+l15 0000073 000000f1 000000f1
 l16 0000021 000000f1 000000f1
 l16 0000022 000000f1 000000f1
 l16 0000023 000000f1 000000f1
