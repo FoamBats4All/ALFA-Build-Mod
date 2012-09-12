@@ -1,22 +1,25 @@
 NDB V1.0
-0000013 0000002 0000900 0000007 0000025
+0000013 0000003 0000905 0000007 0000027
 n00 ginc_debug
-n01 wand_inc
-n02 nwnx_include
-n03 acr_array_i
-n04 acr_queue_i
-n05 acr_settings_i
-n06 acr_db_persist_i
-n07 acr_i
-n08 x0_i0_position
-n09 ginc_math
-n10 acr_tools_i
+n01 acr_tools_i
+n02 wand_inc
+n03 nwnx_include
+n04 acr_array_i
+n05 acr_queue_i
+n06 acr_settings_i
+n07 acr_db_persist_i
+n08 acr_i
+n09 x0_i0_position
+n10 ginc_math
 n11 wand_inc_misc
 N12 gui_wand_pim_show_tab
 s 03 vector
 sf f x
 sf f y
 sf f z
+s 02 IntListIterator
+sf i Position
+sf i Value
 s 02 strInventoryGlobalValues
 sf i iTotWeight
 sf i iTotValue
@@ -1219,6 +1222,19 @@ fp s
 f ffffffff ffffffff 002 i IsElementInStringList
 fp s
 fp i
+f ffffffff ffffffff 001 t0001 ACR_GetFirstInIntList
+fp s
+f ffffffff ffffffff 002 t0001 ACR_GetNextInIntList
+fp s
+fp t0001
+f ffffffff ffffffff 001 i ACR_IsIntListAtEnd
+fp t0001
+f ffffffff ffffffff 002 i ACR_GetIntListValue
+fp s
+fp t0001
+f ffffffff ffffffff 002 i ACR__IntListNextDelimiter
+fp s
+fp i
 f ffffffff ffffffff 001 s RacialTypeName
 fp i
 f ffffffff ffffffff 001 s SubRaceName
@@ -1494,10 +1510,10 @@ fp o
 f ffffffff ffffffff 002 v InitTargetVarRepository
 fp o
 fp o
-f ffffffff ffffffff 002 t0001 InitTargetInventory
+f ffffffff ffffffff 002 t0002 InitTargetInventory
 fp o
 fp o
-f ffffffff ffffffff 002 t0001 InitTargetEquipment
+f ffffffff ffffffff 002 t0002 InitTargetEquipment
 fp o
 fp o
 f ffffffff ffffffff 002 v DisplayInventory
@@ -1520,8 +1536,10 @@ v 00000137 00000175 00000004 o oPc
 v 0000017d 000002ea 00000000 o oSubject
 v 000002f2 00000432 00000000 o oSubject
 l00 0000048 00000015 0000002c
-l01 0000029 0000002c 0000002c
-l01 0000030 0000002c 0000002c
+l01 0000110 0000002c 0000002c
+l01 0000111 0000002c 0000002c
+l02 0000029 0000002c 0000002c
+l02 0000030 0000002c 0000002c
 l12 0000013 0000003e 00000044
 l12 0000015 00000044 00000056
 l12 0000016 0000005c 000000d2
@@ -1532,15 +1550,15 @@ l12 0000022 000000fa 00000129
 l12 0000023 0000012f 00000137
 l11 0000205 00000137 00000175
 l11 0000206 00000175 0000017d
-l01 0000697 0000017d 000001c5
-l01 0000698 000001c5 0000020e
-l01 0000699 0000020e 00000257
-l01 0000700 00000257 000002a3
-l01 0000701 000002a3 000002ea
-l01 0000702 000002ea 000002f2
-l01 0000101 000002f2 00000331
-l01 0000102 00000331 00000371
-l01 0000103 00000371 000003b4
-l01 0000104 000003b4 000003f2
-l01 0000105 000003f2 00000432
-l01 0000106 00000432 0000043a
+l02 0000697 0000017d 000001c5
+l02 0000698 000001c5 0000020e
+l02 0000699 0000020e 00000257
+l02 0000700 00000257 000002a3
+l02 0000701 000002a3 000002ea
+l02 0000702 000002ea 000002f2
+l02 0000101 000002f2 00000331
+l02 0000102 00000331 00000371
+l02 0000103 00000371 000003b4
+l02 0000104 000003b4 000003f2
+l02 0000105 000003f2 00000432
+l02 0000106 00000432 0000043a

@@ -1,22 +1,25 @@
 NDB V1.0
-0000013 0000002 0000900 0000017 0000031
+0000013 0000003 0000905 0000017 0000033
 n00 ginc_debug
-n01 wand_inc
-n02 nwnx_include
-n03 acr_array_i
-n04 acr_queue_i
-n05 acr_settings_i
-n06 acr_db_persist_i
-n07 acr_i
-n08 x0_i0_position
-n09 ginc_math
-n10 acr_tools_i
+n01 acr_tools_i
+n02 wand_inc
+n03 nwnx_include
+n04 acr_array_i
+n05 acr_queue_i
+n06 acr_settings_i
+n07 acr_db_persist_i
+n08 acr_i
+n09 x0_i0_position
+n10 ginc_math
 n11 wand_inc_misc
 N12 gui_wand_lvm_target_loc
 s 03 vector
 sf f x
 sf f y
 sf f z
+s 02 IntListIterator
+sf i Position
+sf i Value
 s 02 strInventoryGlobalValues
 sf i iTotWeight
 sf i iTotValue
@@ -1219,6 +1222,19 @@ fp s
 f ffffffff ffffffff 002 i IsElementInStringList
 fp s
 fp i
+f ffffffff ffffffff 001 t0001 ACR_GetFirstInIntList
+fp s
+f ffffffff ffffffff 002 t0001 ACR_GetNextInIntList
+fp s
+fp t0001
+f ffffffff ffffffff 001 i ACR_IsIntListAtEnd
+fp t0001
+f ffffffff ffffffff 002 i ACR_GetIntListValue
+fp s
+fp t0001
+f ffffffff ffffffff 002 i ACR__IntListNextDelimiter
+fp s
+fp i
 f ffffffff ffffffff 001 s RacialTypeName
 fp i
 f ffffffff ffffffff 001 s SubRaceName
@@ -1494,10 +1510,10 @@ fp o
 f ffffffff ffffffff 002 v InitTargetVarRepository
 fp o
 fp o
-f ffffffff ffffffff 002 t0001 InitTargetInventory
+f ffffffff ffffffff 002 t0002 InitTargetInventory
 fp o
 fp o
-f ffffffff ffffffff 002 t0001 InitTargetEquipment
+f ffffffff ffffffff 002 t0002 InitTargetEquipment
 fp o
 fp o
 f ffffffff ffffffff 002 v DisplayInventory
@@ -1533,8 +1549,10 @@ v 000003e0 0000046d 00000008 s sIntPart
 v 000003f2 0000046d 0000000c s sFloat
 v 0000040b 0000046d 00000010 i iCommaPos
 l00 0000048 00000015 0000002c
-l01 0000029 0000002c 0000002c
-l01 0000030 0000002c 0000002c
+l01 0000110 0000002c 0000002c
+l01 0000111 0000002c 0000002c
+l02 0000029 0000002c 0000002c
+l02 0000030 0000002c 0000002c
 l12 0000005 0000003e 00000044
 l12 0000006 00000044 0000004a
 l12 0000007 0000004a 0000004c
@@ -1556,8 +1574,8 @@ l12 0000026 000002ad 000002ff
 l12 0000027 000002ff 00000352
 l12 0000028 00000352 000003a9
 l12 0000029 000003af 000003b7
-l01 0000239 000003b7 000003d8
-l01 0000240 000003d8 000003e0
+l02 0000239 000003b7 000003d8
+l02 0000240 000003d8 000003e0
 l11 0000217 000003e0 000003f2
 l11 0000218 000003f2 0000040b
 l11 0000219 0000040b 00000423

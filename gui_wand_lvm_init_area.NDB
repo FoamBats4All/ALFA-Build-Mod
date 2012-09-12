@@ -1,22 +1,25 @@
 NDB V1.0
-0000013 0000002 0000900 0000009 0000015
+0000013 0000003 0000905 0000009 0000017
 n00 ginc_debug
-n01 wand_inc
-n02 nwnx_include
-n03 acr_array_i
-n04 acr_queue_i
-n05 acr_settings_i
-n06 acr_db_persist_i
-n07 acr_i
-n08 x0_i0_position
-n09 ginc_math
-n10 acr_tools_i
+n01 acr_tools_i
+n02 wand_inc
+n03 nwnx_include
+n04 acr_array_i
+n05 acr_queue_i
+n06 acr_settings_i
+n07 acr_db_persist_i
+n08 acr_i
+n09 x0_i0_position
+n10 ginc_math
 n11 wand_inc_misc
 N12 gui_wand_lvm_init_area
 s 03 vector
 sf f x
 sf f y
 sf f z
+s 02 IntListIterator
+sf i Position
+sf i Value
 s 02 strInventoryGlobalValues
 sf i iTotWeight
 sf i iTotValue
@@ -1219,6 +1222,19 @@ fp s
 f ffffffff ffffffff 002 i IsElementInStringList
 fp s
 fp i
+f ffffffff ffffffff 001 t0001 ACR_GetFirstInIntList
+fp s
+f ffffffff ffffffff 002 t0001 ACR_GetNextInIntList
+fp s
+fp t0001
+f ffffffff ffffffff 001 i ACR_IsIntListAtEnd
+fp t0001
+f ffffffff ffffffff 002 i ACR_GetIntListValue
+fp s
+fp t0001
+f ffffffff ffffffff 002 i ACR__IntListNextDelimiter
+fp s
+fp i
 f ffffffff ffffffff 001 s RacialTypeName
 fp i
 f ffffffff ffffffff 001 s SubRaceName
@@ -1494,10 +1510,10 @@ fp o
 f ffffffff ffffffff 002 v InitTargetVarRepository
 fp o
 fp o
-f ffffffff ffffffff 002 t0001 InitTargetInventory
+f ffffffff ffffffff 002 t0002 InitTargetInventory
 fp o
 fp o
-f ffffffff ffffffff 002 t0001 InitTargetEquipment
+f ffffffff ffffffff 002 t0002 InitTargetEquipment
 fp o
 fp o
 f ffffffff ffffffff 002 v DisplayInventory
@@ -1522,8 +1538,10 @@ v 00000181 000001bf 00000004 o oPc
 v 000001c7 000001ee 00000000 s #retval
 v 000001c7 000001e8 00000004 o oArea
 l00 0000048 00000015 0000002c
-l01 0000029 0000002c 0000002c
-l01 0000030 0000002c 0000002c
+l01 0000110 0000002c 0000002c
+l01 0000111 0000002c 0000002c
+l02 0000029 0000002c 0000002c
+l02 0000030 0000002c 0000002c
 l12 0000014 0000003e 00000044
 l12 0000017 00000044 00000056
 l12 0000018 0000005c 000000d2
@@ -1534,5 +1552,5 @@ l12 0000025 00000126 00000173
 l12 0000026 00000179 00000181
 l11 0000205 00000181 000001bf
 l11 0000206 000001bf 000001c7
-l01 0000239 000001c7 000001e8
-l01 0000240 000001e8 000001f0
+l02 0000239 000001c7 000001e8
+l02 0000240 000001e8 000001f0

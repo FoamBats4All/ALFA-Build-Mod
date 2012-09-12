@@ -1,22 +1,25 @@
 NDB V1.0
-0000013 0000002 0000900 0000002 0000010
+0000013 0000003 0000905 0000002 0000012
 n00 ginc_debug
-n01 wand_inc
-n02 nwnx_include
-n03 acr_array_i
-n04 acr_queue_i
-n05 acr_settings_i
-n06 acr_db_persist_i
-n07 acr_i
-n08 x0_i0_position
-n09 ginc_math
-n10 acr_tools_i
+n01 acr_tools_i
+n02 wand_inc
+n03 nwnx_include
+n04 acr_array_i
+n05 acr_queue_i
+n06 acr_settings_i
+n07 acr_db_persist_i
+n08 acr_i
+n09 x0_i0_position
+n10 ginc_math
 n11 wand_inc_misc
 N12 gui_wand_lvm_new_tab
 s 03 vector
 sf f x
 sf f y
 sf f z
+s 02 IntListIterator
+sf i Position
+sf i Value
 s 02 strInventoryGlobalValues
 sf i iTotWeight
 sf i iTotValue
@@ -1219,6 +1222,19 @@ fp s
 f ffffffff ffffffff 002 i IsElementInStringList
 fp s
 fp i
+f ffffffff ffffffff 001 t0001 ACR_GetFirstInIntList
+fp s
+f ffffffff ffffffff 002 t0001 ACR_GetNextInIntList
+fp s
+fp t0001
+f ffffffff ffffffff 001 i ACR_IsIntListAtEnd
+fp t0001
+f ffffffff ffffffff 002 i ACR_GetIntListValue
+fp s
+fp t0001
+f ffffffff ffffffff 002 i ACR__IntListNextDelimiter
+fp s
+fp i
 f ffffffff ffffffff 001 s RacialTypeName
 fp i
 f ffffffff ffffffff 001 s SubRaceName
@@ -1494,10 +1510,10 @@ fp o
 f ffffffff ffffffff 002 v InitTargetVarRepository
 fp o
 fp o
-f ffffffff ffffffff 002 t0001 InitTargetInventory
+f ffffffff ffffffff 002 t0002 InitTargetInventory
 fp o
 fp o
-f ffffffff ffffffff 002 t0001 InitTargetEquipment
+f ffffffff ffffffff 002 t0002 InitTargetEquipment
 fp o
 fp o
 f ffffffff ffffffff 002 v DisplayInventory
@@ -1514,8 +1530,10 @@ f 00000015 0000003e 000 v #globals
 v 00000015 ffffffff 00000000 s PRETTY_LINE_COUNT_VAR
 v 0000003e 000001a9 00000000 o oSubject
 l00 0000048 00000015 0000002c
-l01 0000029 0000002c 0000002c
-l01 0000030 0000002c 0000002c
+l01 0000110 0000002c 0000002c
+l01 0000111 0000002c 0000002c
+l02 0000029 0000002c 0000002c
+l02 0000030 0000002c 0000002c
 l12 0000012 0000003e 00000044
 l12 0000014 00000044 0000008b
 l12 0000015 0000008b 000000d4

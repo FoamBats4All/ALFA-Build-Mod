@@ -1,22 +1,25 @@
 NDB V1.0
-0000013 0000002 0000900 0000009 0000055
+0000013 0000003 0000905 0000009 0000057
 n00 ginc_debug
-n01 wand_inc
-n02 nwnx_include
-n03 acr_array_i
-n04 acr_queue_i
-n05 acr_settings_i
-n06 acr_db_persist_i
-n07 acr_i
-n08 x0_i0_position
-n09 ginc_math
-n10 acr_tools_i
+n01 acr_tools_i
+n02 wand_inc
+n03 nwnx_include
+n04 acr_array_i
+n05 acr_queue_i
+n06 acr_settings_i
+n07 acr_db_persist_i
+n08 acr_i
+n09 x0_i0_position
+n10 ginc_math
 n11 wand_inc_misc
 N12 gui_wand_lvm_init
 s 03 vector
 sf f x
 sf f y
 sf f z
+s 02 IntListIterator
+sf i Position
+sf i Value
 s 02 strInventoryGlobalValues
 sf i iTotWeight
 sf i iTotValue
@@ -1219,6 +1222,19 @@ fp s
 f ffffffff ffffffff 002 i IsElementInStringList
 fp s
 fp i
+f ffffffff ffffffff 001 t0001 ACR_GetFirstInIntList
+fp s
+f ffffffff ffffffff 002 t0001 ACR_GetNextInIntList
+fp s
+fp t0001
+f ffffffff ffffffff 001 i ACR_IsIntListAtEnd
+fp t0001
+f ffffffff ffffffff 002 i ACR_GetIntListValue
+fp s
+fp t0001
+f ffffffff ffffffff 002 i ACR__IntListNextDelimiter
+fp s
+fp i
 f ffffffff ffffffff 001 s RacialTypeName
 fp i
 f ffffffff ffffffff 001 s SubRaceName
@@ -1494,10 +1510,10 @@ fp o
 f ffffffff ffffffff 002 v InitTargetVarRepository
 fp o
 fp o
-f ffffffff ffffffff 002 t0001 InitTargetInventory
+f ffffffff ffffffff 002 t0002 InitTargetInventory
 fp o
 fp o
-f ffffffff ffffffff 002 t0001 InitTargetEquipment
+f ffffffff ffffffff 002 t0002 InitTargetEquipment
 fp o
 fp o
 f ffffffff ffffffff 002 v DisplayInventory
@@ -1521,8 +1537,10 @@ v 00000ada 00000bd6 00000010 s sAreaId
 v 00000be4 00000c0b 00000000 s #retval
 v 00000be4 00000c05 00000004 o oArea
 l00 0000048 00000015 0000002c
-l01 0000029 0000002c 0000002c
-l01 0000030 0000002c 0000002c
+l01 0000110 0000002c 0000002c
+l01 0000111 0000002c 0000002c
+l02 0000029 0000002c 0000002c
+l02 0000030 0000002c 0000002c
 l12 0000004 0000003e 00000044
 l12 0000006 00000044 00000052
 l12 0000009 00000052 000000a2
@@ -1564,14 +1582,14 @@ l12 0000048 00000a01 00000a3a
 l12 0000049 00000a3a 00000a87
 l12 0000050 00000a87 00000ac7
 l12 0000053 00000acd 00000acf
-l01 0000245 00000acf 00000ad4
-l01 0000246 00000ad4 00000ada
-l01 0000248 00000ada 00000aed
-l01 0000250 00000aed 00000b1e
-l01 0000252 00000b1e 00000b3e
-l01 0000253 00000b3e 00000b5c
-l01 0000255 00000b5c 00000bbd
-l01 0000257 00000bbd 00000bd0
-l01 0000259 00000bdc 00000be4
-l01 0000239 00000be4 00000c05
-l01 0000240 00000c05 00000c0d
+l02 0000245 00000acf 00000ad4
+l02 0000246 00000ad4 00000ada
+l02 0000248 00000ada 00000aed
+l02 0000250 00000aed 00000b1e
+l02 0000252 00000b1e 00000b3e
+l02 0000253 00000b3e 00000b5c
+l02 0000255 00000b5c 00000bbd
+l02 0000257 00000bbd 00000bd0
+l02 0000259 00000bdc 00000be4
+l02 0000239 00000be4 00000c05
+l02 0000240 00000c05 00000c0d

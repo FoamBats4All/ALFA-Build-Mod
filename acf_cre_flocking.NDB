@@ -1,41 +1,41 @@
 NDB V1.0
-0000071 0000011 0004608 0000031 0000170
+0000071 0000012 0004608 0000031 0000172
 n00 ginc_debug
 n01 x0_i0_enemy
 n02 x0_inc_generic
 n03 nwn2_inc_talent
-n04 acr_debug_i
-n05 acr_time_i
-n06 acr_server_ipc_i
-n07 dmfi_inc_conv
-n08 acr_it_persist_i
-n09 x0_i0_campaign
-n10 nw_i0_generic
-n11 acr_death_i
-n12 acr_wealth_i
-n13 x0_i0_position
-n14 x0_i0_modes
-n15 x0_i0_voice
-n16 x0_i0_debug
-n17 x0_i0_match
-n18 x0_i0_assoc
-n19 x2_inc_switches
-n20 x0_i0_equip
-n21 ginc_2da
-n22 ginc_event_handlers
-n23 x0_i0_talent
-n24 x0_i0_combat
-n25 x0_i0_spawncond
-n26 x0_i0_walkway
-n27 x0_i0_anims
-n28 acr_array_i
-n29 nwnx_include
-n30 acr_queue_i
-n31 acr_settings_i
-n32 acr_db_persist_i
-n33 acr_i
-n34 ginc_math
-n35 acr_tools_i
+n04 acr_tools_i
+n05 acr_debug_i
+n06 acr_time_i
+n07 acr_server_ipc_i
+n08 dmfi_inc_conv
+n09 acr_it_persist_i
+n10 x0_i0_campaign
+n11 nw_i0_generic
+n12 acr_death_i
+n13 acr_wealth_i
+n14 x0_i0_position
+n15 x0_i0_modes
+n16 x0_i0_voice
+n17 x0_i0_debug
+n18 x0_i0_match
+n19 x0_i0_assoc
+n20 x2_inc_switches
+n21 x0_i0_equip
+n22 ginc_2da
+n23 ginc_event_handlers
+n24 x0_i0_talent
+n25 x0_i0_combat
+n26 x0_i0_spawncond
+n27 x0_i0_walkway
+n28 x0_i0_anims
+n29 acr_array_i
+n30 nwnx_include
+n31 acr_queue_i
+n32 acr_settings_i
+n33 acr_db_persist_i
+n34 acr_i
+n35 ginc_math
 n36 acr_events_i
 n37 acr_1984_i
 n38 acr_xp_i
@@ -101,6 +101,9 @@ sf o oTarget
 s 02 EldritchShape
 sf i nSpell
 sf o oTarget
+s 02 IntListIterator
+sf i Position
+sf i Value
 s 04 DateStruct
 sf i year
 sf i month
@@ -2470,6 +2473,19 @@ fp s
 f ffffffff ffffffff 002 i IsElementInStringList
 fp s
 fp i
+f ffffffff ffffffff 001 t0006 ACR_GetFirstInIntList
+fp s
+f ffffffff ffffffff 002 t0006 ACR_GetNextInIntList
+fp s
+fp t0006
+f ffffffff ffffffff 001 i ACR_IsIntListAtEnd
+fp t0006
+f ffffffff ffffffff 002 i ACR_GetIntListValue
+fp s
+fp t0006
+f ffffffff ffffffff 002 i ACR__IntListNextDelimiter
+fp s
+fp i
 f ffffffff ffffffff 001 s RacialTypeName
 fp i
 f ffffffff ffffffff 001 s SubRaceName
@@ -2721,7 +2737,7 @@ f ffffffff ffffffff 000 i ACR_GetFRMonth
 f ffffffff ffffffff 000 i ACR_GetFRDay
 f ffffffff ffffffff 000 i ACR_GetFRTenday
 f ffffffff ffffffff 000 i ACR_GetFRHoliday
-f ffffffff ffffffff 003 t0006 ACR_ConvertDate
+f ffffffff ffffffff 003 t0007 ACR_ConvertDate
 fp i
 fp i
 fp i
@@ -2854,7 +2870,7 @@ f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_PAGE
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_RUN_SCRIPT
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_MAX_EVENT_LENGTH
 f ffffffff ffffffff 001 v ACR_SignalServerIPCEvent
-fp t0007
+fp t0008
 f ffffffff ffffffff 000 v ACR_ServerIPC_OnModuleLoad
 f ffffffff ffffffff 001 v ACR_ServerIPC_OnClientEnter
 fp o
@@ -6073,7 +6089,7 @@ f ffffffff ffffffff 001 i GetHPPercentage
 fp o
 f ffffffff ffffffff 001 i GetCastingMode
 fp i
-f ffffffff ffffffff 007 t0009 CreateTactics
+f ffffffff ffffffff 007 t0010 CreateTactics
 fp i
 fp i
 fp i
@@ -6085,20 +6101,20 @@ f ffffffff ffffffff 003 i TryClassTactic
 fp o
 fp i
 fp i
-f ffffffff ffffffff 004 t0009 CalculateTacticsByClass
-fp t0009
+f ffffffff ffffffff 004 t0010 CalculateTacticsByClass
+fp t0010
 fp o
 fp i
 fp i
-f ffffffff ffffffff 006 t0009 CalculateTactics
-fp t0009
+f ffffffff ffffffff 006 t0010 CalculateTactics
+fp t0010
 fp o
 fp f
 fp i
 fp i
 fp i
 f ffffffff ffffffff 007 i DetermineActionFromTactics
-fp t0009
+fp t0010
 fp o
 fp f
 fp i
@@ -6681,9 +6697,6 @@ fp o
 f ffffffff ffffffff 000 e0 ACR_EffectFatigue
 f ffffffff ffffffff 000 e0 ACR_EffectExhausted
 f ffffffff ffffffff 000 e0 ACR_AdaptionEffect
-f ffffffff ffffffff 002 e0 ACR_EffectSkillIncrease
-fp i
-fp i
 f ffffffff ffffffff 003 v ChangeEffectFromSource
 fp i
 fp o
@@ -7275,15 +7288,8 @@ fp o
 f ffffffff ffffffff 002 i ACR_AddObjectToSpawnPoint
 fp o
 fp o
-f ffffffff ffffffff 002 i _GetShouldSpawnBeActive
+f ffffffff ffffffff 001 i _GetShouldSpawnBeActive
 fp o
-fp i
-f ffffffff ffffffff 002 v _ActivateSpawnPoint
-fp o
-fp i
-f ffffffff ffffffff 002 v _DeactivateSpawnPoint
-fp o
-fp i
 f ffffffff ffffffff 002 v _SpawnPoint
 fp o
 fp i
@@ -7295,8 +7301,6 @@ fp o
 f ffffffff ffffffff 001 v _RefreshArea
 fp o
 f ffffffff ffffffff 001 v _DespawnArea
-fp o
-f ffffffff ffffffff 001 v _RefreshActiveSpawnPoint
 fp o
 f ffffffff ffffffff 001 v _RefreshSpawnPoint
 fp o
@@ -7337,8 +7341,6 @@ fp e2
 fp f
 fp f
 fp f
-f ffffffff ffffffff 001 v _RunSpawnIsActiveLoop
-fp o
 f ffffffff ffffffff 002 v _AddObjectToSpawnPoint
 fp o
 fp o
@@ -7658,47 +7660,49 @@ l03 0000023 0000002c 0000002c
 l03 0000024 0000002c 0000002c
 l03 0000029 0000002c 0000002c
 l03 0000030 0000002c 0000002c
-l04 0000058 0000002c 00000037
-l04 0000059 00000037 00000044
-l04 0000060 00000044 00000048
-l04 0000062 00000048 00000056
-l04 0000064 00000056 00000065
-l04 0000065 00000065 00000074
-l04 0000066 00000074 00000083
-l05 0000076 00000083 00000083
-l05 0000077 00000083 00000083
-l05 0000078 00000083 00000083
-l05 0000079 00000083 00000083
-l06 0000144 00000083 00000083
-l06 0000145 00000083 00000083
-l06 0000146 00000083 00000083
-l06 0000147 00000083 00000083
-l06 0000148 00000083 00000083
-l06 0000149 00000083 00000083
-l07 0000234 00000083 00000087
-l08 0000116 00000087 00000087
-l08 0000117 00000087 00000087
-l08 0000118 00000087 00000087
-l08 0000119 00000087 00000087
-l09 0000051 00000087 000000a1
-l09 0000053 000000a1 000000b7
-l10 0000207 000000b7 000000b7
-l10 0000208 000000b7 000000b7
-l10 0000209 000000b7 000000b7
-l10 0000210 000000b7 000000b7
-l10 0000211 000000b7 000000b7
-l10 0000213 000000b7 000000b7
-l10 0000214 000000b7 000000b7
-l11 0000162 000000b7 000000d4
-l11 0000166 000000d4 000000f1
-l12 0000072 000000f1 000000f1
-l12 0000073 000000f1 000000f1
-l12 0000074 000000f1 000000f1
-l12 0000075 000000f1 000000f1
-l12 0000076 000000f1 000000f1
-l12 0000077 000000f1 000000f1
-l12 0000078 000000f1 000000f1
-l12 0000079 000000f1 000000f1
+l04 0000110 0000002c 0000002c
+l04 0000111 0000002c 0000002c
+l05 0000058 0000002c 00000037
+l05 0000059 00000037 00000044
+l05 0000060 00000044 00000048
+l05 0000062 00000048 00000056
+l05 0000064 00000056 00000065
+l05 0000065 00000065 00000074
+l05 0000066 00000074 00000083
+l06 0000076 00000083 00000083
+l06 0000077 00000083 00000083
+l06 0000078 00000083 00000083
+l06 0000079 00000083 00000083
+l07 0000144 00000083 00000083
+l07 0000145 00000083 00000083
+l07 0000146 00000083 00000083
+l07 0000147 00000083 00000083
+l07 0000148 00000083 00000083
+l07 0000149 00000083 00000083
+l08 0000234 00000083 00000087
+l09 0000116 00000087 00000087
+l09 0000117 00000087 00000087
+l09 0000118 00000087 00000087
+l09 0000119 00000087 00000087
+l10 0000051 00000087 000000a1
+l10 0000053 000000a1 000000b7
+l11 0000207 000000b7 000000b7
+l11 0000208 000000b7 000000b7
+l11 0000209 000000b7 000000b7
+l11 0000210 000000b7 000000b7
+l11 0000211 000000b7 000000b7
+l11 0000213 000000b7 000000b7
+l11 0000214 000000b7 000000b7
+l12 0000162 000000b7 000000d4
+l12 0000166 000000d4 000000f1
+l13 0000072 000000f1 000000f1
+l13 0000073 000000f1 000000f1
+l13 0000074 000000f1 000000f1
+l13 0000075 000000f1 000000f1
+l13 0000076 000000f1 000000f1
+l13 0000077 000000f1 000000f1
+l13 0000078 000000f1 000000f1
+l13 0000079 000000f1 000000f1
 l70 0000032 00000103 00000109
 l70 0000033 00000109 00000127
 l70 0000034 00000127 00000129
