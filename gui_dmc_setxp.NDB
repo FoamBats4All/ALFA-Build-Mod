@@ -1,5 +1,5 @@
 NDB V1.0
-0000014 0000003 0000870 0000126 0000273
+0000015 0000003 0000939 0000126 0000273
 n00 ginc_debug
 n01 acr_tools_i
 n02 acr_time_i
@@ -11,9 +11,10 @@ n07 acr_db_persist_i
 n08 acr_i
 n09 x0_i0_position
 n10 ginc_math
-n11 acr_1984_i
-n12 acr_xp_i
-N13 gui_dmc_setxp
+n11 acr_server_misc_i
+n12 acr_1984_i
+n13 acr_xp_i
+N14 gui_dmc_setxp
 s 03 vector
 sf f x
 sf f y
@@ -361,7 +362,6 @@ f ffffffff ffffffff 000 i CLASS_BLADESINGER
 f ffffffff ffffffff 000 i CLASS_LOREMASTER
 f ffffffff ffffffff 000 i CLASS_MYSTICTHEURGE
 f ffffffff ffffffff 000 i RACIAL_TYPE_PLANT
-f ffffffff ffffffff 000 i IP_CONST_FEAT_DARKVISION
 f ffffffff ffffffff 000 i ACTION_MODE_DARKVISION
 f ffffffff ffffffff 000 i CHAT_MODE_SILENT_TALK
 f ffffffff ffffffff 000 i APPEARANCE_TYPE_DWARF_GOLD
@@ -531,6 +531,26 @@ f ffffffff ffffffff 000 i FEAT_REGION_WATERDEEP
 f ffffffff ffffffff 000 i FEAT_REGION_WESTERN_HEARTLANDS
 f ffffffff ffffffff 000 i FEAT_REGION_WIZARDS_REACH
 f ffffffff ffffffff 000 i FEAT_REGION_OTHER
+f ffffffff ffffffff 000 i FEAT_COSMOPOLITAN
+f ffffffff ffffffff 000 i FEAT_DISCIPLINE
+f ffffffff ffffffff 000 i FEAT_FEARLESS_BK
+f ffffffff ffffffff 000 i FEAT_FORGEHEART
+f ffffffff ffffffff 000 i FEAT_FORESTER
+f ffffffff ffffffff 000 i FEAT_SPELLWISE
+f ffffffff ffffffff 000 i FEAT_STREET_SMART
+f ffffffff ffffffff 000 i FEAT_SUREFOOTED
+f ffffffff ffffffff 000 i FEAT_SURVIVOR
+f ffffffff ffffffff 000 i FEAT_TREETOPPER
+f ffffffff ffffffff 000 i FEAT_ACROBATIC
+f ffffffff ffffffff 000 i FEAT_AGILE
+f ffffffff ffffffff 000 i FEAT_ANIMAL_AFFINITY
+f ffffffff ffffffff 000 i FEAT_ATHLETIC
+f ffffffff ffffffff 000 i FEAT_DECEITFUL
+f ffffffff ffffffff 000 i FEAT_DEFT_HANDS
+f ffffffff ffffffff 000 i FEAT_DILIGENT
+f ffffffff ffffffff 000 i FEAT_INVESTIGATOR
+f ffffffff ffffffff 000 i FEAT_MAGICAL_APTITUDE
+f ffffffff ffffffff 000 i FEAT_PERSUASIVE
 f ffffffff ffffffff 000 i FEAT_SKILL_FOCUS_BALANCE
 f ffffffff ffffffff 000 i FEAT_SKILL_FOCUS_CLIMB
 f ffffffff ffffffff 000 i FEAT_SKILL_FOCUS_DECIPHER
@@ -660,6 +680,8 @@ f ffffffff ffffffff 000 i FEAT_ACR_COMBAT_EXPERTISE
 f ffffffff ffffffff 000 i FEAT_ACR_IMPROVED_COMBAT_EXPERTISE
 f ffffffff ffffffff 000 i FEAT_ACR_POWER_ATTACK
 f ffffffff ffffffff 000 i FEAT_ACR_IMPROVED_POWER_ATTACK
+f ffffffff ffffffff 000 i IP_CONST_FEAT_DARKVISION
+f ffffffff ffffffff 000 i IP_CONST_FEAT_LOWLIGHTVISION
 f ffffffff ffffffff 000 i IPRP_FEATS_ALERTNESS
 f ffffffff ffffffff 000 i IPRP_FEATS_COMBAT_CASTING
 f ffffffff ffffffff 000 i IPRP_FEATS_DODGE
@@ -967,6 +989,80 @@ fp t0000
 f ffffffff ffffffff 002 i CompareVectors2D
 fp t0000
 fp t0000
+f ffffffff ffffffff 000 s ACR_SERVER_MISC_SUPPORT_SCRIPT
+f ffffffff ffffffff 000 s ACR_SERVER_MISC_OBJECT_RETVAL_VAR
+f ffffffff ffffffff 000 s ACR_SERVER_MISC_STRING_RETVAL_VAR
+f ffffffff ffffffff 000 i SCRIPT_DATABASE_CONNECTION_DEBUG
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_EXECUTE_UPDATER_SCRIPT
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_CREATE_AREA_INSTANCE
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_RELEASE_AREA_INSTANCE
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_RUN_POWERSHELL_SCRIPTLET
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_CREATE_DATABASE_CONNECTION
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_DESTROY_DATABASE_CONNECTION
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_QUERY_DATABASE_CONNECTION
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_FETCH_DATABASE_CONNECTION
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_COLUMN_DATABASE_CONNECTION
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_AFFECTED_ROW_COUNT_DATABASE_CONNECTION
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_ESCAPE_STRING_DATABASE_CONNECTION
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_STACK_TRACE
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_SET_DICTIONARY_VALUE
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_DICTIONARY_VALUE
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_FIRST_ITERATE_DICTIONARY
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_NEXT_ITERATE_DICTIONARY
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_DELETE_DICTIONARY_KEY
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_CLEAR_DICTIONARY
+f ffffffff ffffffff 000 i ACR_ExecuteServerUpdaterScript
+f ffffffff ffffffff 003 v ACR_DictionarySet
+fp s
+fp s
+fp s
+f ffffffff ffffffff 002 s ACR_DictionaryGet
+fp s
+fp s
+f ffffffff ffffffff 001 s ACR_DictionaryIterateFirst
+fp s
+f ffffffff ffffffff 001 s ACR_DictionaryIterateNext
+fp s
+f ffffffff ffffffff 002 v ACR_DictionaryDeleteKey
+fp s
+fp s
+f ffffffff ffffffff 001 v ACR_DictionaryClear
+fp s
+f ffffffff ffffffff 001 o ACR_InternalCreateAreaInstance
+fp o
+f ffffffff ffffffff 001 v ACR_InternalReleaseAreaInstance
+fp o
+f ffffffff ffffffff 002 i ACR_RunPowerShellScriptlet
+fp s
+fp o
+f ffffffff ffffffff 002 i ACR_CreateDatabaseConnection
+fp s
+fp i
+f ffffffff ffffffff 001 i ACR_DestroyDatabaseConnection
+fp i
+f ffffffff ffffffff 002 i ACR_QueryDatabaseConnection
+fp i
+fp s
+f ffffffff ffffffff 001 i ACR_FetchDatabaseConnection
+fp i
+f ffffffff ffffffff 002 s ACR_GetColumnDatabaseConnection
+fp i
+fp i
+f ffffffff ffffffff 001 i ACR_GetAffectedRowCountDatabaseConnection
+fp i
+f ffffffff ffffffff 002 s ACR_EscapeStringDatabaseConnection
+fp i
+fp s
+f ffffffff ffffffff 000 s ACR_GetStackTrace
+f ffffffff ffffffff 008 i ACR_CallServerMiscScript
+fp i
+fp i
+fp i
+fp s
+fp s
+fp s
+fp o
+fp o
 f ffffffff ffffffff 000 i BIT_0
 f ffffffff ffffffff 000 i BIT_1
 f ffffffff ffffffff 000 i BIT_2
@@ -1016,6 +1112,8 @@ f ffffffff ffffffff 000 i ARMOR_TYPE_HEAVY
 f ffffffff ffffffff 000 f MATH_CONSTANT_E
 f ffffffff ffffffff 000 f ACR_LOCATION_SEARCH_RADIUS
 f ffffffff ffffffff 000 f ACR_AREA_TRANSITION_ZDIFF_MAX
+f ffffffff ffffffff 000 s LIST_2DA_STARTED
+f ffffffff ffffffff 000 s LIST_2DA_READY
 f ffffffff ffffffff 002 i RemoveAllEffectsFrom
 fp o
 fp o
@@ -1197,6 +1295,8 @@ fp o
 fp i
 f ffffffff ffffffff 001 i ACR_GetArmorRulesType
 fp o
+f ffffffff ffffffff 001 i ACR_GetArmorCheckPenalty
+fp i
 f ffffffff ffffffff 004 o ACR_ApplyEffectAtLocation
 fp i
 fp e0
@@ -1244,6 +1344,23 @@ f ffffffff ffffffff 001 s SubRaceName
 fp i
 f ffffffff ffffffff 001 v ACR_IgnoreAcquire
 fp o
+f ffffffff ffffffff 005 v ACR_Cache2daListing
+fp s
+fp s
+fp s
+fp i
+fp i
+f ffffffff ffffffff 001 i ACR_CheckIsStarted2daList
+fp s
+f ffffffff ffffffff 001 i ACR_CheckIsReady2daList
+fp s
+f ffffffff ffffffff 006 v ACR__Cache2daListing
+fp s
+fp s
+fp s
+fp i
+fp i
+fp i
 f ffffffff ffffffff 002 f atan2
 fp f
 fp f
@@ -1641,41 +1758,41 @@ v 000020aa 000020dc 00000000 i #retval
 v 000020aa 000020d6 00000004 o oPC
 v 000020de 00002106 00000000 i #retval
 l00 0000048 00000015 0000002c
-l01 0000110 0000002c 0000002c
-l01 0000111 0000002c 0000002c
+l01 0000115 0000002c 0000002c
+l01 0000116 0000002c 0000002c
 l02 0000076 0000002c 0000002c
 l02 0000077 0000002c 0000002c
 l02 0000078 0000002c 0000002c
 l02 0000079 0000002c 0000002c
-l13 0000050 0000003e 00000044
-l13 0000051 00000044 00000051
-l13 0000052 00000051 00000053
-l13 0000055 00000053 0000007f
-l13 0000058 00000091 000000d0
-l13 0000060 000000d0 000000d0
-l13 0000061 000000eb 000000eb
-l13 0000062 00000106 00000106
-l13 0000066 00000127 00000137
-l13 0000069 0000013d 00000178
-l13 0000070 00000178 0000022e
-l13 0000073 00000234 00000236
-l13 0000076 00000236 00000256
-l13 0000077 00000256 0000026b
-l13 0000078 00000279 000002c9
-l13 0000080 000002c9 00000345
-l13 0000082 0000034b 00000353
-l12 0000331 00000353 0000039c
-l12 0000332 000003a2 000003a8
-l12 0000334 000003a8 000003b6
-l12 0000335 000003b6 000003be
-l12 0000443 000003be 000003dc
-l12 0000444 000003dc 000003e9
-l12 0000446 000003e9 000003fb
-l12 0000448 00000401 00000413
-l12 0000453 00000413 0000043d
-l12 0000454 00000449 0000044b
-l12 0000456 00000463 0000048d
-l12 0000458 00000493 0000049b
+l14 0000050 0000003e 00000044
+l14 0000051 00000044 00000051
+l14 0000052 00000051 00000053
+l14 0000055 00000053 0000007f
+l14 0000058 00000091 000000d0
+l14 0000060 000000d0 000000d0
+l14 0000061 000000eb 000000eb
+l14 0000062 00000106 00000106
+l14 0000066 00000127 00000137
+l14 0000069 0000013d 00000178
+l14 0000070 00000178 0000022e
+l14 0000073 00000234 00000236
+l14 0000076 00000236 00000256
+l14 0000077 00000256 0000026b
+l14 0000078 00000279 000002c9
+l14 0000080 000002c9 00000345
+l14 0000082 0000034b 00000353
+l13 0000331 00000353 0000039c
+l13 0000332 000003a2 000003a8
+l13 0000334 000003a8 000003b6
+l13 0000335 000003b6 000003be
+l13 0000443 000003be 000003dc
+l13 0000444 000003dc 000003e9
+l13 0000446 000003e9 000003fb
+l13 0000448 00000401 00000413
+l13 0000453 00000413 0000043d
+l13 0000454 00000449 0000044b
+l13 0000456 00000463 0000048d
+l13 0000458 00000493 0000049b
 l07 0000744 0000049b 000004cc
 l07 0000745 000004cc 000004d4
 l07 0000730 000004d4 0000050a
@@ -1893,23 +2010,23 @@ l07 0001425 00001d2f 00001d71
 l07 0001426 00001d77 00001d79
 l07 0001427 00001d79 00001d9c
 l07 0001428 00001da2 00001da4
-l11 0000219 00001da4 00001da9
-l11 0000220 00001da9 00001dab
-l11 0000222 00001dab 00001dbb
-l11 0000223 00001dc1 00001dd5
-l11 0000224 00001ddb 00001ddd
-l11 0000225 00001ddd 00001dfb
-l11 0000229 00001dfb 00001e0d
-l11 0000230 00001e13 00001e4c
-l11 0000232 00001e4c 00001e63
-l11 0000233 00001e69 00001ea7
-l11 0000236 00001ea7 00001ebc
-l11 0000237 00001ec2 00001ee3
-l11 0000239 00001ee3 00001ef3
-l11 0000242 00001ef9 00001fdd
-l11 0000244 00001fe3 00001fe5
-l11 0000246 00001fe5 0000209c
-l11 0000248 000020a2 000020aa
+l12 0000219 00001da4 00001da9
+l12 0000220 00001da9 00001dab
+l12 0000222 00001dab 00001dbb
+l12 0000223 00001dc1 00001dd5
+l12 0000224 00001ddb 00001ddd
+l12 0000225 00001ddd 00001dfb
+l12 0000229 00001dfb 00001e0d
+l12 0000230 00001e13 00001e4c
+l12 0000232 00001e4c 00001e63
+l12 0000233 00001e69 00001ea7
+l12 0000236 00001ea7 00001ebc
+l12 0000237 00001ec2 00001ee3
+l12 0000239 00001ee3 00001ef3
+l12 0000242 00001ef9 00001fdd
+l12 0000244 00001fe3 00001fe5
+l12 0000246 00001fe5 0000209c
+l12 0000248 000020a2 000020aa
 l07 0000937 000020aa 000020d6
 l07 0000938 000020d6 000020de
 l06 0000066 000020de 00002106
