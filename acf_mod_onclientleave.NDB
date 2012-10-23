@@ -1,5 +1,5 @@
 NDB V1.0
-0000104 0000024 0005695 0000513 0001484
+0000104 0000024 0005720 0000513 0001484
 n00 ginc_debug
 n01 acr_tools_i
 n02 acr_debug_i
@@ -77,9 +77,9 @@ n73 acr_scry_i
 n74 acr_quest_i
 n75 acr_chat_i
 n76 acr_combat_actions_i
-n77 acr_items_i
-n78 acr_language_i
-n79 acr_pchide_i
+n77 acr_pchide_i
+n78 acr_items_i
+n79 acr_language_i
 n80 acr_feat_i
 n81 acr_prc_bladesinger_i
 n82 acr_feat_events_i
@@ -896,6 +896,13 @@ f ffffffff ffffffff 000 i FEAT_ACR_COMBAT_EXPERTISE
 f ffffffff ffffffff 000 i FEAT_ACR_IMPROVED_COMBAT_EXPERTISE
 f ffffffff ffffffff 000 i FEAT_ACR_POWER_ATTACK
 f ffffffff ffffffff 000 i FEAT_ACR_IMPROVED_POWER_ATTACK
+f ffffffff ffffffff 000 i FEAT_CHAOS_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_LAW_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_COLD_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_MOON_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_SCALYKIND_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_SLIME_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_SPIDER_DOMAIN_POWER
 f ffffffff ffffffff 000 i IP_CONST_FEAT_DARKVISION
 f ffffffff ffffffff 000 i IP_CONST_FEAT_LOWLIGHTVISION
 f ffffffff ffffffff 000 i IPRP_FEATS_ALERTNESS
@@ -1227,6 +1234,7 @@ f ffffffff ffffffff 000 i ACR_SERVER_MISC_FIRST_ITERATE_DICTIONARY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_NEXT_ITERATE_DICTIONARY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_DELETE_DICTIONARY_KEY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_CLEAR_DICTIONARY
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_SALTED_MD5
 f ffffffff ffffffff 000 i ACR_ExecuteServerUpdaterScript
 f ffffffff ffffffff 003 v ACR_DictionarySet
 fp s
@@ -1270,6 +1278,8 @@ f ffffffff ffffffff 002 s ACR_EscapeStringDatabaseConnection
 fp i
 fp s
 f ffffffff ffffffff 000 s ACR_GetStackTrace
+f ffffffff ffffffff 001 s ACR_GetSaltedMD5
+fp s
 f 0000b8f9 0000b995 008 i ACR_CallServerMiscScript
 fp i
 fp i
@@ -1279,6 +1289,8 @@ fp s
 fp s
 fp o
 fp o
+f ffffffff ffffffff 000 s ACR__GetServerMiscReturnString
+f ffffffff ffffffff 000 o ACR__GetServerMiscReturnObject
 f ffffffff ffffffff 000 i BIT_0
 f ffffffff ffffffff 000 i BIT_1
 f ffffffff ffffffff 000 i BIT_2
@@ -2058,6 +2070,7 @@ f ffffffff ffffffff 000 i ACR_SERVER_IPC_DISABLE_CHARACTER_SAVE
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_ENABLE_CHARACTER_SAVE
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_PAUSE_HEARTBEAT
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_HANDLE_QUARANTINE_PLAYER
+f ffffffff ffffffff 000 i ACR_SERVER_IPC_HANDLE_GUI_RESYNC
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_CHAT_TELL
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_BROADCAST_NOTIFICATION
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_DISCONNECT_PLAYER
@@ -2098,6 +2111,9 @@ fp i
 fp s
 f ffffffff ffffffff 001 v ACR_SendOnlineUserList
 fp o
+f ffffffff ffffffff 002 v ACR_ServerIPC_OnGUIResynchronization
+fp i
+fp s
 f ffffffff ffffffff 002 v ACR_SendFeedbackError
 fp o
 fp s
@@ -7704,6 +7720,27 @@ fp i
 f ffffffff ffffffff 002 v CombatActionsOnEquip
 fp o
 fp o
+f ffffffff ffffffff 000 s ACR_PCH_RESREF
+f ffffffff ffffffff 000 i ACR_PCH_SLOT
+f ffffffff ffffffff 000 s ACR_PCH_PREFIX
+f ffffffff ffffffff 001 o ACR_InitializePCHide
+fp o
+f ffffffff ffffffff 001 o ACR_GetPCHide
+fp o
+f ffffffff ffffffff 001 v ACR_CopyPropertiesToHide
+fp o
+f ffffffff ffffffff 002 v ACR_RemoveAllPropertiesFromHide
+fp o
+fp i
+f ffffffff ffffffff 002 v ACR_AddFlagToHide
+fp o
+fp i
+f ffffffff ffffffff 002 i ACR_GetFlagFromHide
+fp o
+fp i
+f ffffffff ffffffff 002 i ACR_RemoveFlagFromHide
+fp o
+fp i
 f ffffffff ffffffff 000 s ACR_MOD_SPELLBOOK_RESREF
 f ffffffff ffffffff 000 s ACR_MOD_HOLYSYMBOL_RESREF
 f ffffffff ffffffff 000 s ACR_MOD_HEALKIT_RESREF
@@ -7745,6 +7782,14 @@ f ffffffff ffffffff 003 i ACR_HasActiveItemProperty
 fp o
 fp i
 fp i
+f ffffffff ffffffff 001 v _RecalcACP
+fp o
+f ffffffff ffffffff 002 v _ApplyACPSwim
+fp o
+fp o
+f ffffffff ffffffff 002 v _RemoveACPSwim
+fp o
+fp o
 f ffffffff ffffffff 000 s ACR_CHARACTER_REGION
 f ffffffff ffffffff 000 i ACR_REGIONS_START
 f ffffffff ffffffff 000 i ACR_REGIONS_END
@@ -7820,14 +7865,6 @@ f ffffffff ffffffff 001 s ACR_LangAbbToLangID
 fp s
 f ffffffff ffffffff 001 s _RemoveLangTag
 fp s
-f ffffffff ffffffff 000 s ACR_PCH_RESREF
-f ffffffff ffffffff 000 i ACR_PCH_SLOT
-f ffffffff ffffffff 001 o ACR_InitializePCHide
-fp o
-f ffffffff ffffffff 001 o ACR_GetPCHide
-fp o
-f ffffffff ffffffff 001 v ACR_CopyPropertiesToHide
-fp o
 f ffffffff ffffffff 000 f ACR_FEAT_HEARTBEAT_DELAY
 f ffffffff ffffffff 000 s ACR_FEAT_HEARTBEAT_FLAG
 f ffffffff ffffffff 000 s ACR_FEAT_HEARTBEAT_QUEUE
@@ -7837,16 +7874,22 @@ fp i
 f ffffffff ffffffff 002 i ACR_ContinueCustomFeatHeartbeat
 fp o
 fp i
+f ffffffff ffffffff 001 v ACR_FeatsOnPCLevelUp
+fp o
+f ffffffff ffffffff 001 v ACR_RefreshHide
+fp o
+f ffffffff ffffffff 001 v _RefreshFeatsOnHide
+fp o
 f ffffffff ffffffff 003 v _ContinueCustomFeatHeartbeat
 fp o
 fp i
 fp s
-f ffffffff ffffffff 001 v ACR_FeatsOnPCLevelUp
-fp o
-f ffffffff ffffffff 004 v _GiveSkillFocusBonus
+f ffffffff ffffffff 004 v _HandleFeatBonus
 fp o
 fp o
 fp i
+fp i
+f ffffffff ffffffff 001 e4 _SkillFocusBonus
 fp i
 f ffffffff ffffffff 002 v ACR_StartCustomFeatHeartbeat
 fp o
@@ -10008,6 +10051,9 @@ fp o
 f ffffffff ffffffff 001 v ACR_CheckBodyPartsOnLevelUp
 fp o
 f ffffffff ffffffff 000 v ACR_ModuleOnUnAcquireItem
+f ffffffff ffffffff 002 i _canXPForChatEvent
+fp o
+fp s
 f 00000103 00000117 000 v main
 f 0000000d 00000015 000 v #loader
 f 00000015 00000103 000 v #globals
@@ -10538,12 +10584,12 @@ l03 0000076 00000083 00000083
 l03 0000077 00000083 00000083
 l03 0000078 00000083 00000083
 l03 0000079 00000083 00000083
-l04 0000144 00000083 00000083
-l04 0000145 00000083 00000083
-l04 0000146 00000083 00000083
 l04 0000147 00000083 00000083
 l04 0000148 00000083 00000083
 l04 0000149 00000083 00000083
+l04 0000150 00000083 00000083
+l04 0000151 00000083 00000083
+l04 0000152 00000083 00000083
 l05 0000234 00000083 00000087
 l06 0000116 00000087 00000087
 l06 0000117 00000087 00000087
@@ -11352,24 +11398,24 @@ l25 0000732 0000617b 000061d4
 l25 0000733 000061fb 00006211
 l25 0000734 00006211 00006251
 l25 0000735 00006257 0000625f
-l26 0000730 0000625f 0000628b
-l26 0000731 0000628b 00006293
-l26 0000688 00006293 000062a3
-l26 0000689 000062a3 000062b3
-l26 0000691 000062b9 0000633c
-l26 0000692 0000633c 00006356
-l26 0000701 00006356 00006363
-l26 0000702 00006369 000063a4
-l26 0000704 000063a4 000063e4
-l26 0000705 000063e4 00006432
-l26 0000706 00006438 00006440
-l31 0000422 00006440 00006464
-l31 0000423 0000646a 00006470
-l31 0000426 00006470 0000648f
-l31 0000427 0000648f 000064c4
-l31 0000428 000064c4 000064e3
-l31 0000430 000064e3 000064ef
-l31 0000431 000064f5 000064fd
+l26 0000741 0000625f 0000628b
+l26 0000742 0000628b 00006293
+l26 0000699 00006293 000062a3
+l26 0000700 000062a3 000062b3
+l26 0000702 000062b9 0000633c
+l26 0000703 0000633c 00006356
+l26 0000712 00006356 00006363
+l26 0000713 00006369 000063a4
+l26 0000715 000063a4 000063e4
+l26 0000716 000063e4 00006432
+l26 0000717 00006438 00006440
+l31 0000442 00006440 00006464
+l31 0000443 0000646a 00006470
+l31 0000446 00006470 0000648f
+l31 0000447 0000648f 000064c4
+l31 0000448 000064c4 000064e3
+l31 0000450 000064e3 000064ef
+l31 0000451 000064f5 000064fd
 l75 0000060 000064fd 0000650c
 l75 0000065 00006518 00006520
 l25 0001341 00006520 0000652e
@@ -11384,17 +11430,17 @@ l25 0001503 00006599 000065bf
 l25 0001504 000065c5 000065cb
 l25 0001506 000065cb 000065f4
 l25 0001507 000065f4 000065fc
-l04 0000799 000065fc 0000663a
-l04 0000809 0000663a 00006642
-l04 0000830 00006642 0000664f
-l04 0000831 0000664f 0000665c
-l04 0000832 0000665c 00006669
-l04 0000833 00006669 00006676
-l04 0000834 00006676 00006683
-l04 0000835 00006683 00006690
-l04 0000836 00006690 0000669d
-l04 0000838 0000669d 000066de
-l04 0000839 000066de 000066e6
+l04 0000822 000065fc 0000663a
+l04 0000832 0000663a 00006642
+l04 0000853 00006642 0000664f
+l04 0000854 0000664f 0000665c
+l04 0000855 0000665c 00006669
+l04 0000856 00006669 00006676
+l04 0000857 00006676 00006683
+l04 0000858 00006683 00006690
+l04 0000859 00006690 0000669d
+l04 0000861 0000669d 000066de
+l04 0000862 000066de 000066e6
 l85 0000457 000066e6 0000670d
 l85 0000458 0000670d 0000670f
 l85 0000461 0000670f 00006721
@@ -11994,17 +12040,17 @@ l72 0001647 0000b84b 0000b859
 l72 0001649 0000b85f 0000b867
 l72 0001641 0000b867 0000b8af
 l72 0001642 0000b8af 0000b8b7
-l29 0000391 0000b8b7 0000b8f1
-l29 0000399 0000b8f1 0000b8f9
-l29 0000539 0000b8f9 0000b906
-l29 0000540 0000b906 0000b913
-l29 0000541 0000b913 0000b920
-l29 0000542 0000b920 0000b92d
-l29 0000543 0000b92d 0000b93a
-l29 0000544 0000b93a 0000b947
-l29 0000545 0000b947 0000b954
-l29 0000547 0000b954 0000b98d
-l29 0000548 0000b98d 0000b995
+l29 0000395 0000b8b7 0000b8f1
+l29 0000403 0000b8f1 0000b8f9
+l29 0000548 0000b8f9 0000b906
+l29 0000549 0000b906 0000b913
+l29 0000550 0000b913 0000b920
+l29 0000551 0000b920 0000b92d
+l29 0000552 0000b92d 0000b93a
+l29 0000553 0000b93a 0000b947
+l29 0000554 0000b947 0000b954
+l29 0000556 0000b954 0000b98d
+l29 0000557 0000b98d 0000b995
 l84 0000149 0000b995 0000b9b9
 l84 0000150 0000b9b9 0000b9de
 l84 0000151 0000b9de 0000b9e6

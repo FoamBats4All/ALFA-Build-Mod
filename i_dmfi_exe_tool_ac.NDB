@@ -1,5 +1,5 @@
 NDB V1.0
-0000068 0000011 0004384 0000037 0000170
+0000068 0000011 0004397 0000037 0000170
 n00 dmfi_inc_conv
 n01 ginc_debug
 n02 acr_tools_i
@@ -2644,6 +2644,13 @@ f ffffffff ffffffff 000 i FEAT_ACR_COMBAT_EXPERTISE
 f ffffffff ffffffff 000 i FEAT_ACR_IMPROVED_COMBAT_EXPERTISE
 f ffffffff ffffffff 000 i FEAT_ACR_POWER_ATTACK
 f ffffffff ffffffff 000 i FEAT_ACR_IMPROVED_POWER_ATTACK
+f ffffffff ffffffff 000 i FEAT_CHAOS_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_LAW_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_COLD_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_MOON_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_SCALYKIND_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_SLIME_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_SPIDER_DOMAIN_POWER
 f ffffffff ffffffff 000 i IP_CONST_FEAT_DARKVISION
 f ffffffff ffffffff 000 i IP_CONST_FEAT_LOWLIGHTVISION
 f ffffffff ffffffff 000 i IPRP_FEATS_ALERTNESS
@@ -3200,6 +3207,7 @@ f ffffffff ffffffff 000 i ACR_SERVER_MISC_FIRST_ITERATE_DICTIONARY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_NEXT_ITERATE_DICTIONARY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_DELETE_DICTIONARY_KEY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_CLEAR_DICTIONARY
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_SALTED_MD5
 f ffffffff ffffffff 000 i ACR_ExecuteServerUpdaterScript
 f ffffffff ffffffff 003 v ACR_DictionarySet
 fp s
@@ -3243,6 +3251,8 @@ f ffffffff ffffffff 002 s ACR_EscapeStringDatabaseConnection
 fp i
 fp s
 f ffffffff ffffffff 000 s ACR_GetStackTrace
+f ffffffff ffffffff 001 s ACR_GetSaltedMD5
+fp s
 f ffffffff ffffffff 008 i ACR_CallServerMiscScript
 fp i
 fp i
@@ -3252,6 +3262,8 @@ fp s
 fp s
 fp o
 fp o
+f ffffffff ffffffff 000 s ACR__GetServerMiscReturnString
+f ffffffff ffffffff 000 o ACR__GetServerMiscReturnObject
 f ffffffff ffffffff 000 i BIT_0
 f ffffffff ffffffff 000 i BIT_1
 f ffffffff ffffffff 000 i BIT_2
@@ -4031,6 +4043,7 @@ f ffffffff ffffffff 000 i ACR_SERVER_IPC_DISABLE_CHARACTER_SAVE
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_ENABLE_CHARACTER_SAVE
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_PAUSE_HEARTBEAT
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_HANDLE_QUARANTINE_PLAYER
+f ffffffff ffffffff 000 i ACR_SERVER_IPC_HANDLE_GUI_RESYNC
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_CHAT_TELL
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_BROADCAST_NOTIFICATION
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_DISCONNECT_PLAYER
@@ -4071,6 +4084,9 @@ fp i
 fp s
 f ffffffff ffffffff 001 v ACR_SendOnlineUserList
 fp o
+f ffffffff ffffffff 002 v ACR_ServerIPC_OnGUIResynchronization
+fp i
+fp s
 f ffffffff ffffffff 002 v ACR_SendFeedbackError
 fp o
 fp s
@@ -7363,12 +7379,12 @@ l04 0000062 0000004c 0000005a
 l04 0000064 0000005a 00000069
 l04 0000065 00000069 00000078
 l04 0000066 00000078 00000087
-l05 0000144 00000087 00000087
-l05 0000145 00000087 00000087
-l05 0000146 00000087 00000087
 l05 0000147 00000087 00000087
 l05 0000148 00000087 00000087
 l05 0000149 00000087 00000087
+l05 0000150 00000087 00000087
+l05 0000151 00000087 00000087
+l05 0000152 00000087 00000087
 l06 0000116 00000087 00000087
 l06 0000117 00000087 00000087
 l06 0000118 00000087 00000087
@@ -7427,8 +7443,8 @@ l14 0000869 00000271 0000028b
 l14 0000871 0000028b 000002cd
 l14 0000872 000002cd 000002e9
 l14 0000873 000002ef 000002f7
-l12 0001001 000002f7 00000344
-l12 0001002 00000344 0000034c
+l12 0001009 000002f7 00000344
+l12 0001010 00000344 0000034c
 l24 0000585 0000034c 0000034e
 l24 0000586 0000034e 00000350
 l24 0000587 00000350 00000352

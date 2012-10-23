@@ -1,5 +1,5 @@
 NDB V1.0
-0000104 0000024 0005695 0000013 0000114
+0000104 0000024 0005720 0000013 0000114
 n00 ginc_debug
 n01 acr_tools_i
 n02 acr_debug_i
@@ -77,9 +77,9 @@ n73 acr_scry_i
 n74 acr_quest_i
 n75 acr_chat_i
 n76 acr_combat_actions_i
-n77 acr_items_i
-n78 acr_language_i
-n79 acr_pchide_i
+n77 acr_pchide_i
+n78 acr_items_i
+n79 acr_language_i
 n80 acr_feat_i
 n81 acr_prc_bladesinger_i
 n82 acr_feat_events_i
@@ -896,6 +896,13 @@ f ffffffff ffffffff 000 i FEAT_ACR_COMBAT_EXPERTISE
 f ffffffff ffffffff 000 i FEAT_ACR_IMPROVED_COMBAT_EXPERTISE
 f ffffffff ffffffff 000 i FEAT_ACR_POWER_ATTACK
 f ffffffff ffffffff 000 i FEAT_ACR_IMPROVED_POWER_ATTACK
+f ffffffff ffffffff 000 i FEAT_CHAOS_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_LAW_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_COLD_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_MOON_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_SCALYKIND_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_SLIME_DOMAIN_POWER
+f ffffffff ffffffff 000 i FEAT_SPIDER_DOMAIN_POWER
 f ffffffff ffffffff 000 i IP_CONST_FEAT_DARKVISION
 f ffffffff ffffffff 000 i IP_CONST_FEAT_LOWLIGHTVISION
 f ffffffff ffffffff 000 i IPRP_FEATS_ALERTNESS
@@ -1227,6 +1234,7 @@ f ffffffff ffffffff 000 i ACR_SERVER_MISC_FIRST_ITERATE_DICTIONARY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_NEXT_ITERATE_DICTIONARY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_DELETE_DICTIONARY_KEY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_CLEAR_DICTIONARY
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_SALTED_MD5
 f ffffffff ffffffff 000 i ACR_ExecuteServerUpdaterScript
 f ffffffff ffffffff 003 v ACR_DictionarySet
 fp s
@@ -1270,6 +1278,8 @@ f ffffffff ffffffff 002 s ACR_EscapeStringDatabaseConnection
 fp i
 fp s
 f ffffffff ffffffff 000 s ACR_GetStackTrace
+f ffffffff ffffffff 001 s ACR_GetSaltedMD5
+fp s
 f ffffffff ffffffff 008 i ACR_CallServerMiscScript
 fp i
 fp i
@@ -1279,6 +1289,8 @@ fp s
 fp s
 fp o
 fp o
+f ffffffff ffffffff 000 s ACR__GetServerMiscReturnString
+f ffffffff ffffffff 000 o ACR__GetServerMiscReturnObject
 f ffffffff ffffffff 000 i BIT_0
 f ffffffff ffffffff 000 i BIT_1
 f ffffffff ffffffff 000 i BIT_2
@@ -2058,6 +2070,7 @@ f ffffffff ffffffff 000 i ACR_SERVER_IPC_DISABLE_CHARACTER_SAVE
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_ENABLE_CHARACTER_SAVE
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_PAUSE_HEARTBEAT
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_HANDLE_QUARANTINE_PLAYER
+f ffffffff ffffffff 000 i ACR_SERVER_IPC_HANDLE_GUI_RESYNC
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_CHAT_TELL
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_BROADCAST_NOTIFICATION
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_DISCONNECT_PLAYER
@@ -2098,6 +2111,9 @@ fp i
 fp s
 f ffffffff ffffffff 001 v ACR_SendOnlineUserList
 fp o
+f ffffffff ffffffff 002 v ACR_ServerIPC_OnGUIResynchronization
+fp i
+fp s
 f ffffffff ffffffff 002 v ACR_SendFeedbackError
 fp o
 fp s
@@ -7704,6 +7720,27 @@ fp i
 f ffffffff ffffffff 002 v CombatActionsOnEquip
 fp o
 fp o
+f ffffffff ffffffff 000 s ACR_PCH_RESREF
+f ffffffff ffffffff 000 i ACR_PCH_SLOT
+f ffffffff ffffffff 000 s ACR_PCH_PREFIX
+f ffffffff ffffffff 001 o ACR_InitializePCHide
+fp o
+f ffffffff ffffffff 001 o ACR_GetPCHide
+fp o
+f ffffffff ffffffff 001 v ACR_CopyPropertiesToHide
+fp o
+f ffffffff ffffffff 002 v ACR_RemoveAllPropertiesFromHide
+fp o
+fp i
+f ffffffff ffffffff 002 v ACR_AddFlagToHide
+fp o
+fp i
+f ffffffff ffffffff 002 i ACR_GetFlagFromHide
+fp o
+fp i
+f ffffffff ffffffff 002 i ACR_RemoveFlagFromHide
+fp o
+fp i
 f ffffffff ffffffff 000 s ACR_MOD_SPELLBOOK_RESREF
 f ffffffff ffffffff 000 s ACR_MOD_HOLYSYMBOL_RESREF
 f ffffffff ffffffff 000 s ACR_MOD_HEALKIT_RESREF
@@ -7745,6 +7782,14 @@ f ffffffff ffffffff 003 i ACR_HasActiveItemProperty
 fp o
 fp i
 fp i
+f ffffffff ffffffff 001 v _RecalcACP
+fp o
+f ffffffff ffffffff 002 v _ApplyACPSwim
+fp o
+fp o
+f ffffffff ffffffff 002 v _RemoveACPSwim
+fp o
+fp o
 f ffffffff ffffffff 000 s ACR_CHARACTER_REGION
 f ffffffff ffffffff 000 i ACR_REGIONS_START
 f ffffffff ffffffff 000 i ACR_REGIONS_END
@@ -7820,14 +7865,6 @@ f ffffffff ffffffff 001 s ACR_LangAbbToLangID
 fp s
 f ffffffff ffffffff 001 s _RemoveLangTag
 fp s
-f ffffffff ffffffff 000 s ACR_PCH_RESREF
-f ffffffff ffffffff 000 i ACR_PCH_SLOT
-f ffffffff ffffffff 001 o ACR_InitializePCHide
-fp o
-f ffffffff ffffffff 001 o ACR_GetPCHide
-fp o
-f ffffffff ffffffff 001 v ACR_CopyPropertiesToHide
-fp o
 f ffffffff ffffffff 000 f ACR_FEAT_HEARTBEAT_DELAY
 f ffffffff ffffffff 000 s ACR_FEAT_HEARTBEAT_FLAG
 f ffffffff ffffffff 000 s ACR_FEAT_HEARTBEAT_QUEUE
@@ -7837,16 +7874,22 @@ fp i
 f ffffffff ffffffff 002 i ACR_ContinueCustomFeatHeartbeat
 fp o
 fp i
+f ffffffff ffffffff 001 v ACR_FeatsOnPCLevelUp
+fp o
+f ffffffff ffffffff 001 v ACR_RefreshHide
+fp o
+f ffffffff ffffffff 001 v _RefreshFeatsOnHide
+fp o
 f ffffffff ffffffff 003 v _ContinueCustomFeatHeartbeat
 fp o
 fp i
 fp s
-f ffffffff ffffffff 001 v ACR_FeatsOnPCLevelUp
-fp o
-f ffffffff ffffffff 004 v _GiveSkillFocusBonus
+f ffffffff ffffffff 004 v _HandleFeatBonus
 fp o
 fp o
 fp i
+fp i
+f ffffffff ffffffff 001 e4 _SkillFocusBonus
 fp i
 f ffffffff ffffffff 002 v ACR_StartCustomFeatHeartbeat
 fp o
@@ -10008,6 +10051,9 @@ fp o
 f ffffffff ffffffff 001 v ACR_CheckBodyPartsOnLevelUp
 fp o
 f ffffffff ffffffff 000 v ACR_ModuleOnUnAcquireItem
+f ffffffff ffffffff 002 i _canXPForChatEvent
+fp o
+fp s
 f 00000103 0000010b 000 v main
 f 0000000d 00000015 000 v #loader
 f 00000015 00000103 000 v #globals
@@ -10038,12 +10084,12 @@ l03 0000076 00000083 00000083
 l03 0000077 00000083 00000083
 l03 0000078 00000083 00000083
 l03 0000079 00000083 00000083
-l04 0000144 00000083 00000083
-l04 0000145 00000083 00000083
-l04 0000146 00000083 00000083
 l04 0000147 00000083 00000083
 l04 0000148 00000083 00000083
 l04 0000149 00000083 00000083
+l04 0000150 00000083 00000083
+l04 0000151 00000083 00000083
+l04 0000152 00000083 00000083
 l05 0000234 00000083 00000087
 l06 0000116 00000087 00000087
 l06 0000117 00000087 00000087
