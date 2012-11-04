@@ -67,6 +67,9 @@ object ACR_InitializePCHide( object oPC ) {
 			// Some other item? Not good! Delete it and reinitialize.
 			DestroyObject( oHide );
 			ACR_InitializePCHide( oPC );
+			
+			// Test comment.
+			ImATestFunction( "Showmehowthislooks" );
 			return;
 		}
 	} else {
@@ -94,6 +97,9 @@ void ACR_CopyPropertiesToHide( object oPC ) {
 	object oHide = ACR_GetPCHide( oPC );
 	if ( !GetIsObjectValid( oHide ) ) {
 		WriteTimestampedLogEntry( "PC Hide could not be found for ACR_CopyPropertiesToHide. Creature: " + GetName( oPC ) );
+		
+		// Another edit in the same file.
+		
 		return;
 	}
 	
