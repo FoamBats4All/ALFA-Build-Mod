@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "acr_mod_events_i"
+#include "acr_interface_i"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constants ///////////////////////////////////////////////////////////////////
@@ -50,9 +51,15 @@ int StartingConditional(object oSpeaker, object oTarget, int nMode, string sText
     //SendMessageToPC(oTarget, "You heard "+GetName(oSpeaker)+" say: "+sText);
 
     // ACR hook for OnChat event. Run this first in case the text needs to be suppressed.
-    if (ACR_ModuleOnChat(oSpeaker, oTarget, nMode, sText) != TRUE) {
-        return FALSE;
-    }
+//    if (ACR_ModuleOnChat(oSpeaker, oTarget, nMode, sText) != TRUE) {
+//        return FALSE;
+//    }
+
+	if ( GetStringLeft( sText, 1 ) == "#" ) {
+		string sCommand = GetStringRight(GetStringLowerCase(sText), GetStringLength(sText)-1);
+		ACR_FI_ParseAndRunCommand( oSpeaker, sCommand );
+	}
+
     // Custom code goes below this line. Module scripts can supress chat text by returning false here.
     return TRUE;
 }

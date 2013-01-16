@@ -1,5 +1,5 @@
 NDB V1.0
-0000105 0000024 0005736 0000600 0001838
+0000105 0000024 0005742 0000600 0001839
 n00 ginc_debug
 n01 acr_tools_i
 n02 acr_debug_i
@@ -4198,7 +4198,7 @@ fp o
 f ffffffff ffffffff 002 v ACR_LogOfflineMessage
 fp o
 fp s
-f 0000faf1 0000fdd2 001 v ACR_ReportOfflineMessages
+f 0000fb6a 0000fe4b 001 v ACR_ReportOfflineMessages
 fp o
 f ffffffff ffffffff 003 v _playerRestoreLocation
 fp o
@@ -8093,17 +8093,27 @@ fp i
 f ffffffff ffffffff 001 v ACR_WealthReportLog
 fp o
 f ffffffff ffffffff 000 s ACR_UGUI_SCENE
-f ffffffff ffffffff 000 i ACR_UGUI_ACTION_INVALID
-f ffffffff ffffffff 000 i ACR_UGUI_ACTION_UI
-f ffffffff ffffffff 000 i ACR_UGUI_ACTION_UI_CREATE
-f ffffffff ffffffff 000 i ACR_UGUI_ACTION_UI_ADD
-f ffffffff ffffffff 000 i ACR_UGUI_ACTION_UI_BACKOUT
-f ffffffff ffffffff 000 i ACR_UGUI_ACTION_UI_REMOVE
-f ffffffff ffffffff 000 i ACR_UGUI_ACTION_UI_DESTROY
-f ffffffff ffffffff 000 i ACR_UGUI_ACTION_UI_UPDATE
-f ffffffff ffffffff 000 i ACR_UGUI_ACTION_UI_OPEN_CAT
-f 0000faa6 0000faf1 001 v ACR_OpenUniversalGUI
+f ffffffff ffffffff 000 s ACR_UGUI_FILE
+f ffffffff ffffffff 000 s ACR_UGUI_MAINOBJ
+f ffffffff ffffffff 000 s ACR_UGUI_CURRENT_CAT
+f ffffffff ffffffff 000 s ACR_UGUI_CURRENT_SUBCAT
+f ffffffff ffffffff 000 i ACR_UGUI_ACT_CALL_INTERFACE
+f ffffffff ffffffff 000 i ACR_UGUI_ACT_SET_COLLAPSED
+f ffffffff ffffffff 000 i ACR_UGUI_ACT_OPEN_CATEGORY
+f ffffffff ffffffff 000 i ACR_UGUI_ACT_OPEN_SUBCATEGORY
+f 0000faa6 0000fb6a 001 v ACR_OpenUniversalGUI
 fp o
+f ffffffff ffffffff 002 v ACR_UGUI_SetCollapsed
+fp o
+fp i
+f ffffffff ffffffff 002 v ACR_UGUI_SetCurrentCategory
+fp o
+fp s
+f ffffffff ffffffff 001 v ACR_UGUI_CloseCurrentSubcategory
+fp o
+f ffffffff ffffffff 002 v ACR_UGUI_SetCurrentSubcategory
+fp o
+fp s
 f ffffffff ffffffff 000 f _SPAWN_AREA_DESPAWN_DELAY
 f ffffffff ffffffff 000 f _SPAWN_REFRESH_DELAY
 f ffffffff ffffffff 000 i _SPAWN_PRESPAWN_SEAMLESS
@@ -8794,7 +8804,14 @@ fp o
 f ffffffff ffffffff 000 i ACR_TRADESCROLL_COST
 f ffffffff ffffffff 000 s ACR_TRADESCROLL_RESREF
 f ffffffff ffffffff 000 s ACR_TRADESCROLL_TAG
+f ffffffff ffffffff 000 s ACR_TRADESCROLL_VAR
+f ffffffff ffffffff 002 v ACR_CreateTradeScroll
+fp o
+fp i
 f ffffffff ffffffff 000 i _DoTradeScrollSpellHook
+f ffffffff ffffffff 002 v ACR_LearnTradescroll
+fp o
+fp o
 f ffffffff ffffffff 000 f ACR_CRAFTING_XP_PER_GP
 f ffffffff ffffffff 000 i IPRP_SPELL_ROWS
 f ffffffff ffffffff 000 i ACR_CRAFTING_DAILY_MAGIC_VALUE
@@ -10671,12 +10688,12 @@ v 0000f74a 0000f9eb 00000000 o PC
 v 0000f9f3 0000fa31 00000000 i #retval
 v 0000f9f3 0000fa2b 00000004 o PC
 v 0000fa33 0000fa9e 00000000 o oPC
-v 0000faa6 0000fae9 00000000 o oPC
-v 0000faf1 0000fdca 00000000 o oPC
-v 0000fb98 0000fd63 00000004 s sDate
-v 0000fba6 0000fd63 00000008 s sDateIG
-v 0000fbb4 0000fd63 0000000c s sMessage
-v 0000fbc4 0000fd63 00000010 s sOutput
+v 0000faa6 0000fb62 00000000 o oPC
+v 0000fb6a 0000fe43 00000000 o oPC
+v 0000fc11 0000fddc 00000004 s sDate
+v 0000fc1f 0000fddc 00000008 s sDateIG
+v 0000fc2d 0000fddc 0000000c s sMessage
+v 0000fc3d 0000fddc 00000010 s sOutput
 l00 0000048 00000015 0000002c
 l01 0000115 0000002c 0000002c
 l01 0000116 0000002c 0000002c
@@ -12493,25 +12510,26 @@ l103 0000913 0000fa33 0000fa41
 l103 0000915 0000fa41 0000fa5a
 l103 0000917 0000fa60 0000fa9e
 l103 0000919 0000fa9e 0000faa6
-l87 0000065 0000faa6 0000fad6
-l87 0000068 0000fad6 0000fae3
-l87 0000071 0000fae9 0000faf1
-l40 0001021 0000faf1 0000fb00
-l40 0001022 0000fb06 0000fb0c
-l40 0001026 0000fb0c 0000fb7d
-l40 0001027 0000fb7d 0000fb98
-l40 0001029 0000fb98 0000fba6
-l40 0001030 0000fba6 0000fbb4
-l40 0001031 0000fbb4 0000fbc2
-l40 0001034 0000fbc2 0000fbc4
-l40 0001035 0000fbc4 0000fbf0
-l40 0001036 0000fbf6 0000fc4f
-l40 0001037 0000fc55 0000fc57
-l40 0001038 0000fc6b 0000fcb1
-l40 0001039 0000fcb7 0000fcb9
-l40 0001040 0000fccd 0000fd13
-l40 0001041 0000fd19 0000fd1b
-l40 0001042 0000fd1b 0000fd4e
-l40 0001046 0000fd4e 0000fd63
-l40 0001050 0000fd6f 0000fdca
-l40 0001051 0000fdca 0000fdd2
+l87 0000080 0000faa6 0000fae0
+l87 0000085 0000fae0 0000fb23
+l87 0000086 0000fb23 0000fb62
+l87 0000088 0000fb62 0000fb6a
+l40 0001021 0000fb6a 0000fb79
+l40 0001022 0000fb7f 0000fb85
+l40 0001026 0000fb85 0000fbf6
+l40 0001027 0000fbf6 0000fc11
+l40 0001029 0000fc11 0000fc1f
+l40 0001030 0000fc1f 0000fc2d
+l40 0001031 0000fc2d 0000fc3b
+l40 0001034 0000fc3b 0000fc3d
+l40 0001035 0000fc3d 0000fc69
+l40 0001036 0000fc6f 0000fcc8
+l40 0001037 0000fcce 0000fcd0
+l40 0001038 0000fce4 0000fd2a
+l40 0001039 0000fd30 0000fd32
+l40 0001040 0000fd46 0000fd8c
+l40 0001041 0000fd92 0000fd94
+l40 0001042 0000fd94 0000fdc7
+l40 0001046 0000fdc7 0000fddc
+l40 0001050 0000fde8 0000fe43
+l40 0001051 0000fe43 0000fe4b
