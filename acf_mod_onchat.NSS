@@ -56,8 +56,9 @@ int StartingConditional(object oSpeaker, object oTarget, int nMode, string sText
 //    }
 
 	if ( GetStringLeft( sText, 1 ) == "#" ) {
-		string sCommand = GetStringRight(GetStringLowerCase(sText), GetStringLength(sText)-1);
+		string sCommand = GetStringRight( sText, GetStringLength( sText ) - 1 );
 		ACR_FI_ParseAndRunCommand( oSpeaker, sCommand );
+		return FALSE;
 	}
 
     // Custom code goes below this line. Module scripts can supress chat text by returning false here.

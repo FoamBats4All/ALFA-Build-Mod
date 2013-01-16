@@ -24,10 +24,7 @@
 // Includes ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "acr_list_i"
 #include "acr_mod_events_i"
-#include "acr_pps_i"
-#include "010_location_i"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constants ///////////////////////////////////////////////////////////////////
@@ -53,16 +50,5 @@
 
 void main() 
 {
-    string id = "players";
-    int index;
-    object oEnterer;
-	
     ACR_ModuleOnClientEnter();
-
-    // Custom code goes below this line.
-    oEnterer = GetEnteringObject();
-    if (GetIsDM(oEnterer)) {
-        // DM entry- update the ServerID for the DM avatar so it logs properly
-        ACR_PCUpdateStatus(oEnterer, TRUE);
-    }
 }

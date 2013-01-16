@@ -1,7 +1,0 @@
-
-int StartingConditional()
-{
-
-	    return FALSE;
-
-}
