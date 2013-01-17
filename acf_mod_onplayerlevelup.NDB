@@ -1,5 +1,5 @@
 NDB V1.0
-0000105 0000024 0005744 0000410 0001980
+0000105 0000024 0005745 0000410 0001980
 n00 ginc_debug
 n01 acr_tools_i
 n02 acr_debug_i
@@ -16,10 +16,10 @@ n12 acr_death_i
 n13 acr_wealth_i
 n14 nwnx_craft
 n15 x2_inc_craft
-n16 acr_craft_progress_i
-n17 x0_i0_stringlib
-n18 ginc_param_const
-n19 ginc_crafting
+n16 x0_i0_stringlib
+n17 ginc_param_const
+n18 ginc_crafting
+n19 acr_craft_progress_i
 n20 nwnx_objectattributes_include
 n21 acr_settings_i
 n22 acr_array_i
@@ -187,6 +187,22 @@ s 03 craft_receipe_struct
 sf i nMode
 sf o oMajor
 sf o oMinor
+s 05 sStringTokenizer
+sf i nRemainingLen
+sf s sOrig
+sf s sRemaining
+sf s sDelim
+sf s sLastTok
+s 02 rNameValuePair
+sf s sName
+sf i iValue
+s 02 rNameValueStringPair
+sf s sName
+sf s sValue
+s 03 IntVector
+sf i x
+sf i y
+sf i z
 s 16 CraftingStatus
 sf i gpInvested
 sf i xpInvested
@@ -210,22 +226,6 @@ sf i xp
 s 02 ItemPropertyRequirements
 sf i nSpellId
 sf i nCasterLevel
-s 05 sStringTokenizer
-sf i nRemainingLen
-sf s sOrig
-sf s sRemaining
-sf s sDelim
-sf s sLastTok
-s 02 rNameValuePair
-sf s sName
-sf i iValue
-s 02 rNameValueStringPair
-sf s sName
-sf s sValue
-s 03 IntVector
-sf i x
-sf i y
-sf i z
 s 04 XPObjectAttributes_Color
 sf f r
 sf f g
@@ -8816,79 +8816,15 @@ f ffffffff ffffffff 000 i _DoTradeScrollSpellHook
 f ffffffff ffffffff 002 v ACR_LearnTradescroll
 fp o
 fp o
-f ffffffff ffffffff 000 f ACR_CRAFTING_XP_PER_GP
-f ffffffff ffffffff 000 i IPRP_SPELL_ROWS
-f ffffffff ffffffff 000 i ACR_CRAFTING_DAILY_MAGIC_VALUE
-f ffffffff ffffffff 000 s ACR_CRAFT_PROJECT_PREFIX
-f ffffffff ffffffff 000 s ACR_CRAFT_GP_INVESTED
-f ffffffff ffffffff 000 s ACR_CRAFT_NAME
-f ffffffff ffffffff 000 s ACR_CRAFT_DESCRIPTION
-f ffffffff ffffffff 000 s ACR_CRAFT_XP_INVESTED
-f ffffffff ffffffff 000 s ACR_CRAFT_PLOT_FLAG
-f ffffffff ffffffff 000 s ACR_CRAFT_PROPERTY_ACTIVATION
-f ffffffff ffffffff 000 s ACR_CRAFT_SPELLS_IMBUED
-f ffffffff ffffffff 000 s ACR_CRAFT_STACK_SIZE
-f ffffffff ffffffff 000 s ACR_CRAFT_TAG
-f ffffffff ffffffff 000 s ACR_CRAFT_COST
-f ffffffff ffffffff 000 s ACR_CRAFT_MINIMUM_CASTER_LEVEL
-f ffffffff ffffffff 000 s ACR_CRAFT_XP_COST
-f ffffffff ffffffff 000 s ACR_CRAFT_CAST_SPELL_IPS
-f ffffffff ffffffff 002 v ACR_CraftOnEquipItem
-fp o
-fp o
-f ffffffff ffffffff 001 o MakeItemFromCraftingProject
-fp t0015
-f ffffffff ffffffff 002 o MakeCraftingProjectFromItem
-fp o
-fp i
-f ffffffff ffffffff 001 i GetIsCraftingProject
-fp o
-f ffffffff ffffffff 001 i CraftingFeatNeeded
-fp o
-f ffffffff ffffffff 001 s GetCraftingSpellsRequired
-fp o
-f ffffffff ffffffff 001 s GetCraftingProgressSummary
-fp t0015
-f ffffffff ffffffff 001 s _ReadableSpellList
-fp s
-f ffffffff ffffffff 002 i _GetCraftingSpellForItemProperty
-fp o
-fp e4
-f ffffffff ffffffff 002 i _GetMinimumCasterLevel
-fp o
-fp i
-f ffffffff ffffffff 004 i ACR_CraftingSpellhook
-fp o
-fp o
-fp o
-fp i
-f ffffffff ffffffff 001 i _GetCraftingXPCost
-fp i
-f ffffffff ffffffff 001 t0015 GetCraftingStatus
-fp o
-f ffffffff ffffffff 001 v SaveCraftingStatus
-fp t0015
-f ffffffff ffffffff 001 v DeleteCraftingStatus
-fp o
-f ffffffff ffffffff 001 i XpAvailableForCrafting
-fp o
-f ffffffff ffffffff 003 t0016 PossibleProgress
-fp o
-fp t0015
-fp i
-f ffffffff ffffffff 001 v CraftingOnPCLoaded
-fp o
-f ffffffff ffffffff 001 i GetIsProjectReadyForWork
-fp t0015
-f ffffffff ffffffff 002 t0018 GetStringTokenizer
+f ffffffff ffffffff 002 t0015 GetStringTokenizer
 fp s
 fp s
 f ffffffff ffffffff 001 i HasMoreTokens
-fp t0018
-f ffffffff ffffffff 001 t0018 AdvanceToNextToken
-fp t0018
+fp t0015
+f ffffffff ffffffff 001 t0015 AdvanceToNextToken
+fp t0015
 f ffffffff ffffffff 001 s GetNextToken
-fp t0018
+fp t0015
 f ffffffff ffffffff 002 i GetNumberTokens
 fp s
 fp s
@@ -8896,7 +8832,7 @@ f ffffffff ffffffff 003 s GetTokenByPosition
 fp s
 fp s
 fp i
-f ffffffff ffffffff 002 t0019 GetFirstAlpha
+f ffffffff ffffffff 002 t0016 GetFirstAlpha
 fp s
 fp s
 f ffffffff ffffffff 003 s RemoveListElement
@@ -9171,7 +9107,7 @@ f ffffffff ffffffff 001 i GetSkillConstant
 fp i
 f ffffffff ffffffff 001 o GetSoundObjectByTag
 fp s
-f ffffffff ffffffff 002 t0020 GetNameValuePairStruct
+f ffffffff ffffffff 002 t0017 GetNameValuePairStruct
 fp s
 fp s
 f ffffffff ffffffff 002 s GetNVPValue
@@ -9424,7 +9360,7 @@ fp s
 fp s
 fp s
 fp o
-f ffffffff ffffffff 001 t0021 GetRowIndexes
+f ffffffff ffffffff 001 t0018 GetRowIndexes
 fp s
 f ffffffff ffffffff 004 i GetCrafting2DARecipeMatch
 fp s
@@ -9855,6 +9791,73 @@ fp i
 fp f
 fp e0
 fp i
+f ffffffff ffffffff 000 f ACR_CRAFTING_XP_PER_GP
+f ffffffff ffffffff 000 i IPRP_SPELL_ROWS
+f ffffffff ffffffff 000 i ACR_CRAFTING_DAILY_MAGIC_VALUE
+f ffffffff ffffffff 000 s ACR_CRAFT_PROJECT_PREFIX
+f ffffffff ffffffff 000 s ACR_CRAFT_GP_INVESTED
+f ffffffff ffffffff 000 s ACR_CRAFT_NAME
+f ffffffff ffffffff 000 s ACR_CRAFT_DESCRIPTION
+f ffffffff ffffffff 000 s ACR_CRAFT_XP_INVESTED
+f ffffffff ffffffff 000 s ACR_CRAFT_PLOT_FLAG
+f ffffffff ffffffff 000 s ACR_CRAFT_PROPERTY_ACTIVATION
+f ffffffff ffffffff 000 s ACR_CRAFT_SPELLS_IMBUED
+f ffffffff ffffffff 000 s ACR_CRAFT_STACK_SIZE
+f ffffffff ffffffff 000 s ACR_CRAFT_TAG
+f ffffffff ffffffff 000 s ACR_CRAFT_COST
+f ffffffff ffffffff 000 s ACR_CRAFT_MINIMUM_CASTER_LEVEL
+f ffffffff ffffffff 000 s ACR_CRAFT_XP_COST
+f ffffffff ffffffff 000 s ACR_CRAFT_CAST_SPELL_IPS
+f ffffffff ffffffff 002 v ACR_DoCrafting
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_CraftOnEquipItem
+fp o
+fp o
+f ffffffff ffffffff 001 o MakeItemFromCraftingProject
+fp t0019
+f ffffffff ffffffff 002 o MakeCraftingProjectFromItem
+fp o
+fp i
+f ffffffff ffffffff 001 i GetIsCraftingProject
+fp o
+f ffffffff ffffffff 001 i CraftingFeatNeeded
+fp o
+f ffffffff ffffffff 001 s GetCraftingSpellsRequired
+fp o
+f ffffffff ffffffff 001 s GetCraftingProgressSummary
+fp t0019
+f ffffffff ffffffff 001 s _ReadableSpellList
+fp s
+f ffffffff ffffffff 002 i _GetCraftingSpellForItemProperty
+fp o
+fp e4
+f ffffffff ffffffff 002 i _GetMinimumCasterLevel
+fp o
+fp i
+f ffffffff ffffffff 004 i ACR_CraftingSpellhook
+fp o
+fp o
+fp o
+fp i
+f ffffffff ffffffff 001 i _GetCraftingXPCost
+fp i
+f ffffffff ffffffff 001 t0019 GetCraftingStatus
+fp o
+f ffffffff ffffffff 001 v SaveCraftingStatus
+fp t0019
+f ffffffff ffffffff 001 v DeleteCraftingStatus
+fp o
+f ffffffff ffffffff 001 i XpAvailableForCrafting
+fp o
+f ffffffff ffffffff 003 t0020 PossibleProgress
+fp o
+fp t0019
+fp i
+f ffffffff ffffffff 001 v CraftingOnPCLoaded
+fp o
+f ffffffff ffffffff 001 i GetIsProjectReadyForWork
+fp t0019
 f ffffffff ffffffff 000 s ACR_CRAFT_STORE_PREFIX
 f ffffffff ffffffff 000 s ACR_CRAFT_STORE_POTION
 f ffffffff ffffffff 000 s ACR_CRAFT_STORE_WAND
@@ -10585,24 +10588,24 @@ l15 0000043 000000f1 000000f1
 l15 0000048 000000f1 000000f1
 l15 0000049 000000f1 000000f1
 l15 0000050 000000f1 000000f1
-l16 0000061 000000f1 000000f1
-l16 0000062 000000f1 000000f1
-l16 0000063 000000f1 000000f1
-l16 0000064 000000f1 000000f1
-l16 0000068 000000f1 000000f1
-l16 0000073 000000f1 000000f1
-l17 0000021 000000f1 000000f1
-l17 0000022 000000f1 000000f1
-l17 0000023 000000f1 000000f1
-l17 0000024 000000f1 000000f1
-l17 0000025 000000f1 000000f1
-l17 0000031 000000f1 000000f1
-l17 0000032 000000f1 000000f1
-l18 0000055 000000f1 000000f1
-l18 0000056 000000f1 000000f1
-l19 0000163 000000f1 000000f1
-l19 0000164 000000f1 000000f1
-l19 0000165 000000f1 000000f1
+l16 0000021 000000f1 000000f1
+l16 0000022 000000f1 000000f1
+l16 0000023 000000f1 000000f1
+l16 0000024 000000f1 000000f1
+l16 0000025 000000f1 000000f1
+l16 0000031 000000f1 000000f1
+l16 0000032 000000f1 000000f1
+l17 0000055 000000f1 000000f1
+l17 0000056 000000f1 000000f1
+l18 0000163 000000f1 000000f1
+l18 0000164 000000f1 000000f1
+l18 0000165 000000f1 000000f1
+l19 0000064 000000f1 000000f1
+l19 0000065 000000f1 000000f1
+l19 0000066 000000f1 000000f1
+l19 0000067 000000f1 000000f1
+l19 0000071 000000f1 000000f1
+l19 0000076 000000f1 000000f1
 l20 0000064 000000f1 000000f1
 l20 0000065 000000f1 000000f1
 l20 0000066 000000f1 000000f1
