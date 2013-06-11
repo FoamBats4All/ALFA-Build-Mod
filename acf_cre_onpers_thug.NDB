@@ -1,5 +1,5 @@
 NDB V1.0
-0000072 0000012 0004718 0000017 0000084
+0000073 0000012 0004823 0000017 0000084
 n00 ginc_debug
 n01 x0_i0_enemy
 n02 x0_inc_generic
@@ -66,12 +66,13 @@ n62 acr_effects_i
 n63 acr_skills_i
 n64 acr_resting_i
 n65 acr_mobloot_i
-n66 acr_spawn_i
-n67 acr_vfx_i
-n68 acr_report_i
-n69 acr_quest_i
-n70 acr_creature_i
-N71 acf_cre_onpers_thug
+n66 acr_traps_i
+n67 acr_spawn_i
+n68 acr_vfx_i
+n69 acr_report_i
+n70 acr_quest_i
+n71 acr_creature_i
+N72 acf_cre_onpers_thug
 s 03 vector
 sf f x
 sf f y
@@ -1619,6 +1620,7 @@ f ffffffff ffffffff 000 i SQL_ERROR
 f ffffffff ffffffff 000 i SQL_SUCCESS
 f ffffffff ffffffff 000 s ACR_CID
 f ffffffff ffffffff 000 s ACR_PID
+f ffffffff ffffffff 000 s ACR_MEMBERSHIP
 f ffffffff ffffffff 000 s ACR_SRVADMIN
 f ffffffff ffffffff 000 s ACR_DISABLE_STATISTICS
 f ffffffff ffffffff 000 s ACR_GAMEOBJUPDATE
@@ -1628,10 +1630,12 @@ f ffffffff ffffffff 000 s ACR_MOD_COMPILER_OPTIONS
 f ffffffff ffffffff 000 s ACR_MODULERESOURCEFILES_DB
 f ffffffff ffffffff 000 s ACR_MODULERESOURCEFILES_MOD
 f ffffffff ffffffff 000 s ACR_NOTIFY_SERVICE_CHARACTER_ID_MOD
+f ffffffff ffffffff 000 s ACR_ERROR_NOTIFY_IRC_RECIPIENT_MOD
 f ffffffff ffffffff 000 s ACR_CONTENT_PATCH_PATH
 f ffffffff ffffffff 000 s ACR_WER_DISABLED
 f ffffffff ffffffff 000 s ACR_COMPILER_OPTIONS
 f ffffffff ffffffff 000 s ACR_NOTIFY_SERVICE_CHARACTER_ID
+f ffffffff ffffffff 000 s ACR_ERROR_NOTIFY_IRC_RECIPIENT
 f ffffffff ffffffff 000 i ACR_SRVADMIN_INDETERMINITE
 f ffffffff ffffffff 000 i ACR_SRVADMIN_IS_ADMIN
 f ffffffff ffffffff 000 i ACR_SRVADMIN_NOT_ADMIN
@@ -1754,6 +1758,8 @@ fp i
 f ffffffff ffffffff 001 i ACR_GetCharacterID
 fp o
 f ffffffff ffffffff 001 i ACR_GetPlayerID
+fp o
+f ffffffff ffffffff 001 i ACR_GetIsMember
 fp o
 f ffffffff ffffffff 001 i ACR_IsServerAdmin
 fp o
@@ -2767,6 +2773,7 @@ f ffffffff ffffffff 000 s ACR_LOG_SERVER_LOAD
 f ffffffff ffffffff 000 s ACR_LOG_VALIDATED
 f ffffffff ffffffff 000 s ACR_LOG_SERVER_ADMIN_COMMAND
 f ffffffff ffffffff 000 s ACR_LOG_DEATH_FLOOR
+f ffffffff ffffffff 000 s ACR_LOG_SPAWN
 f ffffffff ffffffff 004 v ACR_LogEvent
 fp o
 fp s
@@ -2816,6 +2823,14 @@ fp o
 f ffffffff ffffffff 000 v ACR_LogModuleLoaded
 f ffffffff ffffffff 002 v ACR_LogServerAdminCommand
 fp o
+fp s
+f ffffffff ffffffff 002 v ACR_LogDMSpawn
+fp o
+fp s
+f ffffffff ffffffff 004 v ACR_LogDMedEvent
+fp o
+fp s
+fp s
 fp s
 f ffffffff ffffffff 000 f DAY_TO_SECONDS
 f ffffffff ffffffff 000 f HOUR_TO_SECONDS
@@ -2894,16 +2909,23 @@ f ffffffff ffffffff 000 s _RPXP_PERCENT
 f ffffffff ffffffff 000 i _RPXP_CHECKS_PER_HOUR
 f ffffffff ffffffff 000 f _ACR_XP_NONLETHAL_RATIO
 f ffffffff ffffffff 000 f _ACR_XP_COMBAT_ANCHOR
+f ffffffff ffffffff 000 f _ACR_XP_QUEST_ANCHOR
 f ffffffff ffffffff 000 f _ACR_XP_MAX_RP_HOUR
 f ffffffff ffffffff 000 f _ACR_XP_MAX_CHALLENGE_HOUR
 f ffffffff ffffffff 000 f _ACR_XP_COMBAT_RANGE
 f ffffffff ffffffff 000 f _ACR_XP_OVERCR_LOGGING
 f ffffffff ffffffff 000 f _ACR_XP_PARTYSCALE
 f ffffffff ffffffff 000 s _ACR_PPS_QUARANTINED
-f ffffffff ffffffff 003 v ACR_AwardStaticQuestXP
+f ffffffff ffffffff 004 v ACR_AwardStaticQuestXP
 fp o
 fp s
 fp i
+fp f
+f ffffffff ffffffff 004 v ACR_AwardStaticQuestXPFromCR
+fp o
+fp s
+fp f
+fp f
 f ffffffff ffffffff 006 v ACR_AwardDMSessionXP
 fp o
 fp o
@@ -2998,6 +3020,7 @@ f ffffffff ffffffff 000 i ACR_SERVER_IPC_ENABLE_CHARACTER_SAVE
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_PAUSE_HEARTBEAT
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_HANDLE_QUARANTINE_PLAYER
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_HANDLE_GUI_RESYNC
+f ffffffff ffffffff 000 i ACR_SERVER_IPC_IS_SERVER_PUBLIC
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_CHAT_TELL
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_BROADCAST_NOTIFICATION
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_DISCONNECT_PLAYER
@@ -3041,6 +3064,8 @@ fp o
 f ffffffff ffffffff 002 v ACR_ServerIPC_OnGUIResynchronization
 fp i
 fp s
+f ffffffff ffffffff 001 i ACR_GetIsServerPublic
+fp i
 f ffffffff ffffffff 002 v ACR_SendFeedbackError
 fp o
 fp s
@@ -3105,8 +3130,9 @@ fp o
 fp i
 fp i
 fp i
-f ffffffff ffffffff 001 i ACR_PortalCheckServer
+f ffffffff ffffffff 002 i ACR_PortalCheckServer
 fp i
+fp o
 f ffffffff ffffffff 002 i ACR_PortalCheckPass
 fp o
 fp i
@@ -5429,6 +5455,15 @@ f ffffffff ffffffff 001 v _DoSubduedAnimation
 fp o
 f ffffffff ffffffff 001 i GetIsNonlethalImmune
 fp o
+f ffffffff ffffffff 003 s ACR_GetTokenAtIndex
+fp s
+fp i
+fp s
+f ffffffff ffffffff 002 i ACR_GetTokenCount
+fp s
+fp s
+f ffffffff ffffffff 001 s ACR_SortTokens
+fp s
 f ffffffff ffffffff 001 o _check_object
 fp o
 f ffffffff ffffffff 002 i _get_index
@@ -7212,6 +7247,77 @@ fp o
 f ffffffff ffffffff 002 v _playerStabilizeCheck
 fp o
 fp i
+f ffffffff ffffffff 000 i TRIGGER_SIZE_SMALL
+f ffffffff ffffffff 000 i TRIGGER_SIZE_MEDIUM
+f ffffffff ffffffff 000 i TRIGGER_SIZE_LARGE
+f ffffffff ffffffff 000 i TRIGGER_SIZE_HUGE
+f ffffffff ffffffff 000 i TRIGGER_SIZE_GARGANTUAN
+f ffffffff ffffffff 000 i TRIGGER_SIZE_COLOSSAL
+f ffffffff ffffffff 000 i TRAP_EVENT_CREATE_GENERIC
+f ffffffff ffffffff 000 i TRAP_EVENT_CREATE_SPELL
+f ffffffff ffffffff 000 i TRAP_EVENT_DETECT_ENTER
+f ffffffff ffffffff 000 i TRAP_EVENT_DETECT_EXIT
+f ffffffff ffffffff 000 i TRAP_EVENT_TRIGGER_ENTER
+f ffffffff ffffffff 000 i TRAP_EVENT_TRIGGER_EXIT
+f ffffffff ffffffff 000 i TRAP_EVENT_DISARM_TRAP
+f ffffffff ffffffff 000 i TRAP_EVENT_DESPAWN_TRAP
+f ffffffff ffffffff 000 i SPECIAL_OBJECT_TYPE_TRAP
+f ffffffff ffffffff 016 v SpawnGenericTrap
+fp e2
+fp i
+fp i
+fp f
+fp i
+fp i
+fp i
+fp i
+fp i
+fp i
+fp o
+fp i
+fp i
+fp i
+fp i
+fp i
+f ffffffff ffffffff 010 v SpawnSpellTrap
+fp e2
+fp i
+fp i
+fp i
+fp o
+fp i
+fp i
+fp i
+fp i
+fp i
+f ffffffff ffffffff 000 v TrapDetectEnter
+f ffffffff ffffffff 000 v TrapDetectExit
+f ffffffff ffffffff 000 v TrapTriggerEnter
+f ffffffff ffffffff 000 v TrapTriggerExit
+f ffffffff ffffffff 000 v TrapDisarmAttempt
+f ffffffff ffffffff 021 v _PassToCSharp
+fp i
+fp f
+fp f
+fp f
+fp o
+fp i
+fp i
+fp f
+fp i
+fp i
+fp i
+fp i
+fp i
+fp i
+fp o
+fp i
+fp i
+fp i
+fp i
+fp i
+fp s
+f ffffffff ffffffff 000 i _IsTrapEventNeeded
 f ffffffff ffffffff 000 s _SPAWN_SYSTEM_NAME
 f ffffffff ffffffff 000 s _SPAWN_GROUP_SCRIPT_PREFIX
 f ffffffff ffffffff 000 s _SPAWN_WAYPOINT_TAG
@@ -7497,6 +7603,9 @@ fp f
 f ffffffff ffffffff 002 v _AddObjectToSpawnPoint
 fp o
 fp o
+f ffffffff ffffffff 002 v _AddTrapToSpawnPoint
+fp o
+fp s
 f ffffffff ffffffff 003 v _QuickBuff
 fp o
 fp i
@@ -7547,6 +7656,56 @@ f ffffffff ffffffff 000 i VFX_FLAG_ON_PERCEPTION
 f ffffffff ffffffff 000 i VFX_FLAG_ON_ENTER
 f ffffffff ffffffff 000 i VFX_FLAG_ON_EXIT
 f ffffffff ffffffff 000 i VFX_FLAG_ON_CLICK
+f ffffffff ffffffff 000 i ACR_PVFX_ID_INVALID
+f ffffffff ffffffff 000 i ACR_PVFX_ID_BEERSTEIN
+f ffffffff ffffffff 000 i ACR_PVFX_ID_WINE_BOTTLE
+f ffffffff ffffffff 000 i ACR_PVFX_ID_DRUM_DARK
+f ffffffff ffffffff 000 i ACR_PVFX_ID_DRUM_LIGHT
+f ffffffff ffffffff 000 i ACR_PVFX_ID_FLUTE_DARK
+f ffffffff ffffffff 000 i ACR_PVFX_ID_FLUTE_LIGHT
+f ffffffff ffffffff 000 i ACR_PVFX_ID_SMITHY_HAMMER
+f ffffffff ffffffff 000 i ACR_PVFX_ID_MANDOLIN_AGED
+f ffffffff ffffffff 000 i ACR_PVFX_ID_MANDOLIN_DARK
+f ffffffff ffffffff 000 i ACR_PVFX_ID_MANDOLIN_LIGHT
+f ffffffff ffffffff 000 i ACR_PVFX_ID_PAN
+f ffffffff ffffffff 000 i ACR_PVFX_ID_RAKE
+f ffffffff ffffffff 000 i ACR_PVFX_ID_SHOVEL
+f ffffffff ffffffff 000 i ACR_PVFX_ID_SPOON
+f ffffffff ffffffff 000 i ACR_PVFX_ID_BACKPACK_BROWN
+f ffffffff ffffffff 000 i ACR_PVFX_ID_BACKPACK_GREEN
+f ffffffff ffffffff 000 i ACR_PVFX_ID_LONGSWORD
+f ffffffff ffffffff 000 i ACR_PVFX_ID_LONGSWORD_HIP
+f ffffffff ffffffff 000 i ACR_PVFX_ID_LARGE_SWORD
+f ffffffff ffffffff 000 i ACR_PVFX_ID_GREATAXE
+f ffffffff ffffffff 000 i ACR_PVFX_ID_DWARFAXE
+f ffffffff ffffffff 000 i ACR_PVFX_ID_SHIELD_MEDIUM
+f ffffffff ffffffff 000 i ACR_PVFX_ID_SHIELD_LARGE
+f ffffffff ffffffff 000 i ACR_PVFX_ID_BOW
+f ffffffff ffffffff 000 i ACR_PVFX_ID_QUIVER_BROWN
+f ffffffff ffffffff 000 i ACR_PVFX_ID_QUIVER_RED
+f ffffffff ffffffff 000 i ACR_PVFX_ID_LUTE
+f ffffffff ffffffff 000 i ACR_PVFX_ID_ARCANE_SIGHT
+f ffffffff ffffffff 000 i ACR_PVFX_ID_IOUN_STONE
+f ffffffff ffffffff 000 i ACR_PVFX_ID_MAX
+f ffffffff ffffffff 000 i ACR_PVFX_SID_INVALID
+f ffffffff ffffffff 000 i ACR_PVFX_SID_START
+f ffffffff ffffffff 000 i ACR_PVFX_TYPE_INVALID
+f ffffffff ffffffff 000 i ACR_PVFX_TYPE_HAND
+f ffffffff ffffffff 000 i ACR_PVFX_TYPE_EQUIPMENT
+f ffffffff ffffffff 000 i ACR_PVFX_TYPE_MAGIC
+f ffffffff ffffffff 000 i ACR_PVFX_TYPE_MAX
+f ffffffff ffffffff 000 s ACR_PVFX_COLLECTION_HAND
+f ffffffff ffffffff 000 s ACR_PVFX_COLLECTION_EQUIPMENT
+f ffffffff ffffffff 000 s ACR_PVFX_COLLECTION_MAGIC
+f ffffffff ffffffff 000 s ACR_PVFX_ITREQ_ARCANE_SIGHT
+f ffffffff ffffffff 000 s ACR_PVFX_ITREQ_IOUN_STONE
+f ffffffff ffffffff 000 s ACR_PVFX_GUI_SCENE
+f ffffffff ffffffff 000 s ACR_PVFX_GUI_FILENAME
+f ffffffff ffffffff 000 s ACR_PVFX_GUI_ELE_LISTBOX_HAND
+f ffffffff ffffffff 000 s ACR_PVFX_GUI_ELE_LISTBOX_EQUIPMENT
+f ffffffff ffffffff 000 s ACR_PVFX_GUI_ELE_LISTBOX_MAGIC
+f ffffffff ffffffff 000 i ACR_PVFX_GUI_LVAR_CUR_PAGE
+f ffffffff ffffffff 000 i ACR_PVFX_GUI_LVAR_TARGET
 f ffffffff ffffffff 002 v ACR_VFXOnAttack
 fp o
 fp o
@@ -7596,6 +7755,36 @@ f ffffffff ffffffff 001 v ACR_VFXOnHeartBeat
 fp o
 f ffffffff ffffffff 001 v ACR_VFXOnSpawn
 fp o
+f ffffffff ffffffff 001 i ACR_GetPersonalVFXType
+fp i
+f ffffffff ffffffff 001 s ACR_GetPersonalVFXName
+fp i
+f ffffffff ffffffff 001 s ACR_GetPersonalVFXItemRequired
+fp i
+f ffffffff ffffffff 001 i ACR_GetPersonalVFXSpellID
+fp i
+f ffffffff ffffffff 001 s ACR_GetPersonalVFXEffectFile
+fp i
+f ffffffff ffffffff 002 i ACR_GetHasPersonalVFXActive
+fp o
+fp i
+f ffffffff ffffffff 002 v ACR_RemovePersonalVFX
+fp o
+fp i
+f ffffffff ffffffff 001 v ACR_RemoveAllPersonalVFX
+fp o
+f ffffffff ffffffff 002 v ACR_RemoveConflictingVFX
+fp o
+fp i
+f ffffffff ffffffff 002 v ACR_ApplyPersonalVFX
+fp o
+fp i
+f ffffffff ffffffff 002 v ACR_PersonalVFXItemOnEquip
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_PersonalVFXItemOnUnEquip
+fp o
+fp o
 f ffffffff ffffffff 001 i _getVFXConstant
 fp s
 f ffffffff ffffffff 003 i _getSavingThrow
@@ -7631,6 +7820,10 @@ fp i
 fp f
 f ffffffff ffffffff 001 t0000 _createVectorFromString
 fp s
+f ffffffff ffffffff 001 s ACR_GetPersonalVFXListbox
+fp i
+f ffffffff ffffffff 001 v ACR_RefreshPersonalVFXUI
+fp o
 f ffffffff ffffffff 001 i GetWealthLevel
 fp o
 f ffffffff ffffffff 001 i GetLowWealth
@@ -7684,7 +7877,7 @@ f ffffffff ffffffff 000 s ACR_QST_SPAWN_DELAY
 f ffffffff ffffffff 000 s ACR_QST_MESSAGE
 f ffffffff ffffffff 000 f ACR_QST_RADIUS
 f ffffffff ffffffff 000 s ACR_QST_CONTAINER_TAG
-f ffffffff ffffffff 007 v ACR_AddPersistentJournalQuestEntry
+f ffffffff ffffffff 008 v ACR_AddPersistentJournalQuestEntry
 fp s
 fp i
 fp o
@@ -7692,6 +7885,16 @@ fp i
 fp i
 fp i
 fp i
+fp f
+f ffffffff ffffffff 008 v ACR_AddPersistentJournalQuestEntryByCR
+fp s
+fp i
+fp o
+fp i
+fp i
+fp i
+fp f
+fp f
 f ffffffff ffffffff 004 v ACR_RemovePersistentJournalQuestEntry
 fp s
 fp o
@@ -7736,6 +7939,7 @@ f ffffffff ffffffff 001 v _despawnQuestCreature
 fp o
 f ffffffff ffffffff 000 s _CRE_NO_AI
 f ffffffff ffffffff 000 s ACR_CRE_ISUNDEAD
+f ffffffff ffffffff 000 s ACR_CRE_SPAWN_DAMAGED
 f ffffffff ffffffff 000 i ACR_CRE_FORCE_NOT_UNDEAD
 f ffffffff ffffffff 000 i CREATUREBEHAVIOR_CREATURE_ON_SPAWN
 f ffffffff ffffffff 000 i CREATUREBEHAVIOR_CREATURE_ON_SPELL_CAST_AT
@@ -7830,12 +8034,12 @@ l06 0000076 00000083 00000083
 l06 0000077 00000083 00000083
 l06 0000078 00000083 00000083
 l06 0000079 00000083 00000083
-l07 0000147 00000083 00000083
-l07 0000148 00000083 00000083
-l07 0000149 00000083 00000083
-l07 0000150 00000083 00000083
 l07 0000151 00000083 00000083
 l07 0000152 00000083 00000083
+l07 0000153 00000083 00000083
+l07 0000154 00000083 00000083
+l07 0000155 00000083 00000083
+l07 0000156 00000083 00000083
 l08 0000234 00000083 00000087
 l09 0000116 00000087 00000087
 l09 0000117 00000087 00000087
@@ -7860,22 +8064,22 @@ l13 0000076 000000f1 000000f1
 l13 0000077 000000f1 000000f1
 l13 0000078 000000f1 000000f1
 l13 0000079 000000f1 000000f1
-l71 0000046 00000103 00000108
-l71 0000048 00000108 0000010e
-l71 0000050 0000010e 00000128
-l71 0000051 0000012e 0000013a
-l71 0000053 0000013a 00000147
-l71 0000054 0000014d 0000016a
-l71 0000055 0000016a 00000183
-l71 0000056 00000183 000001d0
-l71 0000058 000001d6 000001d8
-l70 0000471 000001d8 000001dd
-l70 0000473 000001dd 00000243
-l70 0000476 00000249 0000025b
-l70 0000477 0000025b 00000267
-l70 0000481 00000267 0000028b
-l70 0000483 00000291 000002ae
-l70 0000485 000002b4 000002b6
-l70 0000590 000002b6 000002c3
-l70 0000591 000002c3 000002f4
-l70 0000592 000002f4 000002fc
+l72 0000046 00000103 00000108
+l72 0000048 00000108 0000010e
+l72 0000050 0000010e 00000128
+l72 0000051 0000012e 0000013a
+l72 0000053 0000013a 00000147
+l72 0000054 0000014d 0000016a
+l72 0000055 0000016a 00000183
+l72 0000056 00000183 000001d0
+l72 0000058 000001d6 000001d8
+l71 0000477 000001d8 000001dd
+l71 0000479 000001dd 00000243
+l71 0000482 00000249 0000025b
+l71 0000483 0000025b 00000267
+l71 0000487 00000267 0000028b
+l71 0000489 00000291 000002ae
+l71 0000491 000002b4 000002b6
+l71 0000596 000002b6 000002c3
+l71 0000597 000002c3 000002f4
+l71 0000598 000002f4 000002fc

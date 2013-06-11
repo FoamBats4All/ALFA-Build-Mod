@@ -51,9 +51,9 @@ int StartingConditional(object oSpeaker, object oTarget, int nMode, string sText
     //SendMessageToPC(oTarget, "You heard "+GetName(oSpeaker)+" say: "+sText);
 
     // ACR hook for OnChat event. Run this first in case the text needs to be suppressed.
-//    if (ACR_ModuleOnChat(oSpeaker, oTarget, nMode, sText) != TRUE) {
-//        return FALSE;
-//    }
+    if (ACR_ModuleOnChat(oSpeaker, oTarget, nMode, sText) != TRUE) {
+        return FALSE;
+    }
 
 	if ( GetStringLeft( sText, 1 ) == "#" ) {
 		string sCommand = GetStringRight( sText, GetStringLength( sText ) - 1 );

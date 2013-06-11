@@ -1,5 +1,5 @@
 NDB V1.0
-0000070 0000011 0004654 0000014 0000063
+0000071 0000011 0004693 0000014 0000063
 n00 ginc_debug
 n01 acr_tools_i
 n02 acr_debug_i
@@ -65,11 +65,12 @@ n61 acr_effects_i
 n62 acr_skills_i
 n63 acr_resting_i
 n64 acr_mobloot_i
-n65 acr_spawn_i
-n66 acr_seamlessat_i
-n67 acr_area_i
-n68 acr_door_i
-N69 acf_door_death
+n65 acr_traps_i
+n66 acr_spawn_i
+n67 acr_seamlessat_i
+n68 acr_area_i
+n69 acr_door_i
+N70 acf_door_death
 s 03 vector
 sf f x
 sf f y
@@ -264,6 +265,7 @@ f ffffffff ffffffff 000 i SQL_ERROR
 f ffffffff ffffffff 000 i SQL_SUCCESS
 f ffffffff ffffffff 000 s ACR_CID
 f ffffffff ffffffff 000 s ACR_PID
+f ffffffff ffffffff 000 s ACR_MEMBERSHIP
 f ffffffff ffffffff 000 s ACR_SRVADMIN
 f ffffffff ffffffff 000 s ACR_DISABLE_STATISTICS
 f ffffffff ffffffff 000 s ACR_GAMEOBJUPDATE
@@ -273,10 +275,12 @@ f ffffffff ffffffff 000 s ACR_MOD_COMPILER_OPTIONS
 f ffffffff ffffffff 000 s ACR_MODULERESOURCEFILES_DB
 f ffffffff ffffffff 000 s ACR_MODULERESOURCEFILES_MOD
 f ffffffff ffffffff 000 s ACR_NOTIFY_SERVICE_CHARACTER_ID_MOD
+f ffffffff ffffffff 000 s ACR_ERROR_NOTIFY_IRC_RECIPIENT_MOD
 f ffffffff ffffffff 000 s ACR_CONTENT_PATCH_PATH
 f ffffffff ffffffff 000 s ACR_WER_DISABLED
 f ffffffff ffffffff 000 s ACR_COMPILER_OPTIONS
 f ffffffff ffffffff 000 s ACR_NOTIFY_SERVICE_CHARACTER_ID
+f ffffffff ffffffff 000 s ACR_ERROR_NOTIFY_IRC_RECIPIENT
 f ffffffff ffffffff 000 i ACR_SRVADMIN_INDETERMINITE
 f ffffffff ffffffff 000 i ACR_SRVADMIN_IS_ADMIN
 f ffffffff ffffffff 000 i ACR_SRVADMIN_NOT_ADMIN
@@ -399,6 +403,8 @@ fp i
 f ffffffff ffffffff 001 i ACR_GetCharacterID
 fp o
 f ffffffff ffffffff 001 i ACR_GetPlayerID
+fp o
+f ffffffff ffffffff 001 i ACR_GetIsMember
 fp o
 f ffffffff ffffffff 001 i ACR_IsServerAdmin
 fp o
@@ -1682,6 +1688,7 @@ f ffffffff ffffffff 000 s ACR_LOG_SERVER_LOAD
 f ffffffff ffffffff 000 s ACR_LOG_VALIDATED
 f ffffffff ffffffff 000 s ACR_LOG_SERVER_ADMIN_COMMAND
 f ffffffff ffffffff 000 s ACR_LOG_DEATH_FLOOR
+f ffffffff ffffffff 000 s ACR_LOG_SPAWN
 f ffffffff ffffffff 004 v ACR_LogEvent
 fp o
 fp s
@@ -1732,6 +1739,14 @@ f ffffffff ffffffff 000 v ACR_LogModuleLoaded
 f ffffffff ffffffff 002 v ACR_LogServerAdminCommand
 fp o
 fp s
+f ffffffff ffffffff 002 v ACR_LogDMSpawn
+fp o
+fp s
+f ffffffff ffffffff 004 v ACR_LogDMedEvent
+fp o
+fp s
+fp s
+fp s
 f ffffffff ffffffff 000 s _STORED_XP
 f ffffffff ffffffff 000 f _RPXP_SCRIPT_ANCHOR
 f ffffffff ffffffff 000 s _BANKED_RPXP_INCREMENTS
@@ -1744,16 +1759,23 @@ f ffffffff ffffffff 000 s _RPXP_PERCENT
 f ffffffff ffffffff 000 i _RPXP_CHECKS_PER_HOUR
 f ffffffff ffffffff 000 f _ACR_XP_NONLETHAL_RATIO
 f ffffffff ffffffff 000 f _ACR_XP_COMBAT_ANCHOR
+f ffffffff ffffffff 000 f _ACR_XP_QUEST_ANCHOR
 f ffffffff ffffffff 000 f _ACR_XP_MAX_RP_HOUR
 f ffffffff ffffffff 000 f _ACR_XP_MAX_CHALLENGE_HOUR
 f ffffffff ffffffff 000 f _ACR_XP_COMBAT_RANGE
 f ffffffff ffffffff 000 f _ACR_XP_OVERCR_LOGGING
 f ffffffff ffffffff 000 f _ACR_XP_PARTYSCALE
 f ffffffff ffffffff 000 s _ACR_PPS_QUARANTINED
-f ffffffff ffffffff 003 v ACR_AwardStaticQuestXP
+f ffffffff ffffffff 004 v ACR_AwardStaticQuestXP
 fp o
 fp s
 fp i
+fp f
+f ffffffff ffffffff 004 v ACR_AwardStaticQuestXPFromCR
+fp o
+fp s
+fp f
+fp f
 f ffffffff ffffffff 006 v ACR_AwardDMSessionXP
 fp o
 fp o
@@ -1972,6 +1994,7 @@ f ffffffff ffffffff 000 i ACR_SERVER_IPC_ENABLE_CHARACTER_SAVE
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_PAUSE_HEARTBEAT
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_HANDLE_QUARANTINE_PLAYER
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_HANDLE_GUI_RESYNC
+f ffffffff ffffffff 000 i ACR_SERVER_IPC_IS_SERVER_PUBLIC
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_CHAT_TELL
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_BROADCAST_NOTIFICATION
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_DISCONNECT_PLAYER
@@ -2015,6 +2038,8 @@ fp o
 f ffffffff ffffffff 002 v ACR_ServerIPC_OnGUIResynchronization
 fp i
 fp s
+f ffffffff ffffffff 001 i ACR_GetIsServerPublic
+fp i
 f ffffffff ffffffff 002 v ACR_SendFeedbackError
 fp o
 fp s
@@ -2079,8 +2104,9 @@ fp o
 fp i
 fp i
 fp i
-f ffffffff ffffffff 001 i ACR_PortalCheckServer
+f ffffffff ffffffff 002 i ACR_PortalCheckServer
 fp i
+fp o
 f ffffffff ffffffff 002 i ACR_PortalCheckPass
 fp o
 fp i
@@ -4116,6 +4142,15 @@ fp o
 f ffffffff ffffffff 001 v _playerQuarantineAreaCheck
 fp o
 f ffffffff ffffffff 000 e0 ACR_GetAFKEffect
+f ffffffff ffffffff 003 s ACR_GetTokenAtIndex
+fp s
+fp i
+fp s
+f ffffffff ffffffff 002 i ACR_GetTokenCount
+fp s
+fp s
+f ffffffff ffffffff 001 s ACR_SortTokens
+fp s
 f ffffffff ffffffff 001 o _check_object
 fp o
 f ffffffff ffffffff 002 i _get_index
@@ -7198,6 +7233,77 @@ fp o
 f ffffffff ffffffff 002 v _playerStabilizeCheck
 fp o
 fp i
+f ffffffff ffffffff 000 i TRIGGER_SIZE_SMALL
+f ffffffff ffffffff 000 i TRIGGER_SIZE_MEDIUM
+f ffffffff ffffffff 000 i TRIGGER_SIZE_LARGE
+f ffffffff ffffffff 000 i TRIGGER_SIZE_HUGE
+f ffffffff ffffffff 000 i TRIGGER_SIZE_GARGANTUAN
+f ffffffff ffffffff 000 i TRIGGER_SIZE_COLOSSAL
+f ffffffff ffffffff 000 i TRAP_EVENT_CREATE_GENERIC
+f ffffffff ffffffff 000 i TRAP_EVENT_CREATE_SPELL
+f ffffffff ffffffff 000 i TRAP_EVENT_DETECT_ENTER
+f ffffffff ffffffff 000 i TRAP_EVENT_DETECT_EXIT
+f ffffffff ffffffff 000 i TRAP_EVENT_TRIGGER_ENTER
+f ffffffff ffffffff 000 i TRAP_EVENT_TRIGGER_EXIT
+f ffffffff ffffffff 000 i TRAP_EVENT_DISARM_TRAP
+f ffffffff ffffffff 000 i TRAP_EVENT_DESPAWN_TRAP
+f ffffffff ffffffff 000 i SPECIAL_OBJECT_TYPE_TRAP
+f ffffffff ffffffff 016 v SpawnGenericTrap
+fp e2
+fp i
+fp i
+fp f
+fp i
+fp i
+fp i
+fp i
+fp i
+fp i
+fp o
+fp i
+fp i
+fp i
+fp i
+fp i
+f ffffffff ffffffff 010 v SpawnSpellTrap
+fp e2
+fp i
+fp i
+fp i
+fp o
+fp i
+fp i
+fp i
+fp i
+fp i
+f ffffffff ffffffff 000 v TrapDetectEnter
+f ffffffff ffffffff 000 v TrapDetectExit
+f ffffffff ffffffff 000 v TrapTriggerEnter
+f ffffffff ffffffff 000 v TrapTriggerExit
+f ffffffff ffffffff 000 v TrapDisarmAttempt
+f ffffffff ffffffff 021 v _PassToCSharp
+fp i
+fp f
+fp f
+fp f
+fp o
+fp i
+fp i
+fp f
+fp i
+fp i
+fp i
+fp i
+fp i
+fp i
+fp o
+fp i
+fp i
+fp i
+fp i
+fp i
+fp s
+f ffffffff ffffffff 000 i _IsTrapEventNeeded
 f ffffffff ffffffff 000 s _SPAWN_SYSTEM_NAME
 f ffffffff ffffffff 000 s _SPAWN_GROUP_SCRIPT_PREFIX
 f ffffffff ffffffff 000 s _SPAWN_WAYPOINT_TAG
@@ -7483,6 +7589,9 @@ fp f
 f ffffffff ffffffff 002 v _AddObjectToSpawnPoint
 fp o
 fp o
+f ffffffff ffffffff 002 v _AddTrapToSpawnPoint
+fp o
+fp s
 f ffffffff ffffffff 003 v _QuickBuff
 fp o
 fp i
@@ -7674,12 +7783,12 @@ l03 0000076 00000083 00000083
 l03 0000077 00000083 00000083
 l03 0000078 00000083 00000083
 l03 0000079 00000083 00000083
-l04 0000147 00000083 00000083
-l04 0000148 00000083 00000083
-l04 0000149 00000083 00000083
-l04 0000150 00000083 00000083
 l04 0000151 00000083 00000083
 l04 0000152 00000083 00000083
+l04 0000153 00000083 00000083
+l04 0000154 00000083 00000083
+l04 0000155 00000083 00000083
+l04 0000156 00000083 00000083
 l05 0000234 00000083 00000087
 l06 0000116 00000087 00000087
 l06 0000117 00000087 00000087
@@ -7717,9 +7826,9 @@ l11 0000213 000000b7 000000b7
 l11 0000214 000000b7 000000b7
 l12 0000162 000000b7 000000d4
 l12 0000166 000000d4 000000f1
-l69 0000051 00000103 00000109
-l69 0000052 00000109 0000010b
-l68 0000255 0000010b 00000110
-l68 0000256 00000110 00000145
-l68 0000257 0000014b 00000184
-l68 0000259 0000018a 0000018c
+l70 0000051 00000103 00000109
+l70 0000052 00000109 0000010b
+l69 0000255 0000010b 00000110
+l69 0000256 00000110 00000145
+l69 0000257 0000014b 00000184
+l69 0000259 0000018a 0000018c
