@@ -1,5 +1,5 @@
 NDB V1.0
-0000072 0000011 0004799 0000014 0000062
+0000072 0000011 0004805 0000014 0000062
 n00 ginc_debug
 n01 x0_i0_enemy
 n02 x0_inc_generic
@@ -1470,6 +1470,7 @@ f ffffffff ffffffff 000 s _ACR_DB_SQL_PENDING_QUERY_VAR
 f ffffffff ffffffff 000 s _ACR_DB_SQL_SERVER_BOOT_TIME_VAR
 f ffffffff ffffffff 000 s _ACR_DB_SQL_SERVER_BOOT_TIME_MOD_VAR
 f ffffffff ffffffff 000 s _ACR_DB_SQL_PERSIST_CACHE_VAR_PREFIX
+f ffffffff ffffffff 000 s _ACR_DB_VDB_FILE
 f ffffffff ffffffff 000 i _ACR_DB_SQL_PERSIST_CACHE_VAR_PREFIX_LEN
 f ffffffff ffffffff 000 i _ACR_SQL_SAQ_FLUSHALL
 f ffffffff ffffffff 000 i _ACR_SQL_DBCTRL_DATABASE_OFFLINE
@@ -1550,6 +1551,10 @@ f ffffffff ffffffff 002 t0000 ACR_GetPersistentVector
 fp o
 fp s
 f ffffffff ffffffff 003 o ACR_GetPersistentObject
+fp o
+fp s
+fp s
+f ffffffff ffffffff 003 o ACR_GetLegacyPersistentObject
 fp o
 fp s
 fp s
@@ -2224,6 +2229,8 @@ f ffffffff ffffffff 000 i ACR_SERVER_MISC_NEXT_ITERATE_DICTIONARY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_DELETE_DICTIONARY_KEY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_CLEAR_DICTIONARY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_SALTED_MD5
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_HAS_DATABASE_STORE
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_DELETE_DATABASE_STORE
 f ffffffff ffffffff 000 i ACR_ExecuteServerUpdaterScript
 f ffffffff ffffffff 003 v ACR_DictionarySet
 fp s
@@ -2268,6 +2275,10 @@ fp i
 fp s
 f ffffffff ffffffff 000 s ACR_GetStackTrace
 f ffffffff ffffffff 001 s ACR_GetSaltedMD5
+fp s
+f ffffffff ffffffff 001 i ACR_GetHasDatabaseStore
+fp s
+f ffffffff ffffffff 001 i ACR_DeleteDatabaseStore
 fp s
 f ffffffff ffffffff 008 i ACR_CallServerMiscScript
 fp i
@@ -8021,10 +8032,10 @@ l10 0000210 000000b7 000000b7
 l10 0000211 000000b7 000000b7
 l10 0000213 000000b7 000000b7
 l10 0000214 000000b7 000000b7
-l11 0000116 000000b7 000000b7
 l11 0000117 000000b7 000000b7
 l11 0000118 000000b7 000000b7
 l11 0000119 000000b7 000000b7
+l11 0000120 000000b7 000000b7
 l12 0000162 000000b7 000000d4
 l12 0000166 000000d4 000000f1
 l71 0000047 00000103 00000109

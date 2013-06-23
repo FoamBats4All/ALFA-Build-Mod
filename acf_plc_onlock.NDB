@@ -1,5 +1,5 @@
 NDB V1.0
-0000068 0000011 0004536 0000108 0000800
+0000068 0000011 0004542 0000108 0000800
 n00 ginc_debug
 n01 acr_tools_i
 n02 acr_debug_i
@@ -293,6 +293,7 @@ f ffffffff ffffffff 000 s _ACR_DB_SQL_PENDING_QUERY_VAR
 f ffffffff ffffffff 000 s _ACR_DB_SQL_SERVER_BOOT_TIME_VAR
 f ffffffff ffffffff 000 s _ACR_DB_SQL_SERVER_BOOT_TIME_MOD_VAR
 f ffffffff ffffffff 000 s _ACR_DB_SQL_PERSIST_CACHE_VAR_PREFIX
+f ffffffff ffffffff 000 s _ACR_DB_VDB_FILE
 f ffffffff ffffffff 000 i _ACR_DB_SQL_PERSIST_CACHE_VAR_PREFIX_LEN
 f ffffffff ffffffff 000 i _ACR_SQL_SAQ_FLUSHALL
 f ffffffff ffffffff 000 i _ACR_SQL_DBCTRL_DATABASE_OFFLINE
@@ -373,6 +374,10 @@ f ffffffff ffffffff 002 t0000 ACR_GetPersistentVector
 fp o
 fp s
 f ffffffff ffffffff 003 o ACR_GetPersistentObject
+fp o
+fp s
+fp s
+f ffffffff ffffffff 003 o ACR_GetLegacyPersistentObject
 fp o
 fp s
 fp s
@@ -1127,6 +1132,8 @@ f ffffffff ffffffff 000 i ACR_SERVER_MISC_NEXT_ITERATE_DICTIONARY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_DELETE_DICTIONARY_KEY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_CLEAR_DICTIONARY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_SALTED_MD5
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_HAS_DATABASE_STORE
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_DELETE_DATABASE_STORE
 f ffffffff ffffffff 000 i ACR_ExecuteServerUpdaterScript
 f ffffffff ffffffff 003 v ACR_DictionarySet
 fp s
@@ -1171,6 +1178,10 @@ fp i
 fp s
 f ffffffff ffffffff 000 s ACR_GetStackTrace
 f ffffffff ffffffff 001 s ACR_GetSaltedMD5
+fp s
+f ffffffff ffffffff 001 i ACR_GetHasDatabaseStore
+fp s
+f ffffffff ffffffff 001 i ACR_DeleteDatabaseStore
 fp s
 f ffffffff ffffffff 008 i ACR_CallServerMiscScript
 fp i
@@ -7648,10 +7659,10 @@ l07 0000154 00000083 00000083
 l07 0000155 00000083 00000083
 l07 0000156 00000083 00000083
 l08 0000234 00000083 00000087
-l09 0000116 00000087 00000087
 l09 0000117 00000087 00000087
 l09 0000118 00000087 00000087
 l09 0000119 00000087 00000087
+l09 0000120 00000087 00000087
 l10 0000051 00000087 000000a1
 l10 0000053 000000a1 000000b7
 l11 0000207 000000b7 000000b7
