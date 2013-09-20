@@ -1,5 +1,5 @@
 NDB V1.0
-0000107 0000024 0006060 0000019 0000120
+0000107 0000024 0006082 0000019 0000120
 n00 ginc_debug
 n01 acr_tools_i
 n02 acr_debug_i
@@ -1382,6 +1382,8 @@ f ffffffff ffffffff 003 v ACR_TransferInventory
 fp o
 fp o
 fp s
+f ffffffff ffffffff 001 i ACR_GetIsDMOnline
+fp o
 f ffffffff ffffffff 002 o GetAreaFromTagAndResref
 fp s
 fp s
@@ -1786,6 +1788,7 @@ f ffffffff ffffffff 000 s ACR_LOG_TRANSITION
 f ffffffff ffffffff 000 s ACR_LOG_LEVELUP
 f ffffffff ffffffff 000 s ACR_LOG_COMBAT
 f ffffffff ffffffff 000 s ACR_LOG_DEATH
+f ffffffff ffffffff 000 s ACR_LOG_DYING
 f ffffffff ffffffff 000 s ACR_LOG_KILL
 f ffffffff ffffffff 000 s ACR_LOG_REZ
 f ffffffff ffffffff 000 s ACR_LOG_TECHREZ
@@ -7572,6 +7575,7 @@ f ffffffff ffffffff 000 s _SPAWN_REFRESH_DELAY_GF
 f ffffffff ffffffff 000 s _SPAWN_PRESPAWN_SEAMLESS_GB
 f ffffffff ffffffff 000 s _SPAWN_PRESPAWN_PREDICTION_GB
 f ffffffff ffffffff 000 s ACR_LOG_SPAWNS
+f ffffffff ffffffff 000 s ACR_COLOR_NAME
 f ffffffff ffffffff 004 v ACR_InitializeSpawns
 fp f
 fp f
@@ -8127,6 +8131,22 @@ f ffffffff ffffffff 000 i ACR_VFX_POS_EAR_LEFT
 f ffffffff ffffffff 000 i ACR_VFX_POS_EAR_RIGHT
 f ffffffff ffffffff 000 s ACR_VFX_NAME
 f ffffffff ffffffff 000 s ACR_VFX_POS
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_ADJUSTPRICE
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_CALCULATE_PRICE
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_LOOT
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_AMULET
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_ARMOR
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_BELT
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_BOOTS
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_CLOAK
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_GLOVES
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_HELMET
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_RING
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_ROD
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_STAFF
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_WAND
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_SCROLLS
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_POTIONS
 f ffffffff ffffffff 002 v ACR_ItemOnEquip
 fp o
 fp o
@@ -8148,6 +8168,15 @@ fp e2
 f ffffffff ffffffff 003 i ACR_HasActiveItemProperty
 fp o
 fp i
+fp i
+f ffffffff ffffffff 004 v ACR_GenerateLoot
+fp o
+fp i
+fp i
+fp i
+f ffffffff ffffffff 001 v ACR_CorrectPrice
+fp o
+f ffffffff ffffffff 001 i GetMaxItemValue
 fp i
 f ffffffff ffffffff 001 v _RecalcACP
 fp o
@@ -10723,7 +10752,6 @@ l13 0000028 00000106 00000120
 l13 0000029 00000120 0000013a
 l13 0000030 0000013a 00000154
 l13 0000031 00000154 0000016e
-l14 0000072 0000016e 0000016e
 l14 0000073 0000016e 0000016e
 l14 0000074 0000016e 0000016e
 l14 0000075 0000016e 0000016e
@@ -10731,6 +10759,7 @@ l14 0000076 0000016e 0000016e
 l14 0000077 0000016e 0000016e
 l14 0000078 0000016e 0000016e
 l14 0000079 0000016e 0000016e
+l14 0000080 0000016e 0000016e
 l15 0000070 0000016e 0000016e
 l15 0000071 0000016e 0000016e
 l15 0000072 0000016e 0000016e

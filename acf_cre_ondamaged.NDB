@@ -1,5 +1,5 @@
 NDB V1.0
-0000073 0000012 0004829 0000017 0000084
+0000076 0000012 0004912 0000017 0000084
 n00 ginc_debug
 n01 x0_i0_enemy
 n02 x0_inc_generic
@@ -71,8 +71,11 @@ n67 acr_spawn_i
 n68 acr_vfx_i
 n69 acr_report_i
 n70 acr_quest_i
-n71 acr_creature_i
-N72 acf_cre_ondamaged
+n71 acr_combat_actions_i
+n72 acr_pchide_i
+n73 acr_items_i
+n74 acr_creature_i
+N75 acf_cre_ondamaged
 s 03 vector
 sf f x
 sf f y
@@ -2412,6 +2415,8 @@ f ffffffff ffffffff 003 v ACR_TransferInventory
 fp o
 fp o
 fp s
+f ffffffff ffffffff 001 i ACR_GetIsDMOnline
+fp o
 f ffffffff ffffffff 002 o GetAreaFromTagAndResref
 fp s
 fp s
@@ -2763,6 +2768,7 @@ f ffffffff ffffffff 000 s ACR_LOG_TRANSITION
 f ffffffff ffffffff 000 s ACR_LOG_LEVELUP
 f ffffffff ffffffff 000 s ACR_LOG_COMBAT
 f ffffffff ffffffff 000 s ACR_LOG_DEATH
+f ffffffff ffffffff 000 s ACR_LOG_DYING
 f ffffffff ffffffff 000 s ACR_LOG_KILL
 f ffffffff ffffffff 000 s ACR_LOG_REZ
 f ffffffff ffffffff 000 s ACR_LOG_TECHREZ
@@ -7478,6 +7484,7 @@ f ffffffff ffffffff 000 s _SPAWN_REFRESH_DELAY_GF
 f ffffffff ffffffff 000 s _SPAWN_PRESPAWN_SEAMLESS_GB
 f ffffffff ffffffff 000 s _SPAWN_PRESPAWN_PREDICTION_GB
 f ffffffff ffffffff 000 s ACR_LOG_SPAWNS
+f ffffffff ffffffff 000 s ACR_COLOR_NAME
 f ffffffff ffffffff 004 v ACR_InitializeSpawns
 fp f
 fp f
@@ -7845,31 +7852,6 @@ f ffffffff ffffffff 001 i GetHighWealth
 fp i
 f ffffffff ffffffff 001 i GetCutoffWealth
 fp i
-f ffffffff ffffffff 000 f ACR_WLT_SPAWNLOOT_ANCHOR
-f ffffffff ffffffff 000 f ACR_WLT_SPAWNLOOT_MEAN
-f ffffffff ffffffff 000 f ACR_WLT_SPAWNLOOT_STDEV
-f ffffffff ffffffff 000 f ACR_WLT_SPAWNLOOT_MU
-f ffffffff ffffffff 000 f ACR_WLT_SPAWNLOOT_SIGMA
-f ffffffff ffffffff 000 i ACR_WLT_SPAWNLOOT_PERCENT
-f ffffffff ffffffff 000 i ACR_WLT_SPAWNGOLD_PERCENT
-f ffffffff ffffffff 000 s _ACR_LOOT_DISABLE
-f ffffffff ffffffff 000 s _ACR_LOOT_CR_MOD
-f ffffffff ffffffff 000 s _ACR_LOOT_MULTIPLIER
-f ffffffff ffffffff 001 v ACR_WealthOnClientEnter
-fp o
-f ffffffff ffffffff 001 i ACR_GetRandomDropValue
-fp o
-f ffffffff ffffffff 002 v ACR_GenerateTreasure
-fp o
-fp i
-f ffffffff ffffffff 001 i _GetLootMultiplier
-fp o
-f ffffffff ffffffff 003 v _generateTreasure
-fp o
-fp i
-fp i
-f ffffffff ffffffff 001 v ACR_WealthReportLog
-fp o
 f ffffffff ffffffff 000 s ACR_QST_TABLE
 f ffffffff ffffffff 000 s ACR_QST_NAME
 f ffffffff ffffffff 000 s ACR_QST_LOWER_STATE
@@ -7947,6 +7929,170 @@ fp s
 fp o
 fp i
 f ffffffff ffffffff 001 v _despawnQuestCreature
+fp o
+f ffffffff ffffffff 000 i ACR_COMBAT_ACTION_COOLDOWN_TIME
+f ffffffff ffffffff 000 s ACR_COMBAT_ACTION_TIMESTAMP
+f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_OPEN_MENU
+f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_COMBAT_EXPERTISE_MENU
+f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_POWER_ATTACK_MENU
+f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_POWER_ATTACK_TOGGLE
+f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_COMBAT_EXPERTISE_TOGGLE
+f ffffffff ffffffff 000 s POWER_ATTACK_MODE_ACTIVE
+f ffffffff ffffffff 000 s COMBAT_EXPERTISE_MODE_ACTIVE
+f ffffffff ffffffff 000 s POST_SPELLCAST_NO_COMBAT_MODE
+f ffffffff ffffffff 001 v CombatActionsOnItemEquip
+fp o
+f ffffffff ffffffff 001 v FightNormally
+fp o
+f ffffffff ffffffff 001 v FightDefensively
+fp o
+f ffffffff ffffffff 001 v FightTotallyDefensively
+fp o
+f ffffffff ffffffff 002 v FightWithExpertise
+fp o
+fp i
+f ffffffff ffffffff 001 i GetIsFightingDefensively
+fp o
+f ffffffff ffffffff 003 v _FightDefensively
+fp o
+fp i
+fp i
+f ffffffff ffffffff 002 v _NotifyCombatAction
+fp s
+fp o
+f ffffffff ffffffff 001 i _TrySwitchModes
+fp o
+f ffffffff ffffffff 001 v _ClearCombatModes
+fp o
+f ffffffff ffffffff 003 v _HandlePowExpGUIEvent
+fp o
+fp i
+fp i
+f ffffffff ffffffff 002 v CombatActionsOnEquip
+fp o
+fp o
+f ffffffff ffffffff 000 s ACR_PCH_RESREF
+f ffffffff ffffffff 000 i ACR_PCH_SLOT
+f ffffffff ffffffff 000 s ACR_PCH_PREFIX
+f ffffffff ffffffff 002 v _EquipHide
+fp o
+fp o
+f ffffffff ffffffff 001 o ACR_InitializePCHide
+fp o
+f ffffffff ffffffff 001 o ACR_GetPCHide
+fp o
+f ffffffff ffffffff 001 v ACR_CopyPropertiesToHide
+fp o
+f ffffffff ffffffff 002 v ACR_RemoveAllPropertiesFromHide
+fp o
+fp i
+f ffffffff ffffffff 002 v ACR_AddFlagToHide
+fp o
+fp i
+f ffffffff ffffffff 002 i ACR_GetFlagFromHide
+fp o
+fp i
+f ffffffff ffffffff 002 i ACR_RemoveFlagFromHide
+fp o
+fp i
+f ffffffff ffffffff 000 s ACR_MOD_SPELLBOOK_RESREF
+f ffffffff ffffffff 000 s ACR_MOD_HOLYSYMBOL_RESREF
+f ffffffff ffffffff 000 s ACR_MOD_HEALKIT_RESREF
+f ffffffff ffffffff 000 s ACR_MOD_SPELLBOOK_TAG
+f ffffffff ffffffff 000 s ACR_MOD_HOLYSYMBOL_TAG
+f ffffffff ffffffff 000 s ACR_MODHEALKIT_TAG
+f ffffffff ffffffff 000 i ACR_VFX_POS_BACKPACK
+f ffffffff ffffffff 000 i ACR_VFX_POS_LEFTHIP
+f ffffffff ffffffff 000 i ACR_VFX_POS_BOW
+f ffffffff ffffffff 000 i ACR_VFX_POS_SHIELDBACK
+f ffffffff ffffffff 000 i ACR_VFX_POS_LEFTSHOULDER
+f ffffffff ffffffff 000 i ACR_VFX_POS_BACKLUTE
+f ffffffff ffffffff 000 i ACR_VFX_POS_QUIVER
+f ffffffff ffffffff 000 i ACR_VFX_POS_BACKAXE
+f ffffffff ffffffff 000 i ACR_VFX_POS_EARRINGS
+f ffffffff ffffffff 000 i ACR_VFX_POS_EAR_LEFT
+f ffffffff ffffffff 000 i ACR_VFX_POS_EAR_RIGHT
+f ffffffff ffffffff 000 s ACR_VFX_NAME
+f ffffffff ffffffff 000 s ACR_VFX_POS
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_ADJUSTPRICE
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_CALCULATE_PRICE
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_LOOT
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_AMULET
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_ARMOR
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_BELT
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_BOOTS
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_CLOAK
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_GLOVES
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_HELMET
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_RING
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_ROD
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_STAFF
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_WAND
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_SCROLLS
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_POTIONS
+f ffffffff ffffffff 002 v ACR_ItemOnEquip
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_ItemOnUnEquip
+fp o
+fp o
+f ffffffff ffffffff 003 v ACR_ItemOnAcquire
+fp o
+fp o
+fp o
+f ffffffff ffffffff 002 v ACR_ItemOnUnAcquire
+fp o
+fp o
+f ffffffff ffffffff 004 v ACR_ItemOnActivate
+fp o
+fp o
+fp o
+fp e2
+f ffffffff ffffffff 003 i ACR_HasActiveItemProperty
+fp o
+fp i
+fp i
+f ffffffff ffffffff 004 v ACR_GenerateLoot
+fp o
+fp i
+fp i
+fp i
+f ffffffff ffffffff 001 v ACR_CorrectPrice
+fp o
+f ffffffff ffffffff 001 i GetMaxItemValue
+fp i
+f ffffffff ffffffff 001 v _RecalcACP
+fp o
+f ffffffff ffffffff 002 v _ApplyACPSwim
+fp o
+fp o
+f ffffffff ffffffff 002 v _RemoveACPSwim
+fp o
+fp o
+f ffffffff ffffffff 000 f ACR_WLT_SPAWNLOOT_ANCHOR
+f ffffffff ffffffff 000 f ACR_WLT_SPAWNLOOT_MEAN
+f ffffffff ffffffff 000 f ACR_WLT_SPAWNLOOT_STDEV
+f ffffffff ffffffff 000 f ACR_WLT_SPAWNLOOT_MU
+f ffffffff ffffffff 000 f ACR_WLT_SPAWNLOOT_SIGMA
+f ffffffff ffffffff 000 i ACR_WLT_SPAWNLOOT_PERCENT
+f ffffffff ffffffff 000 i ACR_WLT_SPAWNGOLD_PERCENT
+f ffffffff ffffffff 000 s _ACR_LOOT_DISABLE
+f ffffffff ffffffff 000 s _ACR_LOOT_CR_MOD
+f ffffffff ffffffff 000 s _ACR_LOOT_MULTIPLIER
+f ffffffff ffffffff 001 v ACR_WealthOnClientEnter
+fp o
+f ffffffff ffffffff 001 i ACR_GetRandomDropValue
+fp o
+f ffffffff ffffffff 002 v ACR_GenerateTreasure
+fp o
+fp i
+f ffffffff ffffffff 001 i _GetLootMultiplier
+fp o
+f ffffffff ffffffff 003 v _generateTreasure
+fp o
+fp i
+fp i
+f ffffffff ffffffff 001 v ACR_WealthReportLog
 fp o
 f ffffffff ffffffff 000 s _CRE_NO_AI
 f ffffffff ffffffff 000 s ACR_CRE_ISUNDEAD
@@ -8067,7 +8213,6 @@ l11 0000213 000000b7 000000b7
 l11 0000214 000000b7 000000b7
 l12 0000162 000000b7 000000d4
 l12 0000166 000000d4 000000f1
-l13 0000072 000000f1 000000f1
 l13 0000073 000000f1 000000f1
 l13 0000074 000000f1 000000f1
 l13 0000075 000000f1 000000f1
@@ -8075,22 +8220,23 @@ l13 0000076 000000f1 000000f1
 l13 0000077 000000f1 000000f1
 l13 0000078 000000f1 000000f1
 l13 0000079 000000f1 000000f1
-l72 0000046 00000103 00000109
-l72 0000051 00000109 00000128
-l72 0000053 0000012e 0000013f
-l72 0000055 0000013f 00000141
-l71 0000272 00000141 0000014c
-l71 0000277 0000014c 00000158
-l71 0000279 00000158 000001be
-l71 0000282 000001c4 000001d6
-l71 0000283 000001d6 000001e2
-l71 0000288 000001e2 00000206
-l71 0000290 0000020c 00000229
-l71 0000292 0000022f 00000231
-l71 0000145 00000231 0000024c
-l71 0000146 00000252 00000269
-l71 0000148 00000269 00000280
-l71 0000149 00000280 00000288
-l71 0000596 00000288 00000295
-l71 0000597 00000295 000002c6
-l71 0000598 000002c6 000002ce
+l13 0000080 000000f1 000000f1
+l75 0000046 00000103 00000109
+l75 0000051 00000109 00000128
+l75 0000053 0000012e 0000013f
+l75 0000055 0000013f 00000141
+l74 0000272 00000141 0000014c
+l74 0000277 0000014c 00000158
+l74 0000279 00000158 000001be
+l74 0000282 000001c4 000001d6
+l74 0000283 000001d6 000001e2
+l74 0000288 000001e2 00000206
+l74 0000290 0000020c 00000229
+l74 0000292 0000022f 00000231
+l74 0000145 00000231 0000024c
+l74 0000146 00000252 00000269
+l74 0000148 00000269 00000280
+l74 0000149 00000280 00000288
+l74 0000599 00000288 00000295
+l74 0000600 00000295 000002c6
+l74 0000601 000002c6 000002ce
