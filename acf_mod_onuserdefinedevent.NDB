@@ -1,5 +1,5 @@
 NDB V1.0
-0000107 0000024 0006103 0000019 0000120
+0000107 0000024 0006140 0000024 0000131
 n00 acr_tools_i
 n01 ginc_debug
 n02 acr_debug_i
@@ -277,7 +277,7 @@ f ffffffff ffffffff 000 v ACR_ModuleOnPlayerLevelUp
 f ffffffff ffffffff 000 v ACR_ModuleOnPlayerRespawn
 f ffffffff ffffffff 000 v ACR_ModuleOnPlayerRest
 f ffffffff ffffffff 000 v ACR_ModuleOnHeartbeat
-f 00000188 00000195 000 v ACR_ModuleOnUserDefined
+f 00000188 00000207 000 v ACR_ModuleOnUserDefined
 f ffffffff ffffffff 000 v ACR_ModuleOnPlayerEquip
 f ffffffff ffffffff 000 v ACR_ModuleOnPlayerUnequip
 f ffffffff ffffffff 000 v ACR_ModuleOnCutsceneAbort
@@ -347,6 +347,9 @@ f ffffffff ffffffff 001 v _updatePlayerGUIs
 fp o
 f ffffffff ffffffff 000 v _LoadAssemblies
 f ffffffff ffffffff 000 v ACR_InitializeCreatureBehavior
+f 00000207 000002c8 002 i ACR_ModuleOverrideEvent
+fp s
+fp i
 f ffffffff ffffffff 000 s _ACR_SETTINGS_SERVER_ID
 f ffffffff ffffffff 000 s _ACR_SETTINGS_SERVER_NAME
 f ffffffff ffffffff 000 s _ACR_SETTINGS_SERVER_REGION
@@ -679,11 +682,13 @@ f ffffffff ffffffff 000 s ACR_MODULERESOURCEFILES_DB
 f ffffffff ffffffff 000 s ACR_MODULERESOURCEFILES_MOD
 f ffffffff ffffffff 000 s ACR_NOTIFY_SERVICE_CHARACTER_ID_MOD
 f ffffffff ffffffff 000 s ACR_ERROR_NOTIFY_IRC_RECIPIENT_MOD
+f ffffffff ffffffff 000 s ACR_GAME_DIFFICULTY_LEVEL_MOD
 f ffffffff ffffffff 000 s ACR_CONTENT_PATCH_PATH
 f ffffffff ffffffff 000 s ACR_WER_DISABLED
 f ffffffff ffffffff 000 s ACR_COMPILER_OPTIONS
 f ffffffff ffffffff 000 s ACR_NOTIFY_SERVICE_CHARACTER_ID
 f ffffffff ffffffff 000 s ACR_ERROR_NOTIFY_IRC_RECIPIENT
+f ffffffff ffffffff 000 s ACR_GAME_DIFFICULTY_LEVEL
 f ffffffff ffffffff 000 i ACR_SRVADMIN_INDETERMINITE
 f ffffffff ffffffff 000 i ACR_SRVADMIN_IS_ADMIN
 f ffffffff ffffffff 000 i ACR_SRVADMIN_NOT_ADMIN
@@ -992,6 +997,12 @@ fp i
 fp i
 fp i
 f ffffffff ffffffff 000 s ACR_NWN_GOLD_TAG
+f ffffffff ffffffff 000 s ACR_MOD_PROTECTION_LEVEL
+f ffffffff ffffffff 000 i MEMBER_PROTECTION_LEVEL_OPEN
+f ffffffff ffffffff 000 i MEMBER_PROTECTION_LEVEL_QUARANTINE
+f ffffffff ffffffff 000 i MEMBER_PROTECTION_LEVEL_QUARANTINE_DM_ONLY_TELLS
+f ffffffff ffffffff 000 i MEMBER_PROTECTION_LEVEL_BOOT_5S_DELAY
+f ffffffff ffffffff 000 i MEMBER_PROTECTION_LEVEL_BOOT_IMMEDIATELY
 f ffffffff ffffffff 000 i BASE_ITEM_TRADE_GOODS
 f ffffffff ffffffff 000 i BASE_ITEM_SHORT_MAGICSTAFF
 f ffffffff ffffffff 000 i BASE_ITEM_SMALL_SPEAR
@@ -1375,6 +1386,7 @@ f ffffffff ffffffff 001 i ACR_GetIsCorpseMutilated
 fp o
 f ffffffff ffffffff 001 i ACR_GetIsCorpseDecayed
 fp o
+f ffffffff ffffffff 000 i ACR_GetProtectionLevel
 f ffffffff ffffffff 000 i POST_COLOR_RED
 f ffffffff ffffffff 000 i POST_COLOR_GREEN
 f ffffffff ffffffff 000 i POST_COLOR_BLUE
@@ -2499,6 +2511,9 @@ f ffffffff ffffffff 001 v _playerScheduleQuarantineAreaCheck
 fp o
 f ffffffff ffffffff 001 v _playerQuarantineAreaCheck
 fp o
+f ffffffff ffffffff 002 v _playerInitiateQuarantine
+fp o
+fp i
 f ffffffff ffffffff 000 i SPELL_ID_COUNT
 f ffffffff ffffffff 000 s ACR_SPT_SPELL_USES
 f ffffffff ffffffff 000 s ACR_SPT_SPELL
@@ -2697,6 +2712,7 @@ f ffffffff ffffffff 000 i ACR_SERVER_IPC_PAUSE_HEARTBEAT
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_HANDLE_QUARANTINE_PLAYER
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_HANDLE_GUI_RESYNC
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_IS_SERVER_PUBLIC
+f ffffffff ffffffff 000 i ACR_SERVER_IPC_HANDLE_SERVER_PING_RESPONSE
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_CHAT_TELL
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_BROADCAST_NOTIFICATION
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_DISCONNECT_PLAYER
@@ -2742,6 +2758,9 @@ fp i
 fp s
 f ffffffff ffffffff 001 i ACR_GetIsServerPublic
 fp i
+f ffffffff ffffffff 002 v ACR_ServerIPC_OnServerPingResponse
+fp i
+fp s
 f ffffffff ffffffff 002 v ACR_SendFeedbackError
 fp o
 fp s
@@ -7988,10 +8007,14 @@ f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_STAFF
 f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_WAND
 f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_SCROLLS
 f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_GENERATE_POTIONS
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_IPRP_CASTER_LEVEL
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_IPRP_SPELL_LEVEL
+f ffffffff ffffffff 000 i ACR_ITEMS_CSHARP_SPELL_LEVEL
 f ffffffff ffffffff 000 s ACR_SCC_VAR_BASE
 f ffffffff ffffffff 000 s ACR_SCC_VAR_POTION
 f ffffffff ffffffff 000 s ACR_SCC_VAR_SCROLL
 f ffffffff ffffffff 000 i ACR_SSC_DC_POTION
+f ffffffff ffffffff 000 e4 ItemPropertyInvalid
 f ffffffff ffffffff 002 v ACR_ItemOnEquip
 fp o
 fp o
@@ -8032,6 +8055,13 @@ fp o
 f ffffffff ffffffff 002 v ACR_AttemptSpellcraftExamine
 fp o
 fp o
+f ffffffff ffffffff 001 i ACR_GetSpellCastPropertyCasterLevel
+fp i
+f ffffffff ffffffff 001 i ACR_GetSpellCastPropertySpellLevel
+fp i
+f ffffffff ffffffff 002 e4 ACR_GetFirstItemPropertyOfType
+fp o
+fp i
 f ffffffff ffffffff 001 v _RecalcACP
 fp o
 f ffffffff ffffffff 002 v _ApplyACPSwim
@@ -8364,9 +8394,8 @@ fp i
 f ffffffff ffffffff 002 i ACR_GetCorrectCasterLevel
 fp o
 fp i
-f ffffffff ffffffff 002 i ACR_GetSpellLevel
+f ffffffff ffffffff 001 i ACR_GetSpellLevel
 fp i
-fp s
 f ffffffff ffffffff 002 v ACR_SetIsDomainSpell
 fp i
 fp i
@@ -10684,6 +10713,23 @@ f ffffffff ffffffff 001 t0023 GetBodyTintSet
 fp o
 f ffffffff ffffffff 001 t0023 GetHeadTintSet
 fp o
+f ffffffff ffffffff 000 s ACR_MODULE_HOOK_PRE
+f ffffffff ffffffff 000 s ACR_MODULE_HOOK_POST
+f ffffffff ffffffff 000 s ACR_MODULE_ON_CLIENT_ENTER
+f ffffffff ffffffff 000 s ACR_MODULE_ON_CLIENT_LEAVE
+f ffffffff ffffffff 000 s ACR_MODULE_ON_ACQUIRE_ITEM
+f ffffffff ffffffff 000 s ACR_MODULE_ON_UNACQUIRE_ITEM
+f ffffffff ffffffff 000 s ACR_MODULE_ON_ACTIVATE_ITEM
+f ffffffff ffffffff 000 s ACR_MODULE_ON_PC_LOADED
+f ffffffff ffffffff 000 s ACR_MODULE_ON_PLAYER_DEATH
+f ffffffff ffffffff 000 s ACR_MODULE_ON_PLAYER_DYING
+f ffffffff ffffffff 000 s ACR_MODULE_ON_PLAYER_LEVEL_UP
+f ffffffff ffffffff 000 s ACR_MODULE_ON_PLAYER_RESPAWN
+f ffffffff ffffffff 000 s ACR_MODULE_ON_PLAYER_REST
+f ffffffff ffffffff 000 s ACR_MODULE_ON_USER_DEFINED
+f ffffffff ffffffff 000 s ACR_MODULE_ON_PLAYER_EQUIP
+f ffffffff ffffffff 000 s ACR_MODULE_ON_PLAYER_UNEQUIP
+f ffffffff ffffffff 000 s ACR_MODULE_ON_CUTSCENE_ABORT
 f ffffffff ffffffff 005 v _DistributeTranslationToMouthPieces
 fp s
 fp s
@@ -10717,7 +10763,12 @@ v 00000106 ffffffff 00000038 s ACR_COLLECTION_RESULT_VAR_INT
 v 00000120 ffffffff 0000003c s ACR_COLLECTION_RESULT_VAR_FLOAT
 v 0000013a ffffffff 00000040 s ACR_COLLECTION_RESULT_VAR_STRING
 v 00000154 ffffffff 00000044 s ACR_COLLECTION_RESULT_VAR_OBJECT
-v 00000188 0000018d 00000000 i nEvent
+v 00000188 000001ff 00000000 i nEvent
+v 00000207 000002c6 00000000 i #retval
+v 00000207 000002c0 00000004 i Precall
+v 00000207 000002c0 00000008 s Event
+v 00000207 000002ba 0000000c o Module
+v 0000020e 000002ba 00000010 s Script
 l00 0000110 00000015 00000015
 l00 0000111 00000015 00000015
 l01 0000048 00000015 0000002c
@@ -10734,17 +10785,17 @@ l03 0000074 00000083 00000083
 l03 0000075 00000083 00000083
 l04 0000151 00000083 000000a0
 l04 0000155 000000a0 000000bd
-l05 0000147 000000bd 000000bd
-l05 0000148 000000bd 000000bd
-l05 0000149 000000bd 000000bd
 l05 0000150 000000bd 000000bd
 l05 0000151 000000bd 000000bd
 l05 0000152 000000bd 000000bd
+l05 0000153 000000bd 000000bd
+l05 0000154 000000bd 000000bd
+l05 0000155 000000bd 000000bd
 l06 0000234 000000bd 000000c1
-l07 0000107 000000c1 000000c1
-l07 0000108 000000c1 000000c1
-l07 0000109 000000c1 000000c1
-l07 0000110 000000c1 000000c1
+l07 0000113 000000c1 000000c1
+l07 0000114 000000c1 000000c1
+l07 0000115 000000c1 000000c1
+l07 0000116 000000c1 000000c1
 l08 0000051 000000c1 000000db
 l08 0000053 000000db 000000f1
 l09 0000040 000000f1 000000f1
@@ -10836,5 +10887,16 @@ l21 0000082 0000016e 0000016e
 l21 0000083 0000016e 0000016e
 l106 0000047 00000180 00000186
 l106 0000050 00000186 00000188
-l105 0001332 00000188 0000018d
-l105 0001333 00000193 00000195
+l105 0001401 00000188 0000018d
+l105 0001403 0000018d 000001bb
+l105 0001404 000001c1 000001cd
+l105 0001406 000001cd 000001ff
+l105 0001407 00000205 00000207
+l105 0002049 00000207 0000020c
+l105 0002050 0000020c 0000020e
+l105 0002052 0000020e 00000258
+l105 0002054 00000258 00000266
+l105 0002055 0000026c 00000286
+l105 0002057 00000286 0000028b
+l105 0002058 0000028b 000002ba
+l105 0002059 000002c0 000002c8

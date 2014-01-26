@@ -1,5 +1,5 @@
 NDB V1.0
-0000068 0000011 0004557 0000014 0000064
+0000068 0000011 0004569 0000014 0000064
 n00 acr_tools_i
 n01 ginc_debug
 n02 acr_debug_i
@@ -502,11 +502,13 @@ f ffffffff ffffffff 000 s ACR_MODULERESOURCEFILES_DB
 f ffffffff ffffffff 000 s ACR_MODULERESOURCEFILES_MOD
 f ffffffff ffffffff 000 s ACR_NOTIFY_SERVICE_CHARACTER_ID_MOD
 f ffffffff ffffffff 000 s ACR_ERROR_NOTIFY_IRC_RECIPIENT_MOD
+f ffffffff ffffffff 000 s ACR_GAME_DIFFICULTY_LEVEL_MOD
 f ffffffff ffffffff 000 s ACR_CONTENT_PATCH_PATH
 f ffffffff ffffffff 000 s ACR_WER_DISABLED
 f ffffffff ffffffff 000 s ACR_COMPILER_OPTIONS
 f ffffffff ffffffff 000 s ACR_NOTIFY_SERVICE_CHARACTER_ID
 f ffffffff ffffffff 000 s ACR_ERROR_NOTIFY_IRC_RECIPIENT
+f ffffffff ffffffff 000 s ACR_GAME_DIFFICULTY_LEVEL
 f ffffffff ffffffff 000 i ACR_SRVADMIN_INDETERMINITE
 f ffffffff ffffffff 000 i ACR_SRVADMIN_IS_ADMIN
 f ffffffff ffffffff 000 i ACR_SRVADMIN_NOT_ADMIN
@@ -829,6 +831,12 @@ fp s
 fp i
 fp s
 f ffffffff ffffffff 000 s ACR_NWN_GOLD_TAG
+f ffffffff ffffffff 000 s ACR_MOD_PROTECTION_LEVEL
+f ffffffff ffffffff 000 i MEMBER_PROTECTION_LEVEL_OPEN
+f ffffffff ffffffff 000 i MEMBER_PROTECTION_LEVEL_QUARANTINE
+f ffffffff ffffffff 000 i MEMBER_PROTECTION_LEVEL_QUARANTINE_DM_ONLY_TELLS
+f ffffffff ffffffff 000 i MEMBER_PROTECTION_LEVEL_BOOT_5S_DELAY
+f ffffffff ffffffff 000 i MEMBER_PROTECTION_LEVEL_BOOT_IMMEDIATELY
 f ffffffff ffffffff 000 i BASE_ITEM_TRADE_GOODS
 f ffffffff ffffffff 000 i BASE_ITEM_SHORT_MAGICSTAFF
 f ffffffff ffffffff 000 i BASE_ITEM_SMALL_SPEAR
@@ -1212,6 +1220,7 @@ f ffffffff ffffffff 001 i ACR_GetIsCorpseMutilated
 fp o
 f ffffffff ffffffff 001 i ACR_GetIsCorpseDecayed
 fp o
+f ffffffff ffffffff 000 i ACR_GetProtectionLevel
 f ffffffff ffffffff 000 i POST_COLOR_RED
 f ffffffff ffffffff 000 i POST_COLOR_GREEN
 f ffffffff ffffffff 000 i POST_COLOR_BLUE
@@ -3140,6 +3149,9 @@ f ffffffff ffffffff 001 v _playerScheduleQuarantineAreaCheck
 fp o
 f ffffffff ffffffff 001 v _playerQuarantineAreaCheck
 fp o
+f ffffffff ffffffff 002 v _playerInitiateQuarantine
+fp o
+fp i
 f ffffffff ffffffff 000 i SPELL_ID_COUNT
 f ffffffff ffffffff 000 s ACR_SPT_SPELL_USES
 f ffffffff ffffffff 000 s ACR_SPT_SPELL
@@ -3214,6 +3226,7 @@ f ffffffff ffffffff 000 i ACR_SERVER_IPC_PAUSE_HEARTBEAT
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_HANDLE_QUARANTINE_PLAYER
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_HANDLE_GUI_RESYNC
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_IS_SERVER_PUBLIC
+f ffffffff ffffffff 000 i ACR_SERVER_IPC_HANDLE_SERVER_PING_RESPONSE
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_CHAT_TELL
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_BROADCAST_NOTIFICATION
 f ffffffff ffffffff 000 i ACR_SERVER_IPC_EVENT_DISCONNECT_PLAYER
@@ -3259,6 +3272,9 @@ fp i
 fp s
 f ffffffff ffffffff 001 i ACR_GetIsServerPublic
 fp i
+f ffffffff ffffffff 002 v ACR_ServerIPC_OnServerPingResponse
+fp i
+fp s
 f ffffffff ffffffff 002 v ACR_SendFeedbackError
 fp o
 fp s
@@ -7582,17 +7598,17 @@ l07 0000072 000000bd 000000bd
 l07 0000073 000000bd 000000bd
 l07 0000074 000000bd 000000bd
 l07 0000075 000000bd 000000bd
-l08 0000147 000000bd 000000bd
-l08 0000148 000000bd 000000bd
-l08 0000149 000000bd 000000bd
 l08 0000150 000000bd 000000bd
 l08 0000151 000000bd 000000bd
 l08 0000152 000000bd 000000bd
+l08 0000153 000000bd 000000bd
+l08 0000154 000000bd 000000bd
+l08 0000155 000000bd 000000bd
 l09 0000234 000000bd 000000c1
-l10 0000107 000000c1 000000c1
-l10 0000108 000000c1 000000c1
-l10 0000109 000000c1 000000c1
-l10 0000110 000000c1 000000c1
+l10 0000113 000000c1 000000c1
+l10 0000114 000000c1 000000c1
+l10 0000115 000000c1 000000c1
+l10 0000116 000000c1 000000c1
 l11 0000051 000000c1 000000db
 l11 0000053 000000db 000000f1
 l12 0000207 000000f1 000000f1
