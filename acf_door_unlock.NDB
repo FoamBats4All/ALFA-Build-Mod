@@ -1,5 +1,5 @@
 NDB V1.0
-0000071 0000011 0004727 0000050 0000155
+0000073 0000011 0004807 0000050 0000155
 n00 acr_tools_i
 n01 ginc_debug
 n02 acr_debug_i
@@ -62,15 +62,17 @@ n58 nwn2_inc_metmag
 n59 x0_i0_spells
 n60 nwn2_inc_spells
 n61 acr_effects_i
-n62 acr_skills_i
-n63 acr_resting_i
-n64 acr_mobloot_i
-n65 acr_traps_i
-n66 acr_spawn_i
-n67 acr_seamlessat_i
-n68 acr_area_i
-n69 acr_door_i
-N70 acf_door_unlock
+n62 acr_notifications_i
+n63 acr_skills_i
+n64 acr_resting_i
+n65 acr_mobloot_i
+n66 acr_traps_i
+n67 acr_spawn_i
+n68 acr_movement_i
+n69 acr_seamlessat_i
+n70 acr_area_i
+n71 acr_door_i
+N72 acf_door_unlock
 s 03 vector
 sf f x
 sf f y
@@ -205,8 +207,9 @@ fp s
 f ffffffff ffffffff 002 e2 GetLocationInDifferentArea
 fp e2
 fp o
-f ffffffff ffffffff 003 v SetHitPoints
+f ffffffff ffffffff 004 v SetHitPoints
 fp o
+fp i
 fp i
 fp i
 f 00000785 00000821 003 i ApplyIntegerLimit
@@ -296,6 +299,8 @@ f ffffffff ffffffff 000 i GenerateRandomSeed
 f ffffffff ffffffff 001 i GetIsItemShield
 fp o
 f ffffffff ffffffff 001 i GetIsPlayer
+fp o
+f ffffffff ffffffff 001 i ACR_GetIsDMControlled
 fp o
 f ffffffff ffffffff 001 s ACR_CleanCreatureNameTextForPlayers
 fp s
@@ -1019,6 +1024,9 @@ f ffffffff ffffffff 000 i FEAT_SKILL_FOCUS_CRFT_ALCH
 f ffffffff ffffffff 000 i FEAT_SKILL_FOCUS_CRFT_ARM
 f ffffffff ffffffff 000 i FEAT_SKILL_FOCUS_CRFT_BOW
 f ffffffff ffffffff 000 i FEAT_SKILL_FOCUS_CRFT_WPN
+f ffffffff ffffffff 000 i FEAT_WEAPON_PROFICIENCY_EXOTIC_WARAXE
+f ffffffff ffffffff 000 i FEAT_WEAPON_PROFICIENCY_EXOTIC_BASTARD_SWORD
+f ffffffff ffffffff 000 i FEAT_WEAPON_PROFICIENCY_DWARF
 f ffffffff ffffffff 000 i FEAT_CRAFT
 f ffffffff ffffffff 000 i FEAT_CRAFT_CONSTRUCT
 f ffffffff ffffffff 000 i FEAT_FORGE_RING
@@ -1119,6 +1127,8 @@ f ffffffff ffffffff 000 i FEAT_SLIME_DOMAIN_POWER
 f ffffffff ffffffff 000 i FEAT_SPIDER_DOMAIN_POWER
 f ffffffff ffffffff 000 i FEAT_A_THOUSAND_FACES
 f ffffffff ffffffff 000 i FEAT_TIMELESS_BODY
+f ffffffff ffffffff 000 i FEAT_RIDE
+f ffffffff ffffffff 000 i FEAT_PALADIN_WARHORSE
 f ffffffff ffffffff 000 i IP_CONST_FEAT_DARKVISION
 f ffffffff ffffffff 000 i IP_CONST_FEAT_LOWLIGHTVISION
 f ffffffff ffffffff 000 i IPRP_FEATS_ALERTNESS
@@ -1454,6 +1464,8 @@ f ffffffff ffffffff 000 i ACR_SERVER_MISC_CLEAR_DICTIONARY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_SALTED_MD5
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_HAS_DATABASE_STORE
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_DELETE_DATABASE_STORE
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_DELETE_DATABASE_STORE_AT_INDEX
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_SHOW_COMPILER_LOG
 f ffffffff ffffffff 000 i ACR_ExecuteServerUpdaterScript
 f ffffffff ffffffff 003 v ACR_DictionarySet
 fp s
@@ -1503,6 +1515,11 @@ f ffffffff ffffffff 001 i ACR_GetHasDatabaseStore
 fp s
 f ffffffff ffffffff 001 i ACR_DeleteDatabaseStore
 fp s
+f ffffffff ffffffff 002 i ACR_DeleteDatabaseStoreAtIndex
+fp s
+fp i
+f ffffffff ffffffff 001 i ACR_ShowCompilerLog
+fp o
 f ffffffff ffffffff 008 i ACR_CallServerMiscScript
 fp i
 fp i
@@ -4649,6 +4666,9 @@ f ffffffff ffffffff 000 s ACR_GetVersion
 f ffffffff ffffffff 000 s ACR_GetBuildDate
 f ffffffff ffffffff 000 s ACR_GetHAKVersion
 f ffffffff ffffffff 000 s ACR_GetHAKBuildDate
+f ffffffff ffffffff 002 v _WaitForJumpToSavedLocation
+fp o
+fp e2
 f ffffffff ffffffff 000 e0 ACR_GetAFKEffect
 f ffffffff ffffffff 000 i ACR_PSO_RECORD_USERS
 f ffffffff ffffffff 000 i _ACR_PSO_EXPORT_PC_ONSAVE
@@ -7516,6 +7536,19 @@ f ffffffff ffffffff 000 i CHECK_TYPE_ROLL
 f ffffffff ffffffff 000 i CHECK_TYPE_TRACK
 f ffffffff ffffffff 000 i CHECK_TYPE_PERCEPTION
 f ffffffff ffffffff 000 i CHECK_TYPE_STEALTH
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_CID_PREFIX
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_TYPE
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_CHECK
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_CHECK_DC
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_CHECK_MOD
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_SUCC_SMSG
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_SUCC_MSG
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_SUCC_SCRIPT
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_FAIL_SMSG
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_FAIL_MSG
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_FAIL_SCRIPT
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_SHOWROLL
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_BROADCAST
 f ffffffff ffffffff 005 i ACR_InitCheck
 fp o
 fp i
@@ -7562,6 +7595,10 @@ fp o
 f ffffffff ffffffff 001 v ACR_SkillsOnPCLoaded
 fp o
 f ffffffff ffffffff 001 v ACR_SkillsOnClientExit
+fp o
+f ffffffff ffffffff 001 v ACR_SkillsOnTriggerEnter
+fp o
+f ffffffff ffffffff 001 v ACR_SkillsOnTriggerExit
 fp o
 f ffffffff ffffffff 001 i ACR_SkillsCheckIsPCAdapted
 fp o
@@ -7631,6 +7668,38 @@ fp i
 f ffffffff ffffffff 003 v _SendRollMessage
 fp o
 fp s
+fp i
+f ffffffff ffffffff 000 i NOTIFY_TYPE_URGENT
+f ffffffff ffffffff 000 i NOTIFY_TYPE_ERROR
+f ffffffff ffffffff 000 i NOTIFY_TYPE_WARNING
+f ffffffff ffffffff 000 i NOTIFY_TYPE_INFO
+f ffffffff ffffffff 000 i NOTIFY_TYPE_TIP
+f ffffffff ffffffff 000 s NOTIFY_EVENT_CLICKED_TICKER
+f ffffffff ffffffff 000 s NOTIFY_EVENT_DISMISSED_TICKLER
+f ffffffff ffffffff 000 s NOTIFY_WINDOW_MESSAGE_BOX
+f ffffffff ffffffff 000 s NOTIFY_WINDOW_NO_CALLBACK
+f ffffffff ffffffff 000 s NOTIFY_WINDOW_URL_BOX
+f ffffffff ffffffff 009 v NotifyPlayer
+fp o
+fp i
+fp s
+fp s
+fp s
+fp s
+fp s
+fp s
+fp s
+f ffffffff ffffffff 008 v HandleRowClick
+fp o
+fp s
+fp s
+fp s
+fp s
+fp s
+fp s
+fp s
+f ffffffff ffffffff 000 i _GetUniqueMessageId
+f ffffffff ffffffff 001 s _GetIconFromType
 fp i
 f ffffffff ffffffff 007 v ACR_Checks
 fp i
@@ -7741,6 +7810,76 @@ f ffffffff ffffffff 000 i _IsTrapEventNeeded
 f ffffffff ffffffff 003 v _QuickBuff
 fp o
 fp i
+fp o
+f ffffffff ffffffff 000 i ACR_MOVEMENT_ENTER_WATER
+f ffffffff ffffffff 000 i ACR_MOVEMENT_EXIT_WATER
+f ffffffff ffffffff 000 i ACR_MOVEMENT_MOUNT_HORSE
+f ffffffff ffffffff 000 i ACR_MOVEMENT_CLOAK_REMOVED
+f ffffffff ffffffff 000 i ACR_MOVEMENT_ENTER_OLM
+f ffffffff ffffffff 000 i ACR_MOVEMENT_EXIT_OLM
+f ffffffff ffffffff 000 i ACR_MOVEMENT_DISMOUNT
+f ffffffff ffffffff 000 i ACR_MOVEMENT_RECALCULATE
+f ffffffff ffffffff 000 i ACR_MOVEMENT_RESTORE_HORSE
+f ffffffff ffffffff 000 s ACR_HORSE_OWNER
+f ffffffff ffffffff 000 s ACR_IS_WARHORSE
+f ffffffff ffffffff 000 s ACR_PAL_WARHORSE
+f ffffffff ffffffff 000 s ACR_HORSE_PERS_LOC_AREA
+f ffffffff ffffffff 000 s ACR_HORSE_PERS_LOC_X
+f ffffffff ffffffff 000 s ACR_HORSE_PERS_LOC_Y
+f ffffffff ffffffff 000 s ACR_HORSE_PERS_LOC_Z
+f ffffffff ffffffff 000 s ACR_HORSE_OBJECT
+f ffffffff ffffffff 000 s ACR_HORSE_ID
+f ffffffff ffffffff 002 v EnterWater
+fp o
+fp o
+f ffffffff ffffffff 002 v ExitWater
+fp o
+fp o
+f ffffffff ffffffff 002 v MountHorse
+fp o
+fp o
+f ffffffff ffffffff 000 v CloakRemoved
+f ffffffff ffffffff 001 v Dismount
+fp o
+f ffffffff ffffffff 001 v ToOverlandMap
+fp o
+f ffffffff ffffffff 001 v FromOverlandMap
+fp o
+f ffffffff ffffffff 002 v MountAreaTransitionWithTarget
+fp o
+fp o
+f ffffffff ffffffff 001 v MountAreaTransition
+fp o
+f ffffffff ffffffff 001 v RecalculateMovement
+fp o
+f ffffffff ffffffff 002 i GetIsHorseOwnedBy
+fp o
+fp o
+f ffffffff ffffffff 001 v HorseOnPCLoaded
+fp o
+f ffffffff ffffffff 000 v HorseOnAcquire
+f ffffffff ffffffff 001 v HorseOnExit
+fp o
+f ffffffff ffffffff 002 o GetOwnershipItemById
+fp o
+fp i
+f ffffffff ffffffff 003 v _CallToMovement
+fp i
+fp o
+fp o
+f ffffffff ffffffff 001 v RestoreHorse
+fp o
+f ffffffff ffffffff 002 v SetHorseIsOwnedBy
+fp o
+fp o
+f ffffffff ffffffff 001 v RemoveHorseOwnership
+fp o
+f ffffffff ffffffff 002 v _MakeHorse
+fp o
+fp o
+f ffffffff ffffffff 001 i _GetNewHorseId
+fp o
+f ffffffff ffffffff 001 v SaveHorseLocation
 fp o
 f ffffffff ffffffff 000 s ACR_SAT_SEAMLESSAT_TAG
 f ffffffff ffffffff 000 i iDefaultAreaSize
@@ -7912,80 +8051,80 @@ l12 0000210 000000f1 000000f1
 l12 0000211 000000f1 000000f1
 l12 0000213 000000f1 000000f1
 l12 0000214 000000f1 000000f1
-l70 0000051 00000103 00000109
-l70 0000052 00000109 0000010b
-l69 0000360 0000010b 0000011f
-l69 0000361 0000011f 00000124
-l69 0000362 00000124 0000012f
-l69 0000364 0000012f 0000013c
-l69 0000365 00000142 00000155
-l69 0000367 0000015b 0000015d
-l69 0000517 0000015d 00000172
-l69 0000518 00000178 00000192
-l69 0000521 00000192 000001ad
-l69 0000523 000001ad 000001bf
-l69 0000524 000001c5 000001d2
-l69 0000525 000001d8 000001e6
-l69 0000528 000001e6 00000208
-l69 0000529 00000208 00000230
-l69 0000530 00000230 00000252
-l69 0000532 00000252 00000277
-l69 0000533 00000277 000002a1
-l69 0000534 000002a1 000002c9
-l69 0000535 000002c9 000002ee
-l69 0000537 000002ee 00000311
-l69 0000538 00000311 0000033b
-l69 0000539 0000033b 00000363
-l69 0000540 00000363 00000386
-l69 0000542 00000386 000003a8
-l69 0000543 000003ae 000003cc
-l69 0000545 000003cc 000003ee
-l69 0000547 000003ee 00000416
-l69 0000548 0000041c 0000043a
-l69 0000550 0000043a 00000462
-l69 0000552 00000462 00000485
-l69 0000553 0000048b 000004a9
-l69 0000555 000004a9 000004b6
-l69 0000556 000004bc 000004da
-l69 0000559 000004da 000004fe
-l69 0000560 000004fe 0000054e
-l69 0000561 0000054e 0000054e
-l69 0000562 0000054e 0000056c
-l69 0000563 0000056c 00000572
-l69 0000565 00000572 00000572
-l69 0000566 00000572 00000590
-l69 0000567 00000590 00000596
-l69 0000569 00000596 00000596
-l69 0000570 00000596 000005bc
-l69 0000571 000005bc 000005c2
-l69 0000574 000005c8 000005e6
-l69 0000576 000005e6 000005f3
-l69 0000577 000005f3 00000605
-l69 0000578 0000060b 00000628
-l69 0000579 0000062e 0000066b
-l69 0000580 0000066b 0000067e
-l69 0000581 00000684 00000686
-l69 0000582 00000686 000006c3
-l69 0000583 000006c3 000006d6
-l69 0000587 000006d6 000006f9
-l69 0000589 000006ff 0000071b
-l69 0000590 00000721 00000729
+l72 0000051 00000103 00000109
+l72 0000052 00000109 0000010b
+l71 0000360 0000010b 0000011f
+l71 0000361 0000011f 00000124
+l71 0000362 00000124 0000012f
+l71 0000364 0000012f 0000013c
+l71 0000365 00000142 00000155
+l71 0000367 0000015b 0000015d
+l71 0000517 0000015d 00000172
+l71 0000518 00000178 00000192
+l71 0000521 00000192 000001ad
+l71 0000523 000001ad 000001bf
+l71 0000524 000001c5 000001d2
+l71 0000525 000001d8 000001e6
+l71 0000528 000001e6 00000208
+l71 0000529 00000208 00000230
+l71 0000530 00000230 00000252
+l71 0000532 00000252 00000277
+l71 0000533 00000277 000002a1
+l71 0000534 000002a1 000002c9
+l71 0000535 000002c9 000002ee
+l71 0000537 000002ee 00000311
+l71 0000538 00000311 0000033b
+l71 0000539 0000033b 00000363
+l71 0000540 00000363 00000386
+l71 0000542 00000386 000003a8
+l71 0000543 000003ae 000003cc
+l71 0000545 000003cc 000003ee
+l71 0000547 000003ee 00000416
+l71 0000548 0000041c 0000043a
+l71 0000550 0000043a 00000462
+l71 0000552 00000462 00000485
+l71 0000553 0000048b 000004a9
+l71 0000555 000004a9 000004b6
+l71 0000556 000004bc 000004da
+l71 0000559 000004da 000004fe
+l71 0000560 000004fe 0000054e
+l71 0000561 0000054e 0000054e
+l71 0000562 0000054e 0000056c
+l71 0000563 0000056c 00000572
+l71 0000565 00000572 00000572
+l71 0000566 00000572 00000590
+l71 0000567 00000590 00000596
+l71 0000569 00000596 00000596
+l71 0000570 00000596 000005bc
+l71 0000571 000005bc 000005c2
+l71 0000574 000005c8 000005e6
+l71 0000576 000005e6 000005f3
+l71 0000577 000005f3 00000605
+l71 0000578 0000060b 00000628
+l71 0000579 0000062e 0000066b
+l71 0000580 0000066b 0000067e
+l71 0000581 00000684 00000686
+l71 0000582 00000686 000006c3
+l71 0000583 000006c3 000006d6
+l71 0000587 000006d6 000006f9
+l71 0000589 000006ff 0000071b
+l71 0000590 00000721 00000729
 l22 0000177 00000729 0000072b
 l22 0000202 0000072b 00000751
 l22 0000203 00000751 00000777
 l22 0000204 0000077d 00000785
-l00 0000690 00000785 00000797
-l00 0000691 0000079d 000007b9
-l00 0000692 000007bf 000007c1
-l00 0000693 000007d9 000007f5
-l00 0000694 000007fb 000007fd
-l00 0000695 000007fd 00000819
-l00 0000697 00000819 00000821
-l00 0001161 00000821 00000833
-l00 0001162 00000839 00000881
-l00 0001163 00000887 00000889
-l00 0001164 00000889 000008d1
-l00 0001166 000008d1 000008d9
+l00 0000693 00000785 00000797
+l00 0000694 0000079d 000007b9
+l00 0000695 000007bf 000007c1
+l00 0000696 000007d9 000007f5
+l00 0000697 000007fb 000007fd
+l00 0000698 000007fd 00000819
+l00 0000700 00000819 00000821
+l00 0001164 00000821 00000833
+l00 0001165 00000839 00000881
+l00 0001166 00000887 00000889
+l00 0001167 00000889 000008d1
+l00 0001169 000008d1 000008d9
 l03 0000326 000008d9 000008de
 l03 0000327 000008de 000008fe
 l03 0000328 000008fe 00000923
@@ -7996,17 +8135,17 @@ l03 0000333 0000097c 000009a2
 l03 0000334 000009a8 000009b0
 l03 0000337 000009b0 000009d7
 l03 0000338 000009d7 000009d9
-l69 0000646 000009d9 000009ec
-l69 0000648 000009ec 00000a08
-l69 0000649 00000a08 00000a18
-l69 0000650 00000a18 00000a4d
-l69 0000651 00000a53 00000a5b
-l00 0000782 00000a5b 00000a6b
-l00 0000783 00000a6b 00000a93
-l00 0000785 00000a93 00000ac3
-l00 0000787 00000ac9 00000ad1
-l69 0000654 00000ad1 00000ae4
-l69 0000656 00000ae4 00000b00
-l69 0000657 00000b00 00000b10
-l69 0000658 00000b10 00000b45
-l69 0000659 00000b4b 00000b53
+l71 0000646 000009d9 000009ec
+l71 0000648 000009ec 00000a08
+l71 0000649 00000a08 00000a18
+l71 0000650 00000a18 00000a4d
+l71 0000651 00000a53 00000a5b
+l00 0000785 00000a5b 00000a6b
+l00 0000786 00000a6b 00000a93
+l00 0000788 00000a93 00000ac3
+l00 0000790 00000ac9 00000ad1
+l71 0000654 00000ad1 00000ae4
+l71 0000656 00000ae4 00000b00
+l71 0000657 00000b00 00000b10
+l71 0000658 00000b10 00000b45
+l71 0000659 00000b4b 00000b53

@@ -1,5 +1,5 @@
 NDB V1.0
-0000085 0000018 0005369 0000015 0000097
+0000086 0000018 0005419 0000015 0000097
 n00 ginc_debug
 n01 x0_i0_enemy
 n02 x0_inc_generic
@@ -67,24 +67,25 @@ n63 nwn2_inc_metmag
 n64 x0_i0_spells
 n65 nwn2_inc_spells
 n66 acr_effects_i
-n67 acr_skills_i
-n68 acr_resting_i
-n69 acr_mobloot_i
-n70 acr_traps_i
-n71 acr_spawn_i
-n72 acr_vfx_i
-n73 acr_quest_i
-n74 acr_combat_actions_i
-n75 acr_pchide_i
-n76 ginc_vars
-n77 ginc_item
-n78 x2_inc_spellhook
-n79 acr_roll_i
-n80 acr_spells_i
-n81 acr_items_i
-n82 acr_report_i
-n83 acr_creature_i
-N84 acf_cre_onendcombatround
+n67 acr_notifications_i
+n68 acr_skills_i
+n69 acr_resting_i
+n70 acr_mobloot_i
+n71 acr_traps_i
+n72 acr_spawn_i
+n73 acr_vfx_i
+n74 acr_quest_i
+n75 acr_combat_actions_i
+n76 acr_pchide_i
+n77 ginc_vars
+n78 ginc_item
+n79 x2_inc_spellhook
+n80 acr_roll_i
+n81 acr_spells_i
+n82 acr_items_i
+n83 acr_report_i
+n84 acr_creature_i
+N85 acf_cre_onendcombatround
 s 03 vector
 sf f x
 sf f y
@@ -197,6 +198,8 @@ f ffffffff ffffffff 000 i CREATUREBEHAVIOR_CREATURE_ON_PERCEPTION
 f ffffffff ffffffff 000 i CREATUREBEHAVIOR_CREATURE_ON_USER_DEFINED
 f ffffffff ffffffff 000 i CREATUREBEHAVIOR_MODULE_ON_STARTED
 f ffffffff ffffffff 000 i CREATUREBEHAVIOR_AREA_ON_INSTANCE_CREATE
+f ffffffff ffffffff 000 s ACR_FOLLOWING
+f ffffffff ffffffff 000 s ACR_FOLLOWING_TARGET
 f ffffffff ffffffff 001 v _startRunning
 fp o
 f ffffffff ffffffff 000 v ACR_CreatureOnSpawnIn
@@ -220,6 +223,9 @@ fp o
 f 000001d8 00000223 002 v ACR_ResolveCreatureBehavior
 fp o
 fp i
+f ffffffff ffffffff 002 v ACR_FollowTarget
+fp o
+fp o
 f ffffffff ffffffff 000 f DISTANCE_TINY
 f ffffffff ffffffff 000 f DISTANCE_SHORT
 f ffffffff ffffffff 000 f DISTANCE_MEDIUM
@@ -1652,8 +1658,9 @@ fp s
 f ffffffff ffffffff 002 e2 GetLocationInDifferentArea
 fp e2
 fp o
-f ffffffff ffffffff 003 v SetHitPoints
+f ffffffff ffffffff 004 v SetHitPoints
 fp o
+fp i
 fp i
 fp i
 f ffffffff ffffffff 003 i ApplyIntegerLimit
@@ -1743,6 +1750,8 @@ f ffffffff ffffffff 000 i GenerateRandomSeed
 f ffffffff ffffffff 001 i GetIsItemShield
 fp o
 f ffffffff ffffffff 001 i GetIsPlayer
+fp o
+f ffffffff ffffffff 001 i ACR_GetIsDMControlled
 fp o
 f ffffffff ffffffff 001 s ACR_CleanCreatureNameTextForPlayers
 fp s
@@ -2466,6 +2475,9 @@ f ffffffff ffffffff 000 i FEAT_SKILL_FOCUS_CRFT_ALCH
 f ffffffff ffffffff 000 i FEAT_SKILL_FOCUS_CRFT_ARM
 f ffffffff ffffffff 000 i FEAT_SKILL_FOCUS_CRFT_BOW
 f ffffffff ffffffff 000 i FEAT_SKILL_FOCUS_CRFT_WPN
+f ffffffff ffffffff 000 i FEAT_WEAPON_PROFICIENCY_EXOTIC_WARAXE
+f ffffffff ffffffff 000 i FEAT_WEAPON_PROFICIENCY_EXOTIC_BASTARD_SWORD
+f ffffffff ffffffff 000 i FEAT_WEAPON_PROFICIENCY_DWARF
 f ffffffff ffffffff 000 i FEAT_CRAFT
 f ffffffff ffffffff 000 i FEAT_CRAFT_CONSTRUCT
 f ffffffff ffffffff 000 i FEAT_FORGE_RING
@@ -2566,6 +2578,8 @@ f ffffffff ffffffff 000 i FEAT_SLIME_DOMAIN_POWER
 f ffffffff ffffffff 000 i FEAT_SPIDER_DOMAIN_POWER
 f ffffffff ffffffff 000 i FEAT_A_THOUSAND_FACES
 f ffffffff ffffffff 000 i FEAT_TIMELESS_BODY
+f ffffffff ffffffff 000 i FEAT_RIDE
+f ffffffff ffffffff 000 i FEAT_PALADIN_WARHORSE
 f ffffffff ffffffff 000 i IP_CONST_FEAT_DARKVISION
 f ffffffff ffffffff 000 i IP_CONST_FEAT_LOWLIGHTVISION
 f ffffffff ffffffff 000 i IPRP_FEATS_ALERTNESS
@@ -2693,6 +2707,8 @@ f ffffffff ffffffff 000 i ACR_SERVER_MISC_CLEAR_DICTIONARY
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_SALTED_MD5
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_GET_HAS_DATABASE_STORE
 f ffffffff ffffffff 000 i ACR_SERVER_MISC_DELETE_DATABASE_STORE
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_DELETE_DATABASE_STORE_AT_INDEX
+f ffffffff ffffffff 000 i ACR_SERVER_MISC_SHOW_COMPILER_LOG
 f ffffffff ffffffff 000 i ACR_ExecuteServerUpdaterScript
 f ffffffff ffffffff 003 v ACR_DictionarySet
 fp s
@@ -2742,6 +2758,11 @@ f ffffffff ffffffff 001 i ACR_GetHasDatabaseStore
 fp s
 f ffffffff ffffffff 001 i ACR_DeleteDatabaseStore
 fp s
+f ffffffff ffffffff 002 i ACR_DeleteDatabaseStoreAtIndex
+fp s
+fp i
+f ffffffff ffffffff 001 i ACR_ShowCompilerLog
+fp o
 f ffffffff ffffffff 008 i ACR_CallServerMiscScript
 fp i
 fp i
@@ -5430,6 +5451,9 @@ f ffffffff ffffffff 000 s ACR_GetVersion
 f ffffffff ffffffff 000 s ACR_GetBuildDate
 f ffffffff ffffffff 000 s ACR_GetHAKVersion
 f ffffffff ffffffff 000 s ACR_GetHAKBuildDate
+f ffffffff ffffffff 002 v _WaitForJumpToSavedLocation
+fp o
+fp e2
 f ffffffff ffffffff 000 e0 ACR_GetAFKEffect
 f ffffffff ffffffff 000 s X2_IP_WORK_CONTAINER_TAG
 f ffffffff ffffffff 000 s X2_IP_ADDRPOP_2DA
@@ -7514,6 +7538,19 @@ f ffffffff ffffffff 000 i CHECK_TYPE_ROLL
 f ffffffff ffffffff 000 i CHECK_TYPE_TRACK
 f ffffffff ffffffff 000 i CHECK_TYPE_PERCEPTION
 f ffffffff ffffffff 000 i CHECK_TYPE_STEALTH
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_CID_PREFIX
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_TYPE
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_CHECK
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_CHECK_DC
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_CHECK_MOD
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_SUCC_SMSG
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_SUCC_MSG
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_SUCC_SCRIPT
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_FAIL_SMSG
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_FAIL_MSG
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_FAIL_SCRIPT
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_SHOWROLL
+f ffffffff ffffffff 000 s ACR_CHECK_TGR_BROADCAST
 f ffffffff ffffffff 005 i ACR_InitCheck
 fp o
 fp i
@@ -7560,6 +7597,10 @@ fp o
 f ffffffff ffffffff 001 v ACR_SkillsOnPCLoaded
 fp o
 f ffffffff ffffffff 001 v ACR_SkillsOnClientExit
+fp o
+f ffffffff ffffffff 001 v ACR_SkillsOnTriggerEnter
+fp o
+f ffffffff ffffffff 001 v ACR_SkillsOnTriggerExit
 fp o
 f ffffffff ffffffff 001 i ACR_SkillsCheckIsPCAdapted
 fp o
@@ -7629,6 +7670,38 @@ fp i
 f ffffffff ffffffff 003 v _SendRollMessage
 fp o
 fp s
+fp i
+f ffffffff ffffffff 000 i NOTIFY_TYPE_URGENT
+f ffffffff ffffffff 000 i NOTIFY_TYPE_ERROR
+f ffffffff ffffffff 000 i NOTIFY_TYPE_WARNING
+f ffffffff ffffffff 000 i NOTIFY_TYPE_INFO
+f ffffffff ffffffff 000 i NOTIFY_TYPE_TIP
+f ffffffff ffffffff 000 s NOTIFY_EVENT_CLICKED_TICKER
+f ffffffff ffffffff 000 s NOTIFY_EVENT_DISMISSED_TICKLER
+f ffffffff ffffffff 000 s NOTIFY_WINDOW_MESSAGE_BOX
+f ffffffff ffffffff 000 s NOTIFY_WINDOW_NO_CALLBACK
+f ffffffff ffffffff 000 s NOTIFY_WINDOW_URL_BOX
+f ffffffff ffffffff 009 v NotifyPlayer
+fp o
+fp i
+fp s
+fp s
+fp s
+fp s
+fp s
+fp s
+fp s
+f ffffffff ffffffff 008 v HandleRowClick
+fp o
+fp s
+fp s
+fp s
+fp s
+fp s
+fp s
+fp s
+f ffffffff ffffffff 000 i _GetUniqueMessageId
+f ffffffff ffffffff 001 s _GetIconFromType
 fp i
 f ffffffff ffffffff 007 v ACR_Checks
 fp i
@@ -8069,6 +8142,10 @@ fp i
 f ffffffff ffffffff 002 e4 ACR_GetFirstItemPropertyOfType
 fp o
 fp i
+f ffffffff ffffffff 001 i ACR_GetWeaponDamageType
+fp o
+f ffffffff ffffffff 001 i ACR_GetIsWeaponFinessable
+fp o
 f ffffffff ffffffff 001 v _RecalcACP
 fp o
 f ffffffff ffffffff 002 v _ApplyACPSwim
@@ -8171,7 +8248,8 @@ f ffffffff ffffffff 000 i POWER_EXPERT_EVENT_COMBAT_EXPERTISE_TOGGLE
 f ffffffff ffffffff 000 s POWER_ATTACK_MODE_ACTIVE
 f ffffffff ffffffff 000 s COMBAT_EXPERTISE_MODE_ACTIVE
 f ffffffff ffffffff 000 s POST_SPELLCAST_NO_COMBAT_MODE
-f ffffffff ffffffff 001 v CombatActionsOnItemEquip
+f ffffffff ffffffff 002 v CombatActionsOnEquip
+fp o
 fp o
 f ffffffff ffffffff 001 v FightNormally
 fp o
@@ -8184,6 +8262,9 @@ fp o
 fp i
 f ffffffff ffffffff 001 i GetIsFightingDefensively
 fp o
+f ffffffff ffffffff 002 v _FightAggressively
+fp o
+fp i
 f ffffffff ffffffff 003 v _FightDefensively
 fp o
 fp i
@@ -8193,15 +8274,16 @@ fp s
 fp o
 f ffffffff ffffffff 001 i _TrySwitchModes
 fp o
-f ffffffff ffffffff 001 v _ClearCombatModes
+f ffffffff ffffffff 002 v _ClearCombatModes
 fp o
+fp s
 f ffffffff ffffffff 003 v _HandlePowExpGUIEvent
 fp o
 fp i
 fp i
-f ffffffff ffffffff 002 v CombatActionsOnEquip
+f ffffffff ffffffff 002 v FightWithPowerAttack
 fp o
-fp o
+fp i
 f ffffffff ffffffff 000 s ACR_PCH_RESREF
 f ffffffff ffffffff 000 i ACR_PCH_SLOT
 f ffffffff ffffffff 000 s ACR_PCH_PREFIX
@@ -9201,6 +9283,14 @@ f ffffffff ffffffff 001 i GetHighWealth
 fp i
 f ffffffff ffffffff 001 i GetCutoffWealth
 fp i
+f ffffffff ffffffff 001 i ACR_GetIsFollowing
+fp o
+f ffffffff ffffffff 001 o ACR_GetFollowTarget
+fp o
+f ffffffff ffffffff 001 v ACR_StopFollowing
+fp o
+f ffffffff ffffffff 001 v ACR_FollowTargetHeartbeat
+fp o
 f 00000103 0000010b 000 v main
 f 0000000d 00000015 000 v #loader
 f 00000015 00000103 000 v #globals
@@ -9304,15 +9394,15 @@ l16 0000056 000000f1 000000f1
 l17 0000163 000000f1 000000f1
 l17 0000164 000000f1 000000f1
 l17 0000165 000000f1 000000f1
-l84 0000046 00000103 00000109
-l84 0000061 00000109 0000010b
-l83 0000354 0000010b 00000171
-l83 0000357 00000177 00000189
-l83 0000358 00000189 0000018f
-l83 0000360 0000018f 000001b3
-l83 0000362 000001b9 000001d6
-l83 0000364 000001d6 000001d8
-l83 0000603 000001d8 000001dd
-l83 0000604 000001dd 000001ea
-l83 0000605 000001ea 0000021b
-l83 0000606 0000021b 00000223
+l85 0000046 00000103 00000109
+l85 0000061 00000109 0000010b
+l84 0000360 0000010b 00000171
+l84 0000363 00000177 00000189
+l84 0000364 00000189 0000018f
+l84 0000366 0000018f 000001b3
+l84 0000368 000001b9 000001d6
+l84 0000370 000001d6 000001d8
+l84 0000609 000001d8 000001dd
+l84 0000610 000001dd 000001ea
+l84 0000611 000001ea 0000021b
+l84 0000612 0000021b 00000223
